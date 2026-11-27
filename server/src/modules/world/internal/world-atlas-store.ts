@@ -4,11 +4,33 @@
  * Location: server/src/modules/world/internal/world-atlas-store.ts
  */
 import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
 import {
   filterPartyLayers,
   redactPartyGeneratorMeta,
 } from './party-map-projection.ts';
 import type { HostDatabase } from '../../../persistence/open-database.ts';
+
+const ParentAnchorSchema = z.object({
+  parentMapId: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim().length > 0 ? value.trim() : null),
+    z.string().min(1).nullable(),
+  ),
+  centerX: z.preprocess((v) => (v == null ? undefined : Number(v)), z.number().finite().optional()),
+  centerY: z.preprocess((v) => (v == null ? undefined : Number(v)), z.number().finite().optional()),
+  extentX: z.preprocess((value) => Number(value), z.number().finite().positive()),
+  extentY: z.preprocess((value) => Number(value), z.number().finite().positive()),
+  rotationRad: z.preprocess((value) => (value == null ? 0 : Number(value)), z.number().finite()),
+});
+
+const GeneratorMetaRecordSchema = z.record(z.string(), z.unknown());
+
+const NonEmptyTrimmedIdSchema = z.string().trim().min(1);
+
+const CycleParentLinkRawRowSchema = z.object({
+  parentMapId: z.unknown().optional(),
+  anchorParentMapId: z.unknown().optional(),
+});
 
 export type PartyRevealedAtlasMapIds = (
   worldProfileId: string,
@@ -406,6 +428,19 @@ export class WorldAtlasStore {
         ? input.generatorMeta
         : {};
 
+    // SWS-01 write-side shear guard: rotated anchors must have uniform extents (ADR-SWS-01 §3.3).
+    const anchorCheck = this.#validateGeneratorMetaAnchor(meta);
+    if (!anchorCheck.ok) {
+      return { ok: false, error: '23514' };
+    }
+    // Owner-scoped invariant: parentAnchor.parentMapId must resolve to a map inside the same worldId.
+    if (anchorCheck.anchorParentMapId) {
+      const anchorParent = this.#loadRow(anchorCheck.anchorParentMapId);
+      if (!anchorParent || anchorParent.world_profile_id !== worldId) {
+        return { ok: false, error: '22023' };
+      }
+    }
+
     let parentMapId =
       typeof input.parentMapId === 'string' && input.parentMapId.trim().length > 0
         ? input.parentMapId.trim()
@@ -483,6 +518,15 @@ export class WorldAtlasStore {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };
       } else if (parentMapId && this.#mapWouldCycle(mapId, parentMapId)) {
+        this.#db.exec('ROLLBACK');
+        return { ok: false, error: '23514' };
+      }
+      // SWS-01 write-side cycle guard on parentAnchor.parentMapId as well.
+      if (
+        anchorCheck.anchorParentMapId &&
+        (anchorCheck.anchorParentMapId === mapId ||
+          this.#mapWouldCycle(mapId, anchorCheck.anchorParentMapId))
+      ) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };
       }
@@ -588,9 +632,32 @@ export class WorldAtlasStore {
       }
       const child = this.#db
         .prepare(
-          `SELECT 1 AS ok FROM world_atlas_maps WHERE parent_map_id = ? LIMIT 1`,
+          `SELECT 1 AS ok
+           FROM world_atlas_maps
+           WHERE world_profile_id = ?
+             AND id != ?
+             AND (
+               parent_map_id = ?
+               OR (
+                 CASE
+                   WHEN json_valid(generator_meta)
+                        AND json_type(generator_meta, '$.mapFrame') = 'object'
+                        AND json_type(generator_meta, '$.mapFrame.parentAnchor') IS NOT NULL
+                     THEN CASE
+                       WHEN json_type(generator_meta, '$.mapFrame.parentAnchor') = 'object'
+                         THEN json_extract(generator_meta, '$.mapFrame.parentAnchor.parentMapId')
+                       ELSE NULL
+                     END
+                   WHEN json_valid(generator_meta)
+                        AND json_type(generator_meta, '$.parentAnchor') = 'object'
+                     THEN json_extract(generator_meta, '$.parentAnchor.parentMapId')
+                   ELSE NULL
+                 END
+               ) = ?
+             )
+           LIMIT 1`,
         )
-        .get(mapId) as { ok: number } | undefined;
+        .get(worldId, mapId, mapId, mapId) as { ok: number } | undefined;
       if (child) {
         this.#db.exec('ROLLBACK');
         return { ok: false, error: '23514' };
@@ -616,17 +683,75 @@ export class WorldAtlasStore {
     }
   }
 
-  /** True if setting mapId.parent = candidateParent would create a cycle. */
+  /**
+   * SWS-01 write-side shear + anchor validation (ADR-SWS-01 §3.3).
+   * Mirrors domain `anchorHasShear` without importing FE code (architecture boundary).
+   */
+  #validateGeneratorMetaAnchor(
+    meta: Record<string, unknown>,
+  ): { readonly ok: true; readonly anchorParentMapId: string | null } | { readonly ok: false } {
+    const parsedFrame = GeneratorMetaRecordSchema.safeParse(meta.mapFrame);
+    const frame = parsedFrame.success ? parsedFrame.data : null;
+    const rawAnchor =
+      frame && Object.prototype.hasOwnProperty.call(frame, 'parentAnchor')
+        ? frame.parentAnchor
+        : meta.parentAnchor;
+    if (rawAnchor == null) return { ok: true, anchorParentMapId: null };
+    const parsedAnchor = ParentAnchorSchema.safeParse(rawAnchor);
+    if (!parsedAnchor.success) return { ok: false };
+    const { extentX, extentY, rotationRad, parentMapId } = parsedAnchor.data;
+    const EPS = 1e-9;
+    if (Math.abs(rotationRad) > EPS) {
+      const rel =
+        Math.abs(extentX - extentY) / Math.max(Math.abs(extentX), Math.abs(extentY), Number.EPSILON);
+      if (rel > EPS) return { ok: false };
+    }
+    return { ok: true, anchorParentMapId: parentMapId };
+  }
+
+  /** True if setting mapId's parent/anchor = candidateParent would create a cycle via parent_map_id or parentAnchor links. */
   #mapWouldCycle(mapId: string, candidateParent: string): boolean {
-    let cursor: string | null = candidateParent;
+    const stmt = this.#db.prepare(
+      `SELECT
+         parent_map_id AS parentMapId,
+         CASE
+           WHEN json_valid(generator_meta)
+                AND json_type(generator_meta, '$.mapFrame') = 'object'
+                AND json_type(generator_meta, '$.mapFrame.parentAnchor') IS NOT NULL
+             THEN CASE
+               WHEN json_type(generator_meta, '$.mapFrame.parentAnchor') = 'object'
+                 THEN json_extract(generator_meta, '$.mapFrame.parentAnchor.parentMapId')
+               ELSE NULL
+             END
+           WHEN json_valid(generator_meta)
+                AND json_type(generator_meta, '$.parentAnchor') = 'object'
+             THEN json_extract(generator_meta, '$.parentAnchor.parentMapId')
+           ELSE NULL
+         END AS anchorParentMapId
+       FROM world_atlas_maps
+       WHERE id = ?`,
+    );
+    const queue: string[] = [candidateParent];
     const seen = new Set<string>();
-    while (cursor) {
+    while (queue.length > 0) {
+      const cursor = queue.shift()!;
       if (cursor === mapId) return true;
-      if (seen.has(cursor)) return true;
+      if (seen.has(cursor)) continue;
       seen.add(cursor);
-      const row = this.#loadRow(cursor);
-      if (!row) return false;
-      cursor = row.parent_map_id;
+      const rawRow = stmt.get(cursor);
+      if (!rawRow) continue;
+      const parsedRow = CycleParentLinkRawRowSchema.safeParse(rawRow);
+      if (!parsedRow.success) continue;
+      const parsedParentId = NonEmptyTrimmedIdSchema.safeParse(parsedRow.data.parentMapId);
+      if (parsedParentId.success) {
+        queue.push(parsedParentId.data);
+      }
+      const parsedAnchorParentId = NonEmptyTrimmedIdSchema.safeParse(
+        parsedRow.data.anchorParentMapId,
+      );
+      if (parsedAnchorParentId.success) {
+        queue.push(parsedAnchorParentId.data);
+      }
     }
     return false;
   }

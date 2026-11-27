@@ -69,7 +69,7 @@ Archivierter Supabase-/Edge-Stack: `archive/supabase-legacy/` (nicht Produktpfad
 | **Projekte & Mitgliedschaft** | Sagas anlegen, Join-by-Code, Policy-Service-Rollen (GM / Spieler) |
 | **SagaTree Core Editor** | Spezies · Parameter · Look · Inventar · Einstellungen / Presets |
 | **Live Sessions** | Lobby, GM- und Player-Panel, Realtime Session-Runtime |
-| **Bibliothek & Welten** | Abenteuer, World Profiles, Maps |
+| **Bibliothek & Welten** | Abenteuer, World Profiles, Maps; Atlas: gemeinsamer Weltraum, Ebenenfokus und getrennte Einzelkartenbearbeitung |
 | **Inventar & Items** | Inventory v2, Item-Workbench, Thumbnails & optional GLB |
 | **LiveAct** | MediaPipe Face Tracking, Avatar-Capabilities, Kalibrierung |
 | **KI (optional)** | Character-Lore, Portraits, Meshy Text-to-Image / Image-to-3D |
@@ -295,6 +295,7 @@ Desktop-Installer: Pipeline skizziert in [`docs/ops/desktop-release.md`](docs/op
 
 ## Recent changes
 
+- **2026-11-26** — Atlas-Zwischenstand: gemeinsamer Weltraum, Ebenenfokus und getrennte Einzelkartenbearbeitung (`feat/atlas-spatial-containment`)
 - **CUT-21 / #1156 · CUT-22 / #1157 · CUT-23 / #1158** — Produkt-Runtime host-only (Node/Hono · Better Auth · SQLite); Supabase/Edge archiviert
 - **2026-10-22** — UI-Icons: Lucide → Phosphor (`@phosphor-icons/react`); Sidebar Cyan/Gold-Zustände
 - Ältere Einträge (Atlas, Lobby, Bibliothek) bleiben in der Git-Historie / gemergten PRs; GoTrue/PostgREST-Hinweise dort beschreiben den **damaligen** Stack

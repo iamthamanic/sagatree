@@ -4,8 +4,8 @@
   "localId": "MIG-002",
   "result": "PASS",
   "githubClosed": true,
-  "mergeRef": "PR #860 \u2192 main (after #782)",
-  "note": "Inventories regenerated after ATL3-R01B (#1296): atlas-renderer-target R01B conditional GO decision + retireParallelIn; edge inventory sha256 refreshed.",
+  "mergeRef": "PR #860 → main (after #782)",
+  "note": "Inventories regenerated after ADR-ST-11 (#1296) hardware + owner gates passed and Dungeon-Generator Werkzeuge move; edge inventory sha256 refreshed.",
   "checks": [
     {
       "command": "legacy inventory matrix",
@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "5d3aa40dd57332ba2e838e391b418e2f6757ac00efea63ea761f5aa6da48dfff"
+      "sha256": "c5bfd312ccfc5c86f381c66ff8162a5de966b136347a28537d0cc9a1f4120706"
     }
   ],
   "testedCommit": "361d3bd31d8f9cc7bf1918dda2c5d25b174eaab1"

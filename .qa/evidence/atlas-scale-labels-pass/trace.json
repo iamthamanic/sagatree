@@ -1,0 +1,743 @@
+{
+  "world": {
+    "id": "8bf92741-31d0-49c7-9714-60d0e34ed6e2",
+    "public_id": "WO-5CFNZ",
+    "title": "Dornhain"
+  },
+  "dataSource": "/tmp/sagatree-recovery-staging-solo-wo5cfnz/data",
+  "dbRevisionsBefore": [
+    {
+      "id": "dh-map-loc-tavern",
+      "revision": 39
+    },
+    {
+      "id": "dh-map-place-dornhain",
+      "revision": 3
+    }
+  ],
+  "dbRevisionsAfter": [
+    {
+      "id": "dh-map-loc-tavern",
+      "revision": 39
+    },
+    {
+      "id": "dh-map-place-dornhain",
+      "revision": 3
+    }
+  ],
+  "pageErrors": [],
+  "consoleWarningCount": 1,
+  "snapWorld": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 500,
+      "z": 500,
+      "span": 530,
+      "yawRad": 0.42,
+      "pitchRad": 1.1743463490799542
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-atlas-root",
+      "dh-map-continent-ostmark",
+      "dh-map-continent-westmark",
+      "dh-map-country-suedmark"
+    ],
+    "activeEditorMapId": "dh-atlas-root",
+    "focusIntent": null,
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-continent-ostmark": {
+        "detailWeight": 1,
+        "opacity": 0.993,
+        "waterOpacity": 0.993,
+        "depth": 2,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0.963,
+        "waterOpacity": 0.993,
+        "depth": 2,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-country-suedmark": {
+        "detailWeight": 0.312,
+        "opacity": 0.312,
+        "waterOpacity": 0.312,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-atlas-root",
+      "activePlaceId": null,
+      "isWorldRoot": true,
+      "activeLabelDe": "Karte · Dornhain",
+      "activeDepth": 1,
+      "activeBreadcrumbPlaceIds": []
+    },
+    "badge": "Karte · Dornhain",
+    "scaleHudText": "~1149 WE",
+    "scaleHudTitle": "Unkalibriert Z2.0 · ca. 1149 WE (unkalibriert) (Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-continent-ostmark",
+        "label": "Kontinent Ostmark",
+        "tier": "1",
+        "locked": false,
+        "opacity": 1,
+        "left": 812,
+        "top": 398
+      },
+      {
+        "id": "dh-place-continent-westmark",
+        "label": "Kontinent Westmark",
+        "tier": "1",
+        "locked": false,
+        "opacity": 1,
+        "left": 566,
+        "top": 251
+      }
+    ],
+    "terrain": {
+      "chunkCount": 17,
+      "maxActiveLod": 2,
+      "totalTriangles": 37376
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  },
+  "driftSuedmark": {
+    "maxDriftPx": 0,
+    "settledDriftPx": 0
+  },
+  "snapSuedmark": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 251.4900922973708,
+      "z": 503.9543011617839,
+      "span": 61.407651856331924,
+      "yawRad": 0.42,
+      "pitchRad": 1.0024802524319514,
+      "y": 12.808747142317943
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-map-country-suedmark",
+      "dh-atlas-root",
+      "dh-map-continent-westmark"
+    ],
+    "activeEditorMapId": "dh-map-country-suedmark",
+    "focusIntent": null,
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-map-country-suedmark": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "waterOpacity": 1,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 2,
+        "lodState": "coarse",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-map-country-suedmark",
+      "activePlaceId": "dh-place-country-suedmark",
+      "isWorldRoot": false,
+      "activeLabelDe": "Südmark",
+      "activeDepth": 3,
+      "activeBreadcrumbPlaceIds": [
+        "dh-place-continent-westmark",
+        "dh-place-country-suedmark"
+      ]
+    },
+    "badge": "Südmark",
+    "scaleHudText": "~39 km",
+    "scaleHudTitle": "Weltmaßstab Z5.1 · ca. 39 km Boden-Sichthöhe (266.5008954445131 m/WE · Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-continent-westmark",
+        "label": "Kontinent Westmark",
+        "tier": "1",
+        "locked": false,
+        "opacity": 1,
+        "left": 899,
+        "top": 36
+      },
+      {
+        "id": "dh-place-country-suedmark",
+        "label": "Südmark",
+        "tier": "1",
+        "locked": true,
+        "opacity": 1,
+        "left": 769,
+        "top": 325
+      },
+      {
+        "id": "dh-place-place-moorbrueck",
+        "label": "",
+        "tier": "2",
+        "locked": false,
+        "opacity": 0.1,
+        "left": 868,
+        "top": 371
+      },
+      {
+        "id": "dh-place-place-weidenhafen",
+        "label": "",
+        "tier": "2",
+        "locked": false,
+        "opacity": 0.1,
+        "left": 737,
+        "top": 371
+      }
+    ],
+    "terrain": {
+      "chunkCount": 20,
+      "maxActiveLod": 5,
+      "totalTriangles": 44288
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  },
+  "driftMoorbrueckIn": {
+    "maxDriftPx": 0,
+    "settledDriftPx": 0
+  },
+  "snapMoorbrueckFree": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 269.56305093168714,
+      "z": 490.3172607706849,
+      "span": 5.180145710067714,
+      "yawRad": 0.42,
+      "pitchRad": 0.7886784231333882,
+      "y": 11.684556325630375
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-atlas-root",
+      "dh-map-continent-westmark",
+      "dh-map-place-moorbrueck",
+      "dh-map-country-suedmark"
+    ],
+    "activeEditorMapId": "dh-map-place-moorbrueck",
+    "focusIntent": null,
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 2,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-place-moorbrueck": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "waterOpacity": 1,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-country-suedmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0.437,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-map-place-moorbrueck",
+      "activePlaceId": "dh-place-place-moorbrueck",
+      "isWorldRoot": false,
+      "activeLabelDe": "Moorbrück",
+      "activeDepth": 4,
+      "activeBreadcrumbPlaceIds": [
+        "dh-place-continent-westmark",
+        "dh-place-country-suedmark",
+        "dh-place-place-moorbrueck"
+      ]
+    },
+    "badge": "Moorbrück",
+    "scaleHudText": "~3,9 km",
+    "scaleHudTitle": "Weltmaßstab Z8.6 · ca. 3,9 km Boden-Sichthöhe (266.5008954445125 m/WE · Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-place-moorbrueck",
+        "label": "Moorbrück",
+        "tier": "1",
+        "locked": true,
+        "opacity": 1,
+        "left": 704,
+        "top": 346
+      },
+      {
+        "id": "dh-place-loc-moorbrueck-vault",
+        "label": "Versunkenes Gewölbe",
+        "tier": "2",
+        "locked": false,
+        "opacity": 0.294,
+        "left": 688,
+        "top": 392
+      }
+    ],
+    "terrain": {
+      "chunkCount": 8,
+      "maxActiveLod": 6,
+      "totalTriangles": 16640
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  },
+  "scrollCheck": {
+    "windowScrollYBefore": 0,
+    "activeElTagBefore": "BODY"
+  },
+  "drawerMetrics": {
+    "windowScrollYAfter": 0,
+    "scrollTop": 307,
+    "scrollHeight": 1408,
+    "clientHeight": 445,
+    "activeNodeId": "dh-place-place-moorbrueck",
+    "activeNodeLabel": "MoorbrückOrt",
+    "activeNodeVisibleInContainer": true,
+    "activeFocusForcedToNode": false
+  },
+  "drawerAfterDornhain": {
+    "windowScrollY": 0,
+    "scrollTop": 48,
+    "activeNodeLabel": "DornhainOrt",
+    "activeNodeVisibleInContainer": true
+  },
+  "snapDornhainClick": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 227.744,
+      "z": 376.88,
+      "span": 3.678,
+      "yawRad": 0.42,
+      "pitchRad": 0.7807569400208997
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-atlas-root",
+      "dh-map-place-dornhain",
+      "dh-map-continent-westmark",
+      "dh-map-country-westmark"
+    ],
+    "activeEditorMapId": "dh-map-place-dornhain",
+    "focusIntent": {
+      "targetMapId": "dh-map-place-dornhain",
+      "targetPlaceId": "dh-place-dornhain",
+      "labelDe": "Dornhain",
+      "requestedAtMs": 1795777644747,
+      "phase": "arrived"
+    },
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-place-dornhain": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "waterOpacity": 1,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 2,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-country-westmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0.076,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-map-place-dornhain",
+      "activePlaceId": "dh-place-dornhain",
+      "isWorldRoot": false,
+      "activeLabelDe": "Dornhain",
+      "activeDepth": 4,
+      "activeBreadcrumbPlaceIds": [
+        "dh-place-continent-westmark",
+        "dh-place-country-westmark",
+        "dh-place-dornhain"
+      ]
+    },
+    "badge": "Dornhain",
+    "scaleHudText": "~10,5 WE",
+    "scaleHudTitle": "Unkalibriert Z9.1 · ca. 10,5 WE (unkalibriert) (Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-dornhain",
+        "label": "Dornhain",
+        "tier": "1",
+        "locked": true,
+        "opacity": 1,
+        "left": 709,
+        "top": 343
+      },
+      {
+        "id": "dh-place-square",
+        "label": "Marktplatz",
+        "tier": "2",
+        "locked": false,
+        "opacity": 1,
+        "left": 643,
+        "top": 203
+      },
+      {
+        "id": "dh-place-crypt",
+        "label": "Krypta unter dem Hügel",
+        "tier": "2",
+        "locked": false,
+        "opacity": 1,
+        "left": 639,
+        "top": 308
+      },
+      {
+        "id": "dh-place-tavern",
+        "label": "Taverne Zum Flüstern",
+        "tier": "2",
+        "locked": false,
+        "opacity": 1,
+        "left": 573,
+        "top": 238
+      },
+      {
+        "id": "dh-place-whisper",
+        "label": "Whisper Road",
+        "tier": "3",
+        "locked": false,
+        "opacity": 1,
+        "left": 669,
+        "top": 276
+      }
+    ],
+    "terrain": {
+      "chunkCount": 8,
+      "maxActiveLod": 6,
+      "totalTriangles": 16640
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  },
+  "driftWorldOut": {
+    "maxDriftPx": 0,
+    "settledDriftPx": 0
+  },
+  "snapWorldOut": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 227.81068521971628,
+      "z": 377.02932673374386,
+      "span": 481.7229355093905,
+      "yawRad": 0.42,
+      "pitchRad": 1.1713131107176626,
+      "y": 12.826535001179982
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-map-country-suedmark",
+      "dh-map-country-westmark",
+      "dh-atlas-root",
+      "dh-map-country-sonnenkueste",
+      "dh-map-continent-ostmark",
+      "dh-map-continent-westmark"
+    ],
+    "activeEditorMapId": "dh-map-country-westmark",
+    "focusIntent": null,
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-map-country-suedmark": {
+        "detailWeight": 0.453,
+        "opacity": 0.453,
+        "waterOpacity": 0.453,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-country-westmark": {
+        "detailWeight": 0.26,
+        "opacity": 0.26,
+        "waterOpacity": 0.26,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-country-sonnenkueste": {
+        "detailWeight": 0.22,
+        "opacity": 0.22,
+        "waterOpacity": 0.22,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-continent-ostmark": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "waterOpacity": 1,
+        "depth": 2,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0.734,
+        "waterOpacity": 0.908,
+        "depth": 2,
+        "lodState": "active",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-map-country-westmark",
+      "activePlaceId": "dh-place-country-westmark",
+      "isWorldRoot": false,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "activeBreadcrumbPlaceIds": [
+        "dh-place-continent-westmark",
+        "dh-place-country-westmark"
+      ]
+    },
+    "badge": "Nordreich",
+    "scaleHudText": "~1046 WE",
+    "scaleHudTitle": "Unkalibriert Z2.1 · ca. 1046 WE (unkalibriert) (Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-continent-ostmark",
+        "label": "Kontinent Ostmark",
+        "tier": "1",
+        "locked": false,
+        "opacity": 1,
+        "left": 957,
+        "top": 544
+      },
+      {
+        "id": "dh-place-continent-westmark",
+        "label": "Kontinent Westmark",
+        "tier": "1",
+        "locked": false,
+        "opacity": 1,
+        "left": 687,
+        "top": 394
+      },
+      {
+        "id": "dh-place-country-westmark",
+        "label": "Nordreich",
+        "tier": "1",
+        "locked": true,
+        "opacity": 1,
+        "left": 712,
+        "top": 350
+      }
+    ],
+    "terrain": {
+      "chunkCount": 17,
+      "maxActiveLod": 2,
+      "totalTriangles": 37376
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  },
+  "snapMoorbrueckClick": {
+    "camera": {
+      "mode": "diorama-oblique",
+      "x": 269.6,
+      "z": 490.4,
+      "span": 1.672,
+      "yawRad": 0.42,
+      "pitchRad": 0.7873425191785893
+    },
+    "clearRootCount": 0,
+    "ownPerMapTerrainCount": 0,
+    "activeMapIds": [
+      "dh-map-country-suedmark",
+      "dh-atlas-root",
+      "dh-map-continent-westmark",
+      "dh-map-place-moorbrueck",
+      "dh-map-loc-moorbrueck-vault"
+    ],
+    "activeEditorMapId": "dh-map-place-moorbrueck",
+    "focusIntent": {
+      "targetMapId": "dh-map-place-moorbrueck",
+      "targetPlaceId": "dh-place-place-moorbrueck",
+      "labelDe": "Moorbrück",
+      "requestedAtMs": 1795777649808,
+      "phase": "arrived"
+    },
+    "unlocatedNotice": null,
+    "groupOpacities": {
+      "dh-map-country-suedmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-atlas-root": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 1,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-continent-westmark": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "waterOpacity": 0,
+        "depth": 2,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "dh-map-place-moorbrueck": {
+        "detailWeight": 1,
+        "opacity": 0.72,
+        "waterOpacity": 0.72,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "dh-map-loc-moorbrueck-vault": {
+        "detailWeight": 0.383,
+        "opacity": 0.383,
+        "waterOpacity": 0.383,
+        "depth": 5,
+        "lodState": "active",
+        "exiting": false
+      }
+    },
+    "zoomLayer": {
+      "activeMapId": "dh-map-place-moorbrueck",
+      "activePlaceId": "dh-place-place-moorbrueck",
+      "isWorldRoot": false,
+      "activeLabelDe": "Moorbrück",
+      "activeDepth": 4,
+      "activeBreadcrumbPlaceIds": [
+        "dh-place-continent-westmark",
+        "dh-place-country-suedmark",
+        "dh-place-place-moorbrueck"
+      ]
+    },
+    "badge": "Moorbrück",
+    "scaleHudText": "~1,3 km",
+    "scaleHudTitle": "Weltmaßstab Z10.3 · ca. 1,3 km Boden-Sichthöhe (266.5008954445125 m/WE · Klick zentriert)",
+    "visiblePins": [
+      {
+        "id": "dh-place-place-moorbrueck",
+        "label": "Moorbrück",
+        "tier": "1",
+        "locked": true,
+        "opacity": 1,
+        "left": 704,
+        "top": 343
+      },
+      {
+        "id": "dh-place-loc-moorbrueck-vault",
+        "label": "Versunkenes Gewölbe",
+        "tier": "2",
+        "locked": false,
+        "opacity": 1,
+        "left": 663,
+        "top": 387
+      }
+    ],
+    "terrain": {
+      "chunkCount": 5,
+      "maxActiveLod": 6,
+      "totalTriangles": 9728
+    },
+    "rendererInfo": {
+      "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "webglVendor": "Google Inc. (Apple)",
+      "isSoftwareWebgl": false
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "capturedAt": "2026-11-26T08:24:31.449Z",
+  "maxDiffPixelRatio": 0.08,
+  "captures": [
+    {
+      "id": "sws-01-world",
+      "snapshot": "sws-01-world.png",
+      "clearRootCount": 0,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-ostmark__327cb59eac60",
+        "dh-map-continent-westmark__30bc68ef970d"
+      ],
+      "activeEditorMapId": "dh-atlas-root__5dccba2c6f60",
+      "triangles": 15890
+    },
+    {
+      "id": "sws-02-land-nordreich",
+      "snapshot": "sws-02-land-nordreich.png",
+      "clearRootCount": 0,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-westmark__e3eabdfc6f27"
+      ],
+      "activeEditorMapId": "dh-map-country-westmark__e3eabdfc6f27",
+      "triangles": 19696
+    },
+    {
+      "id": "sws-03-ort-dornhain",
+      "snapshot": "sws-03-ort-dornhain.png",
+      "clearRootCount": 0,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-map-place-dornhain__59b982739219"
+      ],
+      "activeEditorMapId": "dh-map-place-dornhain__59b982739219",
+      "triangles": 24190
+    },
+    {
+      "id": "sws-04-raum-schankraum",
+      "snapshot": "sws-04-raum-schankraum.png",
+      "clearRootCount": 0,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-map-place-dornhain__59b982739219",
+        "dh-map-loc-tavern__1d3e26df066c",
+        "dh-map-room-taproom__7430f22a1f2e"
+      ],
+      "activeEditorMapId": "dh-map-room-taproom__7430f22a1f2e",
+      "triangles": 31954
+    }
+  ]
+}

@@ -280,21 +280,55 @@ export function clearAtlasHeightfield(hf: AtlasHeightfield): AtlasHeightfield {
 export function heightfieldMeshTriangles(
   hf: AtlasHeightfield,
 ): readonly (readonly [readonly [number, number, number], readonly [number, number, number], readonly [number, number, number]])[] {
+  return heightfieldChunkMeshTriangles(hf, {
+    minCol: 0,
+    maxCol: hf.cols - 1,
+    minRow: 0,
+    maxRow: hf.rows - 1,
+    stride: 1,
+  });
+}
+
+export type AtlasHeightfieldChunkWindow = {
+  readonly minCol: number;
+  readonly maxCol: number;
+  readonly minRow: number;
+  readonly maxRow: number;
+  readonly stride?: number;
+};
+
+/**
+ * Chunk-subset + LOD-stride triangulation of an `AtlasHeightfield` (Phase 1.3).
+ * Never truncates chunk boundary edges (`maxCol`/`maxRow` clamped cleanly).
+ */
+export function heightfieldChunkMeshTriangles(
+  hf: AtlasHeightfield,
+  window: AtlasHeightfieldChunkWindow,
+): readonly (readonly [readonly [number, number, number], readonly [number, number, number], readonly [number, number, number]])[] {
+  if (hf.cols < 2 || hf.rows < 2) return [];
+  const stride = Math.max(1, Math.floor(window.stride ?? 1));
+  const minCol = Math.max(0, Math.min(hf.cols - 2, Math.floor(window.minCol)));
+  const maxCol = Math.max(minCol + 1, Math.min(hf.cols - 1, Math.floor(window.maxCol)));
+  const minRow = Math.max(0, Math.min(hf.rows - 2, Math.floor(window.minRow)));
+  const maxRow = Math.max(minRow + 1, Math.min(hf.rows - 1, Math.floor(window.maxRow)));
+
   const tris: [
     readonly [number, number, number],
     readonly [number, number, number],
     readonly [number, number, number],
   ][] = [];
-  for (let row = 0; row < hf.rows - 1; row++) {
-    for (let col = 0; col < hf.cols - 1; col++) {
+  for (let row = minRow; row < maxRow; row += stride) {
+    const r1 = Math.min(maxRow, row + stride);
+    for (let col = minCol; col < maxCol; col += stride) {
+      const c1 = Math.min(maxCol, col + stride);
       const x0 = hf.originX + col * hf.cellSize;
       const z0 = hf.originZ + row * hf.cellSize;
-      const x1 = x0 + hf.cellSize;
-      const z1 = z0 + hf.cellSize;
+      const x1 = hf.originX + c1 * hf.cellSize;
+      const z1 = hf.originZ + r1 * hf.cellSize;
       const y00 = hf.heights[heightfieldIndex(hf.cols, col, row)] ?? 0;
-      const y10 = hf.heights[heightfieldIndex(hf.cols, col + 1, row)] ?? 0;
-      const y01 = hf.heights[heightfieldIndex(hf.cols, col, row + 1)] ?? 0;
-      const y11 = hf.heights[heightfieldIndex(hf.cols, col + 1, row + 1)] ?? 0;
+      const y10 = hf.heights[heightfieldIndex(hf.cols, c1, row)] ?? 0;
+      const y01 = hf.heights[heightfieldIndex(hf.cols, col, r1)] ?? 0;
+      const y11 = hf.heights[heightfieldIndex(hf.cols, c1, r1)] ?? 0;
       const p00: [number, number, number] = [x0, y00, z0];
       const p10: [number, number, number] = [x1, y10, z0];
       const p01: [number, number, number] = [x0, y01, z1];

@@ -1,0 +1,22 @@
+{
+  "capturedAt": "2026-11-26T10:21:12.987Z",
+  "dragPlan": {
+    "settlementId": "map:dh-map-place-dornhain__1753b0055698",
+    "countryId": "map:dh-map-country-westmark__4cc1fdda43a8",
+    "settlementOrigMaxX": 242,
+    "countryOrigMaxX": 304,
+    "buildingId": "obj:dh-map-place-dornhain__1753b0055698:g.tavern",
+    "featureId": "g.tavern",
+    "startClientX": 655.49,
+    "startClientY": 400.61,
+    "insideClientX": 663.0699999999999,
+    "insideClientY": 400.61,
+    "outsideClientX": 962.15,
+    "outsideClientY": 400.61
+  },
+  "afterDragGrow": {
+    "settlementMaxX": 242.593225,
+    "countryMaxX": 304
+  },
+  "afterUndo": 242
+}

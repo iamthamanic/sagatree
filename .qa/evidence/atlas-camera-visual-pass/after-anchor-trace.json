@@ -1,0 +1,1297 @@
+{
+  "phase": "after",
+  "capturedAt": "2026-11-27T07:59:09.948Z",
+  "rendererInfo": {
+    "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+    "webglVendor": "Google Inc. (Apple)",
+    "isSoftwareWebgl": false
+  },
+  "pageErrors": [],
+  "consoleWarningCount": 1,
+  "consoleWarnings": [
+    "[error] Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "dbRevisions": {
+    "tavernRev": 39,
+    "dornhainRev": 3
+  },
+  "editBadgeSamples": [
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain",
+    "Dornhain"
+  ],
+  "anchors": {
+    "dornhainIn": {
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "startSpan": 477.379,
+      "endSpan": 35.619,
+      "endPitchRad": 0.943
+    },
+    "dornhainOut": {
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "startSpan": 39.545,
+      "endSpan": 215.482
+    },
+    "perspYawHill": {
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "startSpan": 236.923,
+      "endSpan": 52.493
+    },
+    "orthoTopdown": {
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "startSpan": 288.185,
+      "endSpan": 82.957
+    },
+    "viewports": {
+      "tablet": {
+        "maxDriftPx": 0.01,
+        "settledDriftPx": 0.01
+      },
+      "phone": {
+        "maxDriftPx": 0,
+        "settledDriftPx": 0
+      }
+    }
+  },
+  "landmarks": {
+    "world": {
+      "cam": {
+        "mode": "diorama-oblique",
+        "x": 500,
+        "z": 500,
+        "span": 530,
+        "yawRad": 0.42,
+        "pitchRad": 1.1743463490799542
+      },
+      "stats": {
+        "calls": 62,
+        "triangles": 76904,
+        "rooms": 19,
+        "clearRootCount": 0,
+        "activeMapCount": 3
+      },
+      "terrain": {
+        "enabled": true,
+        "chunkCount": 17,
+        "maxActiveLod": 2,
+        "totalTriangles": 37376,
+        "liveGeometryCount": 17
+      }
+    },
+    "dornhain": {
+      "cam": {
+        "mode": "diorama-oblique",
+        "x": 227.744,
+        "z": 376.88,
+        "span": 3.678,
+        "yawRad": 0.42,
+        "pitchRad": 0.7807569400208997
+      },
+      "stats": {
+        "calls": 73,
+        "triangles": 84216,
+        "rooms": 19,
+        "clearRootCount": 0,
+        "activeMapCount": 4
+      },
+      "terrain": {
+        "enabled": true,
+        "chunkCount": 8,
+        "maxActiveLod": 6,
+        "totalTriangles": 16640,
+        "liveGeometryCount": 8
+      }
+    },
+    "tavern": {
+      "cam": {
+        "mode": "diorama-oblique",
+        "x": 226.412032,
+        "z": 377.15103999999997,
+        "span": 0.3345,
+        "yawRad": 0.42,
+        "pitchRad": 0.9736927196860482
+      },
+      "stats": {
+        "calls": 83,
+        "triangles": 76902,
+        "rooms": 19,
+        "clearRootCount": 0,
+        "activeMapCount": 6
+      },
+      "terrain": {
+        "enabled": true,
+        "chunkCount": 5,
+        "maxActiveLod": 6,
+        "totalTriangles": 9728,
+        "liveGeometryCount": 5
+      }
+    },
+    "room": {
+      "cam": {
+        "mode": "diorama-oblique",
+        "x": 226.37486080000002,
+        "z": 377.0859904,
+        "span": 0.1673,
+        "yawRad": 0.42,
+        "pitchRad": 1.0197937533719659
+      },
+      "stats": {
+        "calls": 79,
+        "triangles": 76734,
+        "rooms": 19,
+        "clearRootCount": 0,
+        "activeMapCount": 6
+      },
+      "terrain": {
+        "enabled": true,
+        "chunkCount": 5,
+        "maxActiveLod": 6,
+        "totalTriangles": 9728,
+        "liveGeometryCount": 5
+      }
+    }
+  },
+  "traces": {
+    "zoomInDorn": {
+      "label": "dornhain-in",
+      "trackedWorldPoint": {
+        "x": 227.20949497683836,
+        "y": 12.850218530945995,
+        "z": 377.573947887645,
+        "hitKind": "terrain"
+      },
+      "anchorStartPx": {
+        "px": 375,
+        "py": 194
+      },
+      "settledPx": {
+        "px": 375,
+        "py": 194
+      },
+      "startSpan": 477.379,
+      "endSpan": 35.619,
+      "endPitchRad": 0.943,
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "sampleCount": 36,
+      "samples": [
+        {
+          "step": 0,
+          "subframe": 1,
+          "span": 477.379,
+          "pitchRad": 1.171,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 2,
+          "span": 458.154,
+          "pitchRad": 1.169,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 3,
+          "span": 445.974,
+          "pitchRad": 1.168,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 1,
+          "span": 382.468,
+          "pitchRad": 1.161,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 2,
+          "span": 366.723,
+          "pitchRad": 1.159,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 3,
+          "span": 356.635,
+          "pitchRad": 1.158,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 1,
+          "span": 310.23,
+          "pitchRad": 1.149,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 2,
+          "span": 295.846,
+          "pitchRad": 1.147,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 3,
+          "span": 286.704,
+          "pitchRad": 1.145,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 1,
+          "span": 244.31,
+          "pitchRad": 1.134,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 2,
+          "span": 234.062,
+          "pitchRad": 1.131,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 3,
+          "span": 227.547,
+          "pitchRad": 1.128,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 1,
+          "span": 197.857,
+          "pitchRad": 1.117,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 2,
+          "span": 188.668,
+          "pitchRad": 1.113,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 3,
+          "span": 182.843,
+          "pitchRad": 1.111,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 1,
+          "span": 155.936,
+          "pitchRad": 1.097,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 2,
+          "span": 149.359,
+          "pitchRad": 1.093,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 3,
+          "span": 143.676,
+          "pitchRad": 1.089,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 1,
+          "span": 125.35,
+          "pitchRad": 1.076,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 2,
+          "span": 119.791,
+          "pitchRad": 1.072,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 3,
+          "span": 116.26,
+          "pitchRad": 1.069,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 1,
+          "span": 99.401,
+          "pitchRad": 1.053,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 2,
+          "span": 95.218,
+          "pitchRad": 1.049,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 3,
+          "span": 92.555,
+          "pitchRad": 1.046,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 8,
+          "subframe": 1,
+          "span": 80.453,
+          "pitchRad": 1.031,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 8,
+          "subframe": 2,
+          "span": 76.713,
+          "pitchRad": 1.026,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 8,
+          "subframe": 3,
+          "span": 74.343,
+          "pitchRad": 1.023,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 9,
+          "subframe": 1,
+          "span": 63.399,
+          "pitchRad": 1.006,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 9,
+          "subframe": 2,
+          "span": 60.725,
+          "pitchRad": 1.001,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 9,
+          "subframe": 3,
+          "span": 59.023,
+          "pitchRad": 0.998,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 10,
+          "subframe": 1,
+          "span": 51.302,
+          "pitchRad": 0.983,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 10,
+          "subframe": 2,
+          "span": 48.916,
+          "pitchRad": 0.978,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 10,
+          "subframe": 3,
+          "span": 47.404,
+          "pitchRad": 0.974,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 11,
+          "subframe": 1,
+          "span": 40.304,
+          "pitchRad": 0.957,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 11,
+          "subframe": 2,
+          "span": 38.643,
+          "pitchRad": 0.952,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 11,
+          "subframe": 3,
+          "span": 37.586,
+          "pitchRad": 0.949,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        }
+      ]
+    },
+    "zoomOutDorn": {
+      "label": "dornhain-out",
+      "trackedWorldPoint": {
+        "x": 227.66437935793647,
+        "y": 14.38816335504686,
+        "z": 378.59256039502515,
+        "hitKind": "surface"
+      },
+      "anchorStartPx": {
+        "px": 375,
+        "py": 194
+      },
+      "settledPx": {
+        "px": 375,
+        "py": 194
+      },
+      "startSpan": 39.545,
+      "endSpan": 215.482,
+      "endPitchRad": 1.125,
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "sampleCount": 24,
+      "samples": [
+        {
+          "step": 0,
+          "subframe": 1,
+          "span": 39.545,
+          "pitchRad": 0.955,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 2,
+          "span": 41.2,
+          "pitchRad": 0.959,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 3,
+          "span": 42.33,
+          "pitchRad": 0.962,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 1,
+          "span": 48.616,
+          "pitchRad": 0.977,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 2,
+          "span": 50.977,
+          "pitchRad": 0.982,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 3,
+          "span": 52.59,
+          "pitchRad": 0.986,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 1,
+          "span": 60.703,
+          "pitchRad": 1.001,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 2,
+          "span": 63.707,
+          "pitchRad": 1.006,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 3,
+          "span": 65.775,
+          "pitchRad": 1.01,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 1,
+          "span": 76.01,
+          "pitchRad": 1.025,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 2,
+          "span": 79.766,
+          "pitchRad": 1.03,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 3,
+          "span": 82.36,
+          "pitchRad": 1.034,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 1,
+          "span": 95.153,
+          "pitchRad": 1.049,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 2,
+          "span": 99.88,
+          "pitchRad": 1.054,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 3,
+          "span": 103.133,
+          "pitchRad": 1.057,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 1,
+          "span": 119.177,
+          "pitchRad": 1.071,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 2,
+          "span": 125.092,
+          "pitchRad": 1.076,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 3,
+          "span": 129.163,
+          "pitchRad": 1.079,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 1,
+          "span": 149.277,
+          "pitchRad": 1.093,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 2,
+          "span": 156.676,
+          "pitchRad": 1.097,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 3,
+          "span": 161.755,
+          "pitchRad": 1.1,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 1,
+          "span": 186.91,
+          "pitchRad": 1.113,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 2,
+          "span": 196.186,
+          "pitchRad": 1.117,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 3,
+          "span": 202.569,
+          "pitchRad": 1.119,
+          "yawRad": 0.42,
+          "px": 375,
+          "py": 194,
+          "driftPx": 0
+        }
+      ]
+    },
+    "zoomPerspHill": {
+      "label": "persp-yaw-hill",
+      "trackedWorldPoint": {
+        "x": 311.1800059374673,
+        "y": -1.791306656145025,
+        "z": 338.54871085812846,
+        "hitKind": "terrain"
+      },
+      "anchorStartPx": {
+        "px": 302,
+        "py": 331
+      },
+      "settledPx": {
+        "px": 302,
+        "py": 331
+      },
+      "startSpan": 236.923,
+      "endSpan": 52.493,
+      "endPitchRad": 0.875,
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "sampleCount": 24,
+      "samples": [
+        {
+          "step": 0,
+          "subframe": 1,
+          "span": 236.923,
+          "pitchRad": 0.907,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 2,
+          "span": 228.422,
+          "pitchRad": 0.941,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 3,
+          "span": 223.003,
+          "pitchRad": 0.963,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 1,
+          "span": 197.187,
+          "pitchRad": 0.984,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 2,
+          "span": 189.069,
+          "pitchRad": 0.986,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 3,
+          "span": 183.887,
+          "pitchRad": 0.988,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 1,
+          "span": 161.85,
+          "pitchRad": 0.982,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 2,
+          "span": 155.054,
+          "pitchRad": 0.979,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 3,
+          "span": 149.18,
+          "pitchRad": 0.976,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 1,
+          "span": 132.063,
+          "pitchRad": 0.966,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 2,
+          "span": 126.664,
+          "pitchRad": 0.962,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 3,
+          "span": 123.216,
+          "pitchRad": 0.96,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 1,
+          "span": 108.479,
+          "pitchRad": 0.948,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 2,
+          "span": 103.928,
+          "pitchRad": 0.944,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 3,
+          "span": 101.018,
+          "pitchRad": 0.941,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 1,
+          "span": 88.856,
+          "pitchRad": 0.929,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 2,
+          "span": 85.115,
+          "pitchRad": 0.924,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 3,
+          "span": 82.734,
+          "pitchRad": 0.922,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 1,
+          "span": 72.767,
+          "pitchRad": 0.909,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 2,
+          "span": 69.69,
+          "pitchRad": 0.904,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 6,
+          "subframe": 3,
+          "span": 67.735,
+          "pitchRad": 0.901,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 1,
+          "span": 59.57,
+          "pitchRad": 0.888,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 2,
+          "span": 57.053,
+          "pitchRad": 0.884,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        },
+        {
+          "step": 7,
+          "subframe": 3,
+          "span": 55.458,
+          "pitchRad": 0.881,
+          "yawRad": -0.85,
+          "px": 302,
+          "py": 331,
+          "driftPx": 0
+        }
+      ]
+    },
+    "zoomOrtho": {
+      "label": "ortho-topdown",
+      "trackedWorldPoint": {
+        "x": 228.1875348970792,
+        "y": 16.60064312927369,
+        "z": 377.13777884940595,
+        "hitKind": "surface"
+      },
+      "anchorStartPx": {
+        "px": 412,
+        "py": 224
+      },
+      "settledPx": {
+        "px": 412,
+        "py": 224
+      },
+      "startSpan": 288.185,
+      "endSpan": 82.957,
+      "endPitchRad": 1.571,
+      "maxIntermediateDriftPx": 0,
+      "settledDriftPx": 0,
+      "maxDriftPx": 0,
+      "sampleCount": 18,
+      "samples": [
+        {
+          "step": 0,
+          "subframe": 1,
+          "span": 288.185,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 2,
+          "span": 276.621,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 0,
+          "subframe": 3,
+          "span": 269.25,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 1,
+          "span": 234.446,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 2,
+          "span": 223.59,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 1,
+          "subframe": 3,
+          "span": 216.732,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 1,
+          "span": 187.74,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 2,
+          "span": 178.874,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 2,
+          "subframe": 3,
+          "span": 173.277,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 1,
+          "span": 150.001,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 2,
+          "span": 142.905,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 3,
+          "subframe": 3,
+          "span": 138.4,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 1,
+          "span": 119.771,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 2,
+          "span": 114.094,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 4,
+          "subframe": 3,
+          "span": 110.512,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 1,
+          "span": 95.638,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 2,
+          "span": 91.116,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        },
+        {
+          "step": 5,
+          "subframe": 3,
+          "span": 88.245,
+          "pitchRad": 1.571,
+          "yawRad": 0.35,
+          "px": 412,
+          "py": 224,
+          "driftPx": 0
+        }
+      ]
+    }
+  }
+}

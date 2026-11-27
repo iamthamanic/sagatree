@@ -246,6 +246,11 @@ test.describe('ATL2-H03 Golden journey (#1236)', () => {
       await zoomOut(page);
 
       // ── Dungeon generate = preview in the 3D runtime (stays WebGL, no Golden map write).
+      // Dungeon Generator lives cleanly inside the collapsible Werkzeuge panel (no stage overlap).
+      const toolsFold = page.locator('[data-atlas-panel-fold="tools"]').first();
+      if ((await toolsFold.count()) > 0 && (await toolsFold.getAttribute('aria-expanded')) !== 'true') {
+        await toolsFold.click();
+      }
       const generate = page.locator('[data-atlas-dungeon-generate]').first();
       // Control must exist on the crypt map — a missing/hidden generator is a regression.
       await expect(generate, 'dungeon "Generieren" control on crypt').toBeVisible({ timeout: 20_000 });

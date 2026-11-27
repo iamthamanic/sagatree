@@ -1,11 +1,11 @@
 {
   "format": "atl3-r01b-three-poc-v1",
   "issue": 1296,
-  "buildSha": "6257b5e351",
-  "at": "2026-11-16T10:00:59.643Z",
+  "buildSha": "1490c7854b",
+  "at": "2026-11-25T11:54:39.643Z",
   "renderer": {
-    "unmasked": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
-    "kind": "software-webgl",
+    "unmasked": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+    "kind": "hardware-webgl",
     "three": "three@0.186.1 (repo dependency)"
   },
   "abThresholds": {
@@ -15,16 +15,16 @@
     "distinctColorsVsCustomMin": 1,
     "structure": "pearson(gradient maps 64×40)"
   },
-  "measurementClass": "software-webgl (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)): informational only — no hardware perf / quality claim",
+  "measurementClass": "hardware-webgl",
   "storedData": [
     {
       "sceneId": "dornhain-block",
-      "mapId": "dh-map-place-dornhain__91d50c1cfe5e",
+      "mapId": "dh-map-place-dornhain__8817773396ba",
       "fingerprint": "3ec9b21f1c3d0ff1"
     },
     {
       "sceneId": "krypta",
-      "mapId": "dh-map-loc-crypt__19ff3b680420",
+      "mapId": "dh-map-loc-crypt__2dcdfb2ba80f",
       "fingerprint": "a44b49a77d61e201"
     }
   ],
@@ -32,38 +32,38 @@
     {
       "profile": "high",
       "sceneId": "dornhain-block",
-      "coldLoadMs": 23,
-      "textureDecodeMs": 11,
-      "shaderCompileMs": 7.3,
-      "firstFrameMs": 112,
-      "sceneBuildMs": 12.9
+      "coldLoadMs": 15,
+      "textureDecodeMs": 6,
+      "shaderCompileMs": 4,
+      "firstFrameMs": 50,
+      "sceneBuildMs": 4.7
     },
     {
       "profile": "high",
       "sceneId": "krypta",
-      "coldLoadMs": 23,
-      "textureDecodeMs": 11,
-      "shaderCompileMs": 5.7,
-      "firstFrameMs": 82,
-      "sceneBuildMs": 8.6
+      "coldLoadMs": 15,
+      "textureDecodeMs": 6,
+      "shaderCompileMs": 2.7,
+      "firstFrameMs": 17,
+      "sceneBuildMs": 4.2
     },
     {
       "profile": "balanced",
       "sceneId": "dornhain-block",
-      "coldLoadMs": 10,
-      "textureDecodeMs": 3,
-      "shaderCompileMs": 2.2,
-      "firstFrameMs": 73,
-      "sceneBuildMs": 1.6
+      "coldLoadMs": 5,
+      "textureDecodeMs": 2,
+      "shaderCompileMs": 1.1,
+      "firstFrameMs": 49,
+      "sceneBuildMs": 1
     },
     {
       "profile": "balanced",
       "sceneId": "krypta",
-      "coldLoadMs": 10,
-      "textureDecodeMs": 3,
-      "shaderCompileMs": 8.5,
-      "firstFrameMs": 235,
-      "sceneBuildMs": 5.3
+      "coldLoadMs": 5,
+      "textureDecodeMs": 2,
+      "shaderCompileMs": 3.8,
+      "firstFrameMs": 30,
+      "sceneBuildMs": 3.6
     }
   ],
   "captures": [
@@ -93,18 +93,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 124.84,
-        "lumaStdDev": 24.12,
-        "distinctColors": 996,
-        "edgeDensity": 0.0738,
+        "lumaMean": 124.8,
+        "lumaStdDev": 24.14,
+        "distinctColors": 992,
+        "edgeDensity": 0.0735,
         "dominantColorShare": 0.1189
       },
       "ab": {
         "structureCorr": 0.443,
         "unrelatedSceneMaxCorr": 0.143,
-        "otherViewMaxCorr": 0.185,
-        "edgeDensityRatio": 6.42,
-        "distinctColorsRatio": 10.38
+        "otherViewMaxCorr": 0.184,
+        "edgeDensityRatio": 6.39,
+        "distinctColorsRatio": 10.33
       },
       "custom": {
         "meshes": 14,
@@ -146,18 +146,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 124.9,
-        "lumaStdDev": 21.11,
-        "distinctColors": 1061,
-        "edgeDensity": 0.0702,
-        "dominantColorShare": 0.1062
+        "lumaMean": 124.89,
+        "lumaStdDev": 21.1,
+        "distinctColors": 1044,
+        "edgeDensity": 0.0699,
+        "dominantColorShare": 0.1061
       },
       "ab": {
         "structureCorr": 0.486,
-        "unrelatedSceneMaxCorr": 0.16,
-        "otherViewMaxCorr": 0.293,
-        "edgeDensityRatio": 5.85,
-        "distinctColorsRatio": 7.37
+        "unrelatedSceneMaxCorr": 0.162,
+        "otherViewMaxCorr": 0.296,
+        "edgeDensityRatio": 5.83,
+        "distinctColorsRatio": 7.25
       },
       "custom": {
         "meshes": 14,
@@ -200,17 +200,17 @@
         "width": 992,
         "height": 600,
         "lumaMean": 130.53,
-        "lumaStdDev": 20.94,
-        "distinctColors": 1089,
-        "edgeDensity": 0.0495,
+        "lumaStdDev": 20.89,
+        "distinctColors": 1068,
+        "edgeDensity": 0.049,
         "dominantColorShare": 0.0987
       },
       "ab": {
-        "structureCorr": 0.506,
-        "unrelatedSceneMaxCorr": 0.205,
-        "otherViewMaxCorr": 0.353,
-        "edgeDensityRatio": 3.26,
-        "distinctColorsRatio": 6.08
+        "structureCorr": 0.511,
+        "unrelatedSceneMaxCorr": 0.212,
+        "otherViewMaxCorr": 0.36,
+        "edgeDensityRatio": 3.22,
+        "distinctColorsRatio": 5.97
       },
       "custom": {
         "meshes": 14,
@@ -252,18 +252,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 31.21,
-        "lumaStdDev": 19.96,
-        "distinctColors": 331,
-        "edgeDensity": 0.0391,
-        "dominantColorShare": 0.4991
+        "lumaMean": 31.16,
+        "lumaStdDev": 19.91,
+        "distinctColors": 329,
+        "edgeDensity": 0.0382,
+        "dominantColorShare": 0.4973
       },
       "ab": {
         "structureCorr": 0.569,
         "unrelatedSceneMaxCorr": 0.333,
         "otherViewMaxCorr": 0.355,
-        "edgeDensityRatio": 3.59,
-        "distinctColorsRatio": 3.85
+        "edgeDensityRatio": 3.5,
+        "distinctColorsRatio": 3.83
       },
       "custom": {
         "meshes": 14,
@@ -305,18 +305,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 30.65,
-        "lumaStdDev": 18.74,
-        "distinctColors": 387,
-        "edgeDensity": 0.0362,
-        "dominantColorShare": 0.4407
+        "lumaMean": 30.63,
+        "lumaStdDev": 18.76,
+        "distinctColors": 393,
+        "edgeDensity": 0.0346,
+        "dominantColorShare": 0.438
       },
       "ab": {
-        "structureCorr": 0.511,
-        "unrelatedSceneMaxCorr": 0.281,
-        "otherViewMaxCorr": 0.374,
-        "edgeDensityRatio": 3.42,
-        "distinctColorsRatio": 3.2
+        "structureCorr": 0.512,
+        "unrelatedSceneMaxCorr": 0.282,
+        "otherViewMaxCorr": 0.372,
+        "edgeDensityRatio": 3.26,
+        "distinctColorsRatio": 3.25
       },
       "custom": {
         "meshes": 14,
@@ -358,18 +358,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 30.76,
-        "lumaStdDev": 16.1,
-        "distinctColors": 373,
-        "edgeDensity": 0.0243,
-        "dominantColorShare": 0.4564
+        "lumaMean": 30.75,
+        "lumaStdDev": 16.13,
+        "distinctColors": 375,
+        "edgeDensity": 0.0234,
+        "dominantColorShare": 0.4531
       },
       "ab": {
-        "structureCorr": 0.495,
+        "structureCorr": 0.497,
         "unrelatedSceneMaxCorr": 0.328,
-        "otherViewMaxCorr": 0.477,
-        "edgeDensityRatio": 1.8,
-        "distinctColorsRatio": 1.96
+        "otherViewMaxCorr": 0.478,
+        "edgeDensityRatio": 1.73,
+        "distinctColorsRatio": 1.97
       },
       "custom": {
         "meshes": 14,
@@ -411,9 +411,9 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 138.14,
-        "lumaStdDev": 16.6,
-        "distinctColors": 653,
+        "lumaMean": 138.13,
+        "lumaStdDev": 16.61,
+        "distinctColors": 657,
         "edgeDensity": 0.0106,
         "dominantColorShare": 0.4608
       },
@@ -422,7 +422,7 @@
         "unrelatedSceneMaxCorr": 0.163,
         "otherViewMaxCorr": 0.34,
         "edgeDensityRatio": 4.61,
-        "distinctColorsRatio": 12.09
+        "distinctColorsRatio": 12.17
       },
       "custom": {
         "meshes": 14,
@@ -464,18 +464,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 124.85,
-        "lumaStdDev": 24.09,
-        "distinctColors": 993,
-        "edgeDensity": 0.0738,
+        "lumaMean": 124.82,
+        "lumaStdDev": 24.11,
+        "distinctColors": 989,
+        "edgeDensity": 0.0734,
         "dominantColorShare": 0.1189
       },
       "ab": {
         "structureCorr": 0.444,
         "unrelatedSceneMaxCorr": 0.143,
         "otherViewMaxCorr": 0.185,
-        "edgeDensityRatio": 7.17,
-        "distinctColorsRatio": 11.96
+        "edgeDensityRatio": 7.13,
+        "distinctColorsRatio": 11.92
       },
       "custom": {
         "meshes": 14,
@@ -517,18 +517,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 114.52,
-        "lumaStdDev": 33.27,
-        "distinctColors": 1072,
-        "edgeDensity": 0.1921,
-        "dominantColorShare": 0.0863
+        "lumaMean": 114.47,
+        "lumaStdDev": 33.29,
+        "distinctColors": 1095,
+        "edgeDensity": 0.1923,
+        "dominantColorShare": 0.0862
       },
       "ab": {
         "structureCorr": 0.404,
         "unrelatedSceneMaxCorr": 0.077,
-        "otherViewMaxCorr": 0.1,
-        "edgeDensityRatio": 13.25,
-        "distinctColorsRatio": 12.18
+        "otherViewMaxCorr": 0.099,
+        "edgeDensityRatio": 13.26,
+        "distinctColorsRatio": 12.44
       },
       "custom": {
         "meshes": 14,
@@ -570,18 +570,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 139.95,
-        "lumaStdDev": 15.83,
-        "distinctColors": 661,
-        "edgeDensity": 0.0109,
-        "dominantColorShare": 0.5382
+        "lumaMean": 139.94,
+        "lumaStdDev": 15.85,
+        "distinctColors": 667,
+        "edgeDensity": 0.0108,
+        "dominantColorShare": 0.5381
       },
       "ab": {
-        "structureCorr": 0.576,
-        "unrelatedSceneMaxCorr": 0.224,
-        "otherViewMaxCorr": 0.352,
-        "edgeDensityRatio": 5.45,
-        "distinctColorsRatio": 8.26
+        "structureCorr": 0.575,
+        "unrelatedSceneMaxCorr": 0.223,
+        "otherViewMaxCorr": 0.351,
+        "edgeDensityRatio": 5.4,
+        "distinctColorsRatio": 8.34
       },
       "custom": {
         "meshes": 14,
@@ -623,18 +623,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 124.92,
-        "lumaStdDev": 21.08,
-        "distinctColors": 1067,
-        "edgeDensity": 0.0701,
-        "dominantColorShare": 0.1062
+        "lumaMean": 124.91,
+        "lumaStdDev": 21.07,
+        "distinctColors": 1053,
+        "edgeDensity": 0.0699,
+        "dominantColorShare": 0.1061
       },
       "ab": {
         "structureCorr": 0.484,
-        "unrelatedSceneMaxCorr": 0.158,
-        "otherViewMaxCorr": 0.303,
-        "edgeDensityRatio": 6.49,
-        "distinctColorsRatio": 8.08
+        "unrelatedSceneMaxCorr": 0.161,
+        "otherViewMaxCorr": 0.306,
+        "edgeDensityRatio": 6.47,
+        "distinctColorsRatio": 7.98
       },
       "custom": {
         "meshes": 14,
@@ -676,18 +676,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 115.85,
-        "lumaStdDev": 32.68,
-        "distinctColors": 1192,
-        "edgeDensity": 0.21,
+        "lumaMean": 115.71,
+        "lumaStdDev": 32.76,
+        "distinctColors": 1201,
+        "edgeDensity": 0.2101,
         "dominantColorShare": 0.0795
       },
       "ab": {
-        "structureCorr": 0.447,
-        "unrelatedSceneMaxCorr": 0.142,
-        "otherViewMaxCorr": 0.248,
+        "structureCorr": 0.445,
+        "unrelatedSceneMaxCorr": 0.137,
+        "otherViewMaxCorr": 0.257,
         "edgeDensityRatio": 12.73,
-        "distinctColorsRatio": 8
+        "distinctColorsRatio": 8.06
       },
       "custom": {
         "meshes": 14,
@@ -729,18 +729,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 141.41,
-        "lumaStdDev": 15.24,
-        "distinctColors": 741,
-        "edgeDensity": 0.0087,
+        "lumaMean": 141.67,
+        "lumaStdDev": 14.93,
+        "distinctColors": 636,
+        "edgeDensity": 0.0081,
         "dominantColorShare": 0.6074
       },
       "ab": {
-        "structureCorr": 0.615,
-        "unrelatedSceneMaxCorr": 0.235,
-        "otherViewMaxCorr": 0.408,
-        "edgeDensityRatio": 1.05,
-        "distinctColorsRatio": 4.46
+        "structureCorr": 0.611,
+        "unrelatedSceneMaxCorr": 0.229,
+        "otherViewMaxCorr": 0.399,
+        "edgeDensityRatio": 0.98,
+        "distinctColorsRatio": 3.83
       },
       "custom": {
         "meshes": 14,
@@ -782,18 +782,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 130.54,
-        "lumaStdDev": 20.91,
-        "distinctColors": 1085,
-        "edgeDensity": 0.0495,
+        "lumaMean": 130.55,
+        "lumaStdDev": 20.87,
+        "distinctColors": 1073,
+        "edgeDensity": 0.049,
         "dominantColorShare": 0.0987
       },
       "ab": {
-        "structureCorr": 0.508,
-        "unrelatedSceneMaxCorr": 0.203,
-        "otherViewMaxCorr": 0.355,
-        "edgeDensityRatio": 3.84,
-        "distinctColorsRatio": 6.06
+        "structureCorr": 0.514,
+        "unrelatedSceneMaxCorr": 0.21,
+        "otherViewMaxCorr": 0.361,
+        "edgeDensityRatio": 3.8,
+        "distinctColorsRatio": 5.99
       },
       "custom": {
         "meshes": 14,
@@ -835,18 +835,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 116.92,
-        "lumaStdDev": 33.79,
-        "distinctColors": 1291,
-        "edgeDensity": 0.1818,
-        "dominantColorShare": 0.0572
+        "lumaMean": 116.86,
+        "lumaStdDev": 33.84,
+        "distinctColors": 1310,
+        "edgeDensity": 0.182,
+        "dominantColorShare": 0.0573
       },
       "ab": {
-        "structureCorr": 0.469,
+        "structureCorr": 0.47,
         "unrelatedSceneMaxCorr": 0.128,
         "otherViewMaxCorr": 0.266,
-        "edgeDensityRatio": 10.1,
-        "distinctColorsRatio": 7.38
+        "edgeDensityRatio": 10.11,
+        "distinctColorsRatio": 7.49
       },
       "custom": {
         "meshes": 14,
@@ -889,17 +889,17 @@
         "width": 730,
         "height": 912,
         "lumaMean": 132.06,
-        "lumaStdDev": 17.46,
-        "distinctColors": 788,
-        "edgeDensity": 0.0191,
+        "lumaStdDev": 17.45,
+        "distinctColors": 804,
+        "edgeDensity": 0.0189,
         "dominantColorShare": 0.2147
       },
       "ab": {
-        "structureCorr": 0.527,
-        "unrelatedSceneMaxCorr": 0.121,
+        "structureCorr": 0.532,
+        "unrelatedSceneMaxCorr": 0.123,
         "otherViewMaxCorr": -1,
-        "edgeDensityRatio": 6.82,
-        "distinctColorsRatio": 10.51
+        "edgeDensityRatio": 6.75,
+        "distinctColorsRatio": 10.72
       },
       "custom": {
         "meshes": 14,
@@ -941,18 +941,18 @@
       "metrics": {
         "width": 366,
         "height": 604,
-        "lumaMean": 130.68,
-        "lumaStdDev": 18,
-        "distinctColors": 663,
-        "edgeDensity": 0.0238,
-        "dominantColorShare": 0.1623
+        "lumaMean": 130.66,
+        "lumaStdDev": 18.03,
+        "distinctColors": 679,
+        "edgeDensity": 0.0237,
+        "dominantColorShare": 0.1622
       },
       "ab": {
-        "structureCorr": 0.273,
+        "structureCorr": 0.272,
         "unrelatedSceneMaxCorr": 0.088,
         "otherViewMaxCorr": -1,
         "edgeDensityRatio": 1.3,
-        "distinctColorsRatio": 4.7
+        "distinctColorsRatio": 4.82
       },
       "custom": {
         "meshes": 14,
@@ -994,18 +994,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 31.74,
-        "lumaStdDev": 12.29,
-        "distinctColors": 239,
+        "lumaMean": 31.72,
+        "lumaStdDev": 12.28,
+        "distinctColors": 231,
         "edgeDensity": 0.0134,
         "dominantColorShare": 0.4618
       },
       "ab": {
         "structureCorr": 0.679,
         "unrelatedSceneMaxCorr": 0.35,
-        "otherViewMaxCorr": 0.362,
+        "otherViewMaxCorr": 0.361,
         "edgeDensityRatio": 1.12,
-        "distinctColorsRatio": 4.88
+        "distinctColorsRatio": 4.71
       },
       "custom": {
         "meshes": 14,
@@ -1047,18 +1047,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 31.26,
-        "lumaStdDev": 19.97,
-        "distinctColors": 330,
-        "edgeDensity": 0.0387,
-        "dominantColorShare": 0.4995
+        "lumaMean": 31.22,
+        "lumaStdDev": 19.92,
+        "distinctColors": 324,
+        "edgeDensity": 0.0378,
+        "dominantColorShare": 0.4976
       },
       "ab": {
         "structureCorr": 0.579,
-        "unrelatedSceneMaxCorr": 0.333,
+        "unrelatedSceneMaxCorr": 0.332,
         "otherViewMaxCorr": 0.391,
-        "edgeDensityRatio": 3.22,
-        "distinctColorsRatio": 5.24
+        "edgeDensityRatio": 3.15,
+        "distinctColorsRatio": 5.14
       },
       "custom": {
         "meshes": 14,
@@ -1100,18 +1100,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 37.12,
-        "lumaStdDev": 30.12,
-        "distinctColors": 454,
-        "edgeDensity": 0.105,
-        "dominantColorShare": 0.4013
+        "lumaMean": 37.08,
+        "lumaStdDev": 30.08,
+        "distinctColors": 451,
+        "edgeDensity": 0.1044,
+        "dominantColorShare": 0.4009
       },
       "ab": {
         "structureCorr": 0.484,
         "unrelatedSceneMaxCorr": 0.241,
         "otherViewMaxCorr": 0.283,
-        "edgeDensityRatio": 7.34,
-        "distinctColorsRatio": 5.34
+        "edgeDensityRatio": 7.3,
+        "distinctColorsRatio": 5.31
       },
       "custom": {
         "meshes": 14,
@@ -1153,18 +1153,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 32.26,
-        "lumaStdDev": 11.58,
-        "distinctColors": 273,
-        "edgeDensity": 0.013,
+        "lumaMean": 32.25,
+        "lumaStdDev": 11.62,
+        "distinctColors": 270,
+        "edgeDensity": 0.0125,
         "dominantColorShare": 0.5327
       },
       "ab": {
         "structureCorr": 0.652,
-        "unrelatedSceneMaxCorr": 0.346,
-        "otherViewMaxCorr": 0.451,
-        "edgeDensityRatio": 1.86,
-        "distinctColorsRatio": 4.07
+        "unrelatedSceneMaxCorr": 0.347,
+        "otherViewMaxCorr": 0.45,
+        "edgeDensityRatio": 1.79,
+        "distinctColorsRatio": 4.03
       },
       "custom": {
         "meshes": 14,
@@ -1206,18 +1206,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 30.68,
-        "lumaStdDev": 18.75,
-        "distinctColors": 383,
-        "edgeDensity": 0.0359,
-        "dominantColorShare": 0.4409
+        "lumaMean": 30.67,
+        "lumaStdDev": 18.77,
+        "distinctColors": 394,
+        "edgeDensity": 0.0343,
+        "dominantColorShare": 0.4382
       },
       "ab": {
-        "structureCorr": 0.504,
-        "unrelatedSceneMaxCorr": 0.282,
+        "structureCorr": 0.505,
+        "unrelatedSceneMaxCorr": 0.283,
         "otherViewMaxCorr": 0.356,
-        "edgeDensityRatio": 3.18,
-        "distinctColorsRatio": 4.07
+        "edgeDensityRatio": 3.04,
+        "distinctColorsRatio": 4.19
       },
       "custom": {
         "meshes": 14,
@@ -1259,18 +1259,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 36.04,
-        "lumaStdDev": 28.02,
-        "distinctColors": 537,
-        "edgeDensity": 0.0934,
-        "dominantColorShare": 0.3729
+        "lumaMean": 36.05,
+        "lumaStdDev": 28.03,
+        "distinctColors": 530,
+        "edgeDensity": 0.0918,
+        "dominantColorShare": 0.3718
       },
       "ab": {
         "structureCorr": 0.436,
         "unrelatedSceneMaxCorr": 0.264,
         "otherViewMaxCorr": 0.334,
-        "edgeDensityRatio": 7.98,
-        "distinctColorsRatio": 4.2
+        "edgeDensityRatio": 7.85,
+        "distinctColorsRatio": 4.14
       },
       "custom": {
         "meshes": 14,
@@ -1313,17 +1313,17 @@
         "width": 992,
         "height": 600,
         "lumaMean": 33.07,
-        "lumaStdDev": 10.59,
-        "distinctColors": 268,
-        "edgeDensity": 0.011,
+        "lumaStdDev": 10.63,
+        "distinctColors": 264,
+        "edgeDensity": 0.0106,
         "dominantColorShare": 0.6234
       },
       "ab": {
-        "structureCorr": 0.617,
-        "unrelatedSceneMaxCorr": 0.334,
-        "otherViewMaxCorr": 0.55,
-        "edgeDensityRatio": 1.04,
-        "distinctColorsRatio": 2.39
+        "structureCorr": 0.616,
+        "unrelatedSceneMaxCorr": 0.336,
+        "otherViewMaxCorr": 0.548,
+        "edgeDensityRatio": 1,
+        "distinctColorsRatio": 2.36
       },
       "custom": {
         "meshes": 14,
@@ -1365,18 +1365,18 @@
       "metrics": {
         "width": 992,
         "height": 600,
-        "lumaMean": 30.8,
-        "lumaStdDev": 16.11,
-        "distinctColors": 373,
-        "edgeDensity": 0.0243,
-        "dominantColorShare": 0.4565
+        "lumaMean": 30.78,
+        "lumaStdDev": 16.14,
+        "distinctColors": 374,
+        "edgeDensity": 0.0233,
+        "dominantColorShare": 0.4533
       },
       "ab": {
-        "structureCorr": 0.472,
-        "unrelatedSceneMaxCorr": 0.327,
-        "otherViewMaxCorr": 0.444,
-        "edgeDensityRatio": 1.84,
-        "distinctColorsRatio": 2.68
+        "structureCorr": 0.473,
+        "unrelatedSceneMaxCorr": 0.326,
+        "otherViewMaxCorr": 0.445,
+        "edgeDensityRatio": 1.77,
+        "distinctColorsRatio": 2.69
       },
       "custom": {
         "meshes": 14,
@@ -1419,17 +1419,17 @@
         "width": 992,
         "height": 600,
         "lumaMean": 34.78,
-        "lumaStdDev": 25.43,
-        "distinctColors": 501,
-        "edgeDensity": 0.071,
-        "dominantColorShare": 0.4049
+        "lumaStdDev": 25.45,
+        "distinctColors": 502,
+        "edgeDensity": 0.0706,
+        "dominantColorShare": 0.4023
       },
       "ab": {
-        "structureCorr": 0.412,
-        "unrelatedSceneMaxCorr": 0.282,
-        "otherViewMaxCorr": 0.402,
-        "edgeDensityRatio": 5.38,
-        "distinctColorsRatio": 3.34
+        "structureCorr": 0.411,
+        "unrelatedSceneMaxCorr": 0.283,
+        "otherViewMaxCorr": 0.403,
+        "edgeDensityRatio": 5.35,
+        "distinctColorsRatio": 3.35
       },
       "custom": {
         "meshes": 14,
@@ -1471,18 +1471,18 @@
       "metrics": {
         "width": 730,
         "height": 912,
-        "lumaMean": 30.1,
-        "lumaStdDev": 16,
-        "distinctColors": 357,
-        "edgeDensity": 0.0245,
-        "dominantColorShare": 0.41
+        "lumaMean": 30.08,
+        "lumaStdDev": 16.02,
+        "distinctColors": 360,
+        "edgeDensity": 0.0234,
+        "dominantColorShare": 0.4068
       },
       "ab": {
-        "structureCorr": 0.518,
-        "unrelatedSceneMaxCorr": 0.237,
+        "structureCorr": 0.517,
+        "unrelatedSceneMaxCorr": 0.236,
         "otherViewMaxCorr": -1,
-        "edgeDensityRatio": 3.36,
-        "distinctColorsRatio": 4.82
+        "edgeDensityRatio": 3.21,
+        "distinctColorsRatio": 4.86
       },
       "custom": {
         "meshes": 14,
@@ -1524,18 +1524,18 @@
       "metrics": {
         "width": 366,
         "height": 604,
-        "lumaMean": 30.9,
-        "lumaStdDev": 17.9,
-        "distinctColors": 287,
-        "edgeDensity": 0.0378,
-        "dominantColorShare": 0.4229
+        "lumaMean": 30.88,
+        "lumaStdDev": 17.94,
+        "distinctColors": 288,
+        "edgeDensity": 0.0366,
+        "dominantColorShare": 0.4179
       },
       "ab": {
-        "structureCorr": 0.353,
-        "unrelatedSceneMaxCorr": 0.069,
+        "structureCorr": 0.35,
+        "unrelatedSceneMaxCorr": 0.071,
         "otherViewMaxCorr": -1,
-        "edgeDensityRatio": 1.62,
-        "distinctColorsRatio": 2.21
+        "edgeDensityRatio": 1.56,
+        "distinctColorsRatio": 2.22
       },
       "custom": {
         "meshes": 14,
@@ -1556,29 +1556,29 @@
     {
       "sceneId": "dornhain-block",
       "profile": "high",
-      "p50": 50,
-      "p95": 100.1,
+      "p50": 16.7,
+      "p95": 16.7,
       "customP50": 26.5,
       "customP95": 70.3,
-      "budgetMode": "informational"
+      "budgetMode": "enforced"
     },
     {
       "sceneId": "krypta",
       "profile": "high",
       "p50": 16.7,
-      "p95": 66.7,
+      "p95": 16.7,
       "customP50": 16.9,
       "customP95": 42.1,
-      "budgetMode": "informational"
+      "budgetMode": "enforced"
     },
     {
       "sceneId": "dornhain-block",
       "profile": "balanced",
       "p50": 16.7,
-      "p95": 33.4,
+      "p95": 16.7,
       "customP50": 16.8,
       "customP95": 35.7,
-      "budgetMode": "informational"
+      "budgetMode": "enforced"
     },
     {
       "sceneId": "krypta",
@@ -1587,7 +1587,7 @@
       "p95": 16.7,
       "customP50": 16.6,
       "customP95": 19.8,
-      "budgetMode": "informational"
+      "budgetMode": "enforced"
     }
   ],
   "idParity": [
@@ -1665,7 +1665,7 @@
       "sceneId": "dornhain-block",
       "lost": true,
       "restored": true,
-      "restoreMs": 96,
+      "restoreMs": 61,
       "info": {
         "calls": 28,
         "triangles": 2006,
@@ -1678,7 +1678,7 @@
       "sceneId": "krypta",
       "lost": true,
       "restored": true,
-      "restoreMs": 128,
+      "restoreMs": 54,
       "info": {
         "calls": 15,
         "triangles": 6570,
@@ -1689,19 +1689,19 @@
     }
   ],
   "heapMb": {
-    "dornhain-block": 24.7955322265625,
-    "krypta": 24.7955322265625
+    "dornhain-block": 26.3214111328125,
+    "krypta": 26.3214111328125
   },
   "editPath": {
-    "addedId": "hu95695h0",
+    "addedId": "ddcpnb3v9",
     "doc": {
       "x": 585.7143012844787,
       "y": 557.1428415726642
     },
     "threeCentroid": [
-      585.7143249511719,
-      9.48479974269867,
-      557.1428527832031
+      585.7142944335938,
+      21.78939946492513,
+      557.142822265625
     ],
     "planarOffset": 0,
     "idsBefore": 13,
@@ -1710,7 +1710,7 @@
   },
   "loadError": {
     "rejected": true,
-    "ms": 10,
+    "ms": 7,
     "message": "[object Event]"
   },
   "fallback": {

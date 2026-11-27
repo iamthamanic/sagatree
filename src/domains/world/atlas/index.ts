@@ -302,6 +302,7 @@ export {
   atlasTerrainMaxTriangles,
   atlasTerrainStrideForBudget,
   atlasTerrainTriangleEstimate,
+  buildAtlasTerrainChunkMeshTriangles,
   buildAtlasTerrainMeshPlan,
   type AtlasTerrainCoastEdge,
   type AtlasTerrainLodBand,
@@ -323,6 +324,7 @@ export {
   applyShoreRule,
   clearAtlasHeightfield,
   emptyAtlasHeightfield,
+  heightfieldChunkMeshTriangles,
   heightfieldContentFingerprint,
   heightfieldIndex,
   heightfieldMeshTriangles,
@@ -335,7 +337,26 @@ export {
   type AtlasHeightBrushStroke,
   type AtlasHeightfield,
   type AtlasHeightfieldAssetRef,
+  type AtlasHeightfieldChunkWindow,
 } from './atlas-heightfield';
+
+export {
+  ATLAS_TERRAIN_CHUNK_DEFAULT_RESOLUTION,
+  ATLAS_TERRAIN_CHUNK_LOGICAL_CELLS,
+  ATLAS_TERRAIN_CHUNK_MAX_LOD,
+  ATLAS_WORLD_TERRAIN_CHUNK_FORMAT,
+  DEFAULT_ATLAS_WORLD_TERRAIN_CHUNK_CONFIG,
+  createAtlasWorldHeightfieldSource,
+  planWorldTerrainChunks,
+  sampleWorldChunkHeightGrid,
+  sampleWorldHeight,
+  type AtlasTerrainChunkDescriptor,
+  type AtlasWorldHeightfieldOverlay,
+  type AtlasWorldHeightfieldSource,
+  type AtlasWorldTerrainBounds,
+  type AtlasWorldTerrainChunkPlan,
+  type AtlasWorldTerrainChunkPlanConfig,
+} from './atlas-world-terrain-chunks';
 
 export {
   WEBGL_GEOMETRY_BACKUP_META_KEY,
@@ -366,6 +387,7 @@ export {
   canLodEnterChildMap,
   canWebglDrillSelect,
   childLocalToParentPoint,
+  extractMapCalibrationMetersPerUnit,
   extractMapFrameFromGeneratorMeta,
   independentPrimaryBounds,
   isGroundedLinkAnchor,
@@ -384,6 +406,22 @@ export {
   type MapSketchStatus,
   type ParentSpatialAnchor,
 } from './map-frame';
+
+export {
+  ATLAS_UNIFORM_EXTENT_EPSILON,
+  WORLD_SPACE_ERROR_DE,
+  anchorHasShear,
+  describeWorldChain,
+  isAtlasWorldError,
+  localToWorld,
+  resolveWorldChain,
+  worldToLocal,
+  type AtlasPoint2,
+  type AtlasWorldResult,
+  type AtlasWorldSpaceNode,
+  type AtlasWorldTransformChain,
+  type AtlasWorldTransformError,
+} from './atlas-world-space';
 
 export {
   HIERARCHY_NAV_BACK_DE,
@@ -516,6 +554,7 @@ export {
   atlasProductBrushWidth,
   atlasProductStampSize,
   buildAtlasMapPins,
+  buildAtlasWorldPins,
   type AtlasMapPin,
   type AtlasMapScale,
 } from './atlas-map-pins';
@@ -699,4 +738,216 @@ export {
   type AtlasGoldenVisualTolerance,
   type AtlasGoldenVisualViewportId,
 } from './atlas-golden-visual';
+
+export {
+  buildAtlasSceneScatter,
+  type AtlasScatterInstance,
+  type AtlasScatterKind,
+  type AtlasScatterPlan,
+} from './atlas-scene-scatter';
+
+export {
+  ATLAS_BIOME_BRUSHES,
+  ATLAS_TERRAIN_SCULPT_MODES,
+  applyAtlasTerrainSculptDab,
+  type AtlasBiomeBrushId,
+  type AtlasBiomeBrushSpec,
+  type AtlasTerrainSculptMode,
+} from './atlas-biome-brush';
+
+export {
+  formatAtlasSpanLabelDe,
+  resolveContinuousZoomTransition,
+  type AtlasScaleLabelSpec,
+  type AtlasZoomTransitionIntent,
+} from './atlas-continuous-zoom';
+
+export {
+  ATLAS_WORLD_CAMERA_MAX_SPAN,
+  ATLAS_WORLD_CAMERA_MIN_SPAN,
+  clampWorldCameraPitch,
+  createAtlasWorldCameraState,
+  defaultWorldCameraPitch,
+  focusWorldCameraOnMapLocal,
+  panWorldCamera,
+  projectWorldCameraTo2dViewport,
+  switchWorldCameraProjection,
+  worldCameraFocusInMapLocal,
+  zoomWorldCameraToward,
+  type AtlasWorldCameraProjection,
+  type AtlasWorldCameraState,
+} from './atlas-world-camera';
+
+export {
+  DEFAULT_ATLAS_WORLD_SCENE_PLAN_CONFIG,
+  buildAtlasWorldScenePlan,
+  computeMapWorldTransform,
+  resolveWorldCalibrationMetersPerUnit,
+  type AtlasLocalCutoutRect,
+  type AtlasSceneMapLodState,
+  type AtlasWorldAabb,
+  type AtlasWorldSceneExclusion,
+  type AtlasWorldSceneExclusionReason,
+  type AtlasWorldSceneGroupPlan,
+  type AtlasWorldSceneMapInput,
+  type AtlasWorldScenePlan,
+  type AtlasWorldScenePlanConfig,
+  type AtlasWorldTransform2D,
+} from './atlas-world-scene-plan';
+
+export {
+  ATLAS_DEFAULT_WORLD_ROOT_METERS_PER_UNIT,
+  ATLAS_DEFAULT_WORLD_ROOT_SEED,
+  DEFAULT_DORNHAIN_HILLS,
+  DEFAULT_KRYPTA_FORGE_PARAMS,
+  buildCalibratedDefaultWorld,
+  buildDefaultDornhainCanvas,
+  buildDefaultDornhainHeightfield,
+  buildDefaultTaproomCanvas,
+  buildDefaultTavernCanvas,
+  buildDefaultWorldHeightfield,
+  verifyDefaultWorldIntegrity,
+  type CalibratedDefaultWorldBundle,
+  type DefaultWorldMapSpec,
+  type DefaultWorldPlaceSpec,
+} from './atlas-default-world';
+
+export {
+  ATLAS_GEOMETRY_STRUCTURE_DIRECTION,
+  GEOMETRY_OWNERSHIP_CONFLICT_DE,
+  GEOMETRY_OWNERSHIP_DIRECTION_MISMATCH_DE,
+  GEOMETRY_OWNERSHIP_UNLOCATED_DE,
+  computeGeometryDerivedFingerprint,
+  deriveCalibratedChildMetersPerUnit,
+  deriveCoarseObjectFromChild,
+  deriveCoarseRoomFromChild,
+  deriveCoarseStrokeFromChild,
+  findGeometryOwnershipConflicts,
+  geometryOwnershipFingerprint,
+  inferStructureFromMaterial,
+  projectChildPointsToParent,
+  simplifyPolylineRdp,
+  type AtlasDerivedGeometryRef,
+  type AtlasGeometryConflict,
+  type AtlasGeometryConflictKind,
+  type AtlasGeometryDirection,
+  type AtlasGeometryOwner,
+  type AtlasGeometryStructureKind,
+} from './atlas-geometry-ownership';
+
+export {
+  classifyAtlasPinTier,
+  classifyAtlasPortalKind,
+  computeAtlasPinZoomPresentation,
+  type AtlasLabelTier,
+  type AtlasPinZoomPresentation,
+  type AtlasPortalTransitionKind,
+} from './atlas-label-hierarchy';
+
+export {
+  SPATIAL_EPSILON,
+  SPATIAL_RELATION_FLOWING,
+  SPATIAL_RELATION_FREELAND,
+  boundsContains,
+  boundsFromPoints,
+  boundsIntersects,
+  boundsUnion,
+  checkContainment,
+  computeBoundsOverflow,
+  expandBoundsToFit,
+  isFiniteSpatialBounds,
+  isFreelandRelation,
+  listDescendantEntities,
+  listDirectContainedChildren,
+  pointInBounds,
+  rectPointsFromBounds,
+  remapPolygonToBounds,
+  resolveCarrierChain,
+  resolveRelation,
+  validateSpatialInvariants,
+  type SpatialBounds2D,
+  type SpatialContainmentCheckResult,
+  type SpatialEntityNode,
+  type SpatialEntityStatus,
+  type SpatialInvariantId,
+  type SpatialInvariantValidationResult,
+  type SpatialInvariantViolation,
+  type SpatialInvariantViolationCode,
+  type SpatialPoint2D,
+  type SpatialRelationKind,
+  type SpatialStructureRole,
+  type SpatialWorldModel,
+} from './atlas-spatial-containment';
+
+export {
+  applyWorldOperation,
+  clipPolylineInsideBounds,
+  clipPolylineOutsideRects,
+  clipSegmentInsideBounds,
+  clipSegmentOutsideRect,
+  liangBarskySegmentInterval,
+  planPropagation,
+  type ApplyWorldOperationResult,
+  type SpatialCascadeCounts,
+  type SpatialChangeKind,
+  type SpatialConfirmationKind,
+  type SpatialEditIntent,
+  type SpatialEntityChange,
+  type SpatialPlanFailureCode,
+  type SpatialPropagationPlanResult,
+  type WorldOperationPlan,
+} from './atlas-spatial-propagation';
+
+export {
+  canRedoSpatialWorld,
+  canUndoSpatialWorld,
+  emptySpatialWorldHistory,
+  executeSpatialWorldOperation,
+  parseSpatialWorld,
+  redoSpatialWorldOperation,
+  serializeSpatialWorld,
+  undoSpatialWorldOperation,
+  type ExecuteSpatialWorldResult,
+  type SpatialMapPersistSnapshot,
+  type SpatialWorldHistorySnapshot,
+  type SpatialWorldTransactionHistory,
+} from './atlas-world-operation-history';
+
+export {
+  SPATIAL_ARCHIVE_META_KEY,
+  buildSpatialWorldFromDefaultWorld,
+  buildSpatialWorldFromMapSources,
+  extractSpatialArchiveFromGeneratorMeta,
+  mergeSpatialArchiveIntoGeneratorMeta,
+  projectSpatialOperationToMapUpdates,
+  type ProjectedMapMutation,
+  type SpatialArchiveMeta,
+  type SpatialArchivedEntityRecord,
+  type SpatialMapSourceInput,
+} from './atlas-spatial-world-bridge';
+
+export {
+  DEFAULT_SPATIAL_EDIT_PREFERENCES,
+  SPATIAL_EDIT_PREFS_STORAGE_KEY,
+  applyDontAskAgainPreference,
+  parseSpatialEditPreferences,
+  serializeSpatialEditPreferences,
+  shouldPromptSpatialOperation,
+  type SpatialEditPreferences,
+} from './atlas-spatial-edit-prefs';
+
+export {
+  deriveZoomLayerHierarchyState,
+  type AtlasZoomLayerNavNode,
+  type AtlasZoomLayerState,
+} from './atlas-zoom-layer-state';
+
+export {
+  recommendedWorldCameraSpan,
+  resolveWorldFocusTarget,
+  type AtlasWorldFocusIntent,
+  type AtlasWorldFocusTarget,
+} from './atlas-world-focus';
+
+
 

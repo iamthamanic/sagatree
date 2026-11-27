@@ -7,7 +7,8 @@
  * Product path (#721): controlled mount — seed/persist via generator_meta, not localStorage SoT.
  * Product nav (#747): external WorldNode tree replaces demo NAV_CHILDREN in #nav.
  */
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import {
   resolveAtlasDioramaLightProfile,
   resolveAtlasGraphicsPreset,
@@ -16,9 +17,12 @@ import {
   type AtlasGraphicsPresetId,
   type AtlasMapPin,
   type AtlasMapScale,
+  type AtlasWorldCameraState,
+  type AtlasWorldSceneMapInput,
   type UnifiedCanvasDoc,
   type WebglRuntimeState,
 } from '../../../../domains/world/atlas';
+import type { AtlasThreeWorldMapSource } from '../../../../infrastructure/world/atlas-three';
 import type { WorldNodeKind } from '../../../../domains/world/hierarchy';
 import type { AtlasWebglNavTree } from '../../../../domains/world/places';
 import { mountAtlasPrototype3d } from './prototype3d/atlas-prototype-runtime.mjs';
@@ -26,6 +30,8 @@ import {
   atlasNative3dDungeonLookKey,
   resolveAtlasNative3dDungeonLook,
 } from './atlas-native-3d-look';
+import { AtlasThreeWorkstation } from './AtlasThreeWorkstation';
+import type { AtlasSpatialContainmentAdapter } from './useSpatialEditPreferences';
 import './prototype3d/atlas-sagatree-skin.css';
 
 export type AtlasNativeNavSelectPayload = {
@@ -98,6 +104,8 @@ export type AtlasNative3dEditorProps = {
   readonly mapScale?: AtlasMapScale;
   /** Persisted place labels anchored on the active map. */
   readonly mapPins?: readonly AtlasMapPin[] | null;
+  /** Explicit physical calibration (`metersPerUnit`) for the active map/world, or null if uncalibrated. */
+  readonly metersPerUnit?: number | null;
   /** ATL2-D01 graphics quality preset (default balanced). */
   readonly graphicsPresetId?: AtlasGraphicsPresetId;
   /** ATL2-F04 dungeon theme (atmospheric); geometry IDs stay canonical. */
@@ -119,6 +127,42 @@ export type AtlasNative3dEditorProps = {
   }) => void;
   /** ATL2-G03 — mount failure so workbench can enter webgl-fallback + switch to 2D. */
   readonly onWebglMountError?: (message: string | null) => void;
+  /** Optional React content portaled cleanly inside the collapsible Werkzeuge (#inspector) drawer. */
+  readonly toolsSlot?: ReactNode;
+  /** Canonical UnifiedCanvasDoc driving the productive Three.js PBR Workstation (ADR-ST-11). */
+  readonly doc?: UnifiedCanvasDoc | null;
+  readonly canUndo?: boolean;
+  readonly canRedo?: boolean;
+  readonly onUndo?: () => void;
+  readonly onRedo?: () => void;
+  readonly onCommitDoc?: (next: UnifiedCanvasDoc, recordHistory: boolean) => void;
+  readonly onBeginEditBatch?: () => void;
+  readonly onCommitEditBatch?: () => void;
+  readonly onCancelEditBatch?: () => void;
+  readonly sharedWorldCamera?: AtlasWorldCameraState | null;
+  readonly onSharedWorldCameraChange?: (next: AtlasWorldCameraState) => void;
+  readonly worldSceneGraph?: {
+    readonly maps: readonly AtlasWorldSceneMapInput[];
+    readonly sources: readonly AtlasThreeWorldMapSource[];
+  } | null;
+  readonly onHierarchyBack?: () => void;
+  readonly forcedTopDown?: boolean;
+  readonly topBarExtra?: ReactNode;
+  readonly spatialContainment?: AtlasSpatialContainmentAdapter | null;
+  readonly isChildDocumentEditMode?: boolean;
+  readonly onRequestEditMap?: (payload: {
+    readonly mapId: string;
+    readonly placeId: string | null;
+    readonly worldCamera: AtlasWorldCameraState | null;
+    readonly focusedMapId: string | null;
+  }) => void;
+  readonly onReturnToWorld?: () => void;
+  readonly restoreWorldFocus?: {
+    readonly camera: AtlasWorldCameraState;
+    readonly focusedMapId: string | null;
+    readonly focusedPlaceId: string | null;
+  } | null;
+  readonly onRestoreWorldFocusConsumed?: () => void;
 };
 /** Rebrand leftover prototype copy to SagaTree product wording. */
 function applySagaTreeCopy(host: HTMLElement): void {
@@ -246,7 +290,10 @@ function installMapFirstReveal(atlasRoot: HTMLElement): () => void {
 }
 
 /** Layers / Tools fold controls — collapse each aside upward to a slim toggle. */
-function installCollapsiblePanels(host: HTMLElement): () => void {
+function installCollapsiblePanels(host: HTMLElement): {
+  readonly dispose: () => void;
+  readonly toolsSlotEl: HTMLElement | null;
+} {
   const atlasRoot = host.querySelector('#atlas3d');
   const cleanups: Array<() => void> = [];
   // Boot: collapsed before first paint — no open→close transition flash.
@@ -317,14 +364,26 @@ function installCollapsiblePanels(host: HTMLElement): () => void {
     actionTools.classList.remove('atlas-tools-on-canvas');
   }
 
+  let toolsSlotEl: HTMLElement | null = null;
+  if (toolsInner) {
+    const slot = document.createElement('div');
+    slot.className = 'atlas-tools-slot';
+    slot.dataset.atlasToolsSlot = 'true';
+    toolsInner.appendChild(slot);
+    toolsSlotEl = slot;
+  }
+
   atlasRoot?.setAttribute('data-panels-ready', 'true');
 
   if (atlasRoot instanceof HTMLElement) {
     cleanups.push(installMapFirstReveal(atlasRoot));
   }
 
-  return () => {
-    for (const fn of cleanups) fn();
+  return {
+    dispose: () => {
+      for (const fn of cleanups) fn();
+    },
+    toolsSlotEl,
   };
 }
 
@@ -350,7 +409,111 @@ function resolveHistoryStore(
   return created;
 }
 
-export function AtlasNative3dEditor({
+export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
+  const {
+    className,
+    mapKey = 'default',
+    controlled = false,
+    externalNav = null,
+    activePlaceId = null,
+    onNavSelect,
+    onNavAdd,
+    canEdit = true,
+    mapScale = 'world',
+    mapPins = null,
+    metersPerUnit = null,
+    graphicsPresetId = 'balanced',
+    navRestoreView = null,
+    onNavViewChange,
+    onWebglMountError,
+    toolsSlot = null,
+    doc = null,
+    canUndo = false,
+    canRedo = false,
+    onUndo,
+    onRedo,
+    onCommitDoc,
+    onBeginEditBatch,
+    onCommitEditBatch,
+    onCancelEditBatch,
+    sharedWorldCamera = null,
+    onSharedWorldCameraChange,
+    worldSceneGraph = null,
+    onHierarchyBack,
+    forcedTopDown = false,
+    topBarExtra = null,
+    spatialContainment = null,
+    isChildDocumentEditMode = false,
+    onRequestEditMap,
+    onReturnToWorld,
+    restoreWorldFocus = null,
+    onRestoreWorldFocusConsumed,
+  } = props;
+  const [threeFailed, setThreeFailed] = useState(false);
+
+  // ADR-ST-11: Three.js PBR Workstation is the productive 3D engine for high/balanced;
+  // lite preset or WebGL failure falls back cleanly to Custom WebGL / AtlasLite3D.
+  const useThreeWorkstation = Boolean(doc) && graphicsPresetId !== 'lite' && !threeFailed;
+
+  if (useThreeWorkstation && doc) {
+    return (
+      <div
+        className={`flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden ${className ?? ''}`}
+        data-atlas-native-3d
+        data-atlas-proto-exact="true"
+        data-atlas-renderer="three-js"
+        data-atlas-controlled={controlled ? 'true' : undefined}
+        data-atlas-product-nav={externalNav ? 'true' : undefined}
+        style={{ background: '#10252f' }}
+      >
+        <AtlasThreeWorkstation
+          doc={doc}
+          canEdit={canEdit}
+          mapKey={mapKey}
+          mapScale={mapScale}
+          graphicsPresetId={graphicsPresetId}
+          externalNav={externalNav}
+          activePlaceId={activePlaceId}
+          mapPins={mapPins ?? []}
+          metersPerUnit={metersPerUnit}
+          navRestoreView={navRestoreView}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={() => onUndo?.()}
+          onRedo={() => onRedo?.()}
+          onCommitDoc={(next, recordHistory) => onCommitDoc?.(next, recordHistory)}
+          onBeginEditBatch={onBeginEditBatch}
+          onCommitEditBatch={onCommitEditBatch}
+          onCancelEditBatch={onCancelEditBatch}
+          sharedWorldCamera={sharedWorldCamera}
+          onSharedWorldCameraChange={onSharedWorldCameraChange}
+          worldSceneGraph={worldSceneGraph}
+          onNavSelect={onNavSelect}
+          onNavAdd={onNavAdd}
+          onNavViewChange={onNavViewChange}
+          onHierarchyBack={onHierarchyBack}
+          onWebglMountError={(msg) => {
+            if (msg) setThreeFailed(true);
+            onWebglMountError?.(msg);
+          }}
+          toolsSlot={toolsSlot}
+          forcedTopDown={forcedTopDown}
+          topBarExtra={topBarExtra}
+          spatialContainment={spatialContainment}
+          isChildDocumentEditMode={isChildDocumentEditMode}
+          onRequestEditMap={onRequestEditMap}
+          onReturnToWorld={onReturnToWorld}
+          restoreWorldFocus={restoreWorldFocus}
+          onRestoreWorldFocusConsumed={onRestoreWorldFocusConsumed}
+        />
+      </div>
+    );
+  }
+
+  return <AtlasNative3dLegacyHost {...props} />;
+}
+
+function AtlasNative3dLegacyHost({
   className,
   mapKey = 'default',
   historyKey,
@@ -376,6 +539,7 @@ export function AtlasNative3dEditor({
   navRestoreView = null,
   onNavViewChange,
   onWebglMountError,
+  toolsSlot = null,
 }: AtlasNative3dEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<AtlasNativeMountHandle | null>(null);
@@ -441,6 +605,7 @@ export function AtlasNative3dEditor({
   const dungeonLookRef = useRef(dungeonLook);
   dungeonLookRef.current = dungeonLook;
   const [error, setError] = useState<string | null>(null);
+  const [toolsSlotEl, setToolsSlotEl] = useState<HTMLElement | null>(null);
 
   // Layout effect: mount + collapse panels before the browser paints (no open→close flash).
   useLayoutEffect(() => {
@@ -462,7 +627,27 @@ export function AtlasNative3dEditor({
       const seeded =
         restore && seedRef.current
           ? {
-              ...seedRef.current,
+            ...seedRef.current,
+            camera: {
+              mode: restore.mode,
+              x: restore.centerX,
+              z: restore.centerY,
+              span: restore.span,
+              yawRad: 0,
+              pitchRad:
+                restore.mode === 'ortho-topdown'
+                  ? Math.PI / 2
+                  : restore.mode === 'diorama-oblique'
+                    ? 1.05
+                    : 0.95,
+            },
+          }
+          : restore
+            ? {
+              props: [],
+              strokes: [],
+              walls: [],
+              layers: {},
               camera: {
                 mode: restore.mode,
                 x: restore.centerX,
@@ -477,26 +662,6 @@ export function AtlasNative3dEditor({
                       : 0.95,
               },
             }
-          : restore
-            ? {
-                props: [],
-                strokes: [],
-                walls: [],
-                layers: {},
-                camera: {
-                  mode: restore.mode,
-                  x: restore.centerX,
-                  z: restore.centerY,
-                  span: restore.span,
-                  yawRad: 0,
-                  pitchRad:
-                    restore.mode === 'ortho-topdown'
-                      ? Math.PI / 2
-                      : restore.mode === 'diorama-oblique'
-                        ? 1.05
-                        : 0.95,
-                },
-              }
             : (seedRef.current ?? null);
       mount = mountAtlasPrototype3d(host, {
         controlled,
@@ -504,22 +669,22 @@ export function AtlasNative3dEditor({
         seedState: seeded,
         onPersist: controlled
           ? (state) => {
-              const next = state as WebglRuntimeState;
-              persistRef.current?.(next);
-              const cam = mountRef.current?.getNavCamera?.();
-              if (cam && onNavViewChangeRef.current) {
-                const mode =
-                  cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
-                    ? cam.mode
-                    : 'ortho-topdown';
-                onNavViewChangeRef.current({
-                  centerX: cam.x,
-                  centerY: cam.z,
-                  span: cam.span,
-                  mode,
-                });
-              }
+            const next = state as WebglRuntimeState;
+            persistRef.current?.(next);
+            const cam = mountRef.current?.getNavCamera?.();
+            if (cam && onNavViewChangeRef.current) {
+              const mode =
+                cam.mode === 'diorama-oblique' || cam.mode === 'perspective'
+                  ? cam.mode
+                  : 'ortho-topdown';
+              onNavViewChangeRef.current({
+                centerX: cam.x,
+                centerY: cam.z,
+                span: cam.span,
+                mode,
+              });
             }
+          }
           : undefined,
         externalNav: externalNavRef.current ?? null,
         activePlaceId: activePlaceIdRef.current ?? null,
@@ -553,7 +718,9 @@ export function AtlasNative3dEditor({
         dungeonLook: dungeonLookRef.current,
       });
       mountRef.current = mount;
-      disposePanels = installCollapsiblePanels(host);
+      const panels = installCollapsiblePanels(host);
+      disposePanels = panels.dispose;
+      setToolsSlotEl(panels.toolsSlotEl);
       applySagaTreeCopy(host);
       // Nav is rendered async after mount — rebrand once levels paint.
       copyTimer = window.setTimeout(() => applySagaTreeCopy(host), 0);
@@ -608,6 +775,7 @@ export function AtlasNative3dEditor({
         });
       }
       mountRef.current = null;
+      setToolsSlotEl(null);
       try {
         disposePanels?.();
       } catch {
@@ -685,6 +853,7 @@ export function AtlasNative3dEditor({
         </p>
       ) : null}
       <div ref={hostRef} className="min-h-0 min-w-0 flex-1" data-atlas-native-3d-host />
+      {toolsSlotEl && toolsSlot ? createPortal(toolsSlot, toolsSlotEl) : null}
     </div>
   );
 }

@@ -1,0 +1,671 @@
+{
+  "capturedAt": "2026-11-26T15:26:22.001Z",
+  "dornWorldCenter": {
+    "x": 227.74400000000003,
+    "y": 376.88,
+    "w": 7.744,
+    "h": 9.680000000000007
+  },
+  "steps": 22,
+  "trace": [
+    {
+      "step": 0,
+      "tsMs": 1795706806077,
+      "span": 461.326,
+      "focus": {
+        "x": 465.72,
+        "z": 483.94
+      },
+      "activeLabelDe": "Karte · Dornhain",
+      "activeEditorMapId": "dh-atlas-root",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": null,
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 2
+    },
+    {
+      "step": 1,
+      "tsMs": 1795706806211,
+      "span": 375.291,
+      "focus": {
+        "x": 421.51,
+        "z": 463.17
+      },
+      "activeLabelDe": "Karte · Dornhain",
+      "activeEditorMapId": "dh-atlas-root",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": null,
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 2
+    },
+    {
+      "step": 2,
+      "tsMs": 1795706806342,
+      "span": 300.917,
+      "focus": {
+        "x": 382.54,
+        "z": 444.67
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": null,
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 3
+    },
+    {
+      "step": 3,
+      "tsMs": 1795706806475,
+      "span": 240.532,
+      "focus": {
+        "x": 350.57,
+        "z": 429.27
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-continent-westmark",
+        "dh-map-country-suedmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": null,
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 3
+    },
+    {
+      "step": 4,
+      "tsMs": 1795706806612,
+      "span": 192.082,
+      "focus": {
+        "x": 324.77,
+        "z": 416.69
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-continent-westmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-eisengrat",
+        "dh-map-country-westmark",
+        "dh-map-country-sonnenkueste"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 0.605,
+        "opacity": 0.34,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 3
+    },
+    {
+      "step": 5,
+      "tsMs": 1795706806741,
+      "span": 153.387,
+      "focus": {
+        "x": 304.5,
+        "z": 407.4
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-eisengrat",
+        "dh-map-country-westmark",
+        "dh-map-country-sonnenkueste",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 0.974,
+        "opacity": 0.716,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 4
+    },
+    {
+      "step": 6,
+      "tsMs": 1795706806875,
+      "span": 122.48,
+      "focus": {
+        "x": 288.65,
+        "z": 400.62
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-ostmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-map-country-sonnenkueste",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.93,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 4
+    },
+    {
+      "step": 7,
+      "tsMs": 1795706807012,
+      "span": 97.804,
+      "focus": {
+        "x": 276.17,
+        "z": 395.53
+      },
+      "activeLabelDe": "Kontinent Westmark",
+      "activeEditorMapId": "dh-map-continent-westmark",
+      "activeMapIds": [
+        "dh-map-continent-ostmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-map-country-sonnenkueste",
+        "dh-map-continent-westmark",
+        "dh-atlas-root"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.983,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 4
+    },
+    {
+      "step": 8,
+      "tsMs": 1795706807144,
+      "span": 78.099,
+      "focus": {
+        "x": 266.27,
+        "z": 391.6
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-continent-ostmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-map-continent-westmark",
+        "dh-atlas-root"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.996,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 5
+    },
+    {
+      "step": 9,
+      "tsMs": 1795706807275,
+      "span": 62.363,
+      "focus": {
+        "x": 258.13,
+        "z": 387.95
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-continent-ostmark",
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-map-continent-westmark",
+        "dh-atlas-root"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.999,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 5
+    },
+    {
+      "step": 10,
+      "tsMs": 1795706807416,
+      "span": 49.792,
+      "focus": {
+        "x": 251.55,
+        "z": 384.79
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-map-continent-westmark",
+        "dh-atlas-root"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 5
+    },
+    {
+      "step": 11,
+      "tsMs": 1795706807540,
+      "span": 39.763,
+      "focus": {
+        "x": 246.53,
+        "z": 382.75
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-atlas-root",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 12,
+      "tsMs": 1795706807674,
+      "span": 31.752,
+      "focus": {
+        "x": 242.68,
+        "z": 381.5
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-country-suedmark",
+        "dh-map-country-westmark",
+        "dh-atlas-root",
+        "dh-map-continent-westmark"
+      ],
+      "dornhainGroup": null,
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 13,
+      "tsMs": 1795706807952,
+      "span": 24.163,
+      "focus": {
+        "x": 239.06,
+        "z": 380.46
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-map-country-suedmark",
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-country-westmark",
+        "dh-map-place-dornhain"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 0.422,
+        "opacity": 0.207,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.86,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 14,
+      "tsMs": 1795706808243,
+      "span": 19.808,
+      "focus": {
+        "x": 237.01,
+        "z": 379.89
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-country-westmark",
+        "dh-map-place-dornhain"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 0.695,
+        "opacity": 0.564,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.435,
+        "depth": 3,
+        "lodState": "active",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 15,
+      "tsMs": 1795706808374,
+      "span": 16.091,
+      "focus": {
+        "x": 235.33,
+        "z": 379.4
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 0.821,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.164,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 16,
+      "tsMs": 1795706808508,
+      "span": 12.896,
+      "focus": {
+        "x": 233.86,
+        "z": 378.97
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 0.956,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.041,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 17,
+      "tsMs": 1795706808643,
+      "span": 10.305,
+      "focus": {
+        "x": 232.64,
+        "z": 378.59
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 0.989,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.01,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 18,
+      "tsMs": 1795706808774,
+      "span": 8.23,
+      "focus": {
+        "x": 231.65,
+        "z": 378.25
+      },
+      "activeLabelDe": "Nordreich",
+      "activeEditorMapId": "dh-map-country-westmark",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 0.997,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.002,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 19,
+      "tsMs": 1795706808909,
+      "span": 6.572,
+      "focus": {
+        "x": 230.85,
+        "z": 377.97
+      },
+      "activeLabelDe": "Dornhain",
+      "activeEditorMapId": "dh-map-place-dornhain",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark",
+        "dh-map-place-silberfurt"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 0.999,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0.001,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 20,
+      "tsMs": 1795706809043,
+      "span": 5.249,
+      "focus": {
+        "x": 230.22,
+        "z": 377.73
+      },
+      "activeLabelDe": "Dornhain",
+      "activeEditorMapId": "dh-map-place-dornhain",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark",
+        "dh-map-place-silberfurt"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    },
+    {
+      "step": 21,
+      "tsMs": 1795706809174,
+      "span": 4.192,
+      "focus": {
+        "x": 229.71,
+        "z": 377.55
+      },
+      "activeLabelDe": "Dornhain",
+      "activeEditorMapId": "dh-map-place-dornhain",
+      "activeMapIds": [
+        "dh-atlas-root",
+        "dh-map-continent-westmark",
+        "dh-map-place-dornhain",
+        "dh-map-country-westmark",
+        "dh-map-place-silberfurt"
+      ],
+      "dornhainGroup": {
+        "detailWeight": 1,
+        "opacity": 1,
+        "depth": 4,
+        "lodState": "active",
+        "exiting": false
+      },
+      "nordreichGroup": {
+        "detailWeight": 1,
+        "opacity": 0,
+        "depth": 3,
+        "lodState": "coarse",
+        "exiting": false
+      },
+      "ownPerMapTerrainCount": 0,
+      "clearRootCount": 0,
+      "terrainMaxLod": 6
+    }
+  ]
+}

@@ -7,10 +7,12 @@
  */
 
 import {
+  heightfieldChunkMeshTriangles,
   heightfieldContentFingerprint,
   heightfieldIndex,
   heightfieldMeshTriangles,
   type AtlasHeightfield,
+  type AtlasHeightfieldChunkWindow,
 } from './atlas-heightfield';
 import type { UnifiedCanvasDoc } from './unified-canvas-doc';
 
@@ -229,4 +231,23 @@ export function buildAtlasTerrainMeshPlan(
 /** Sanity: near LOD must not invent more tris than the dense heightfield mesh. */
 export function atlasTerrainDenseTriangleUpperBound(hf: AtlasHeightfield): number {
   return heightfieldMeshTriangles(hf).length;
+}
+
+/**
+ * Triangulate a single chunk window of a shared world `AtlasHeightfield` at the given LOD band.
+ * Complements `planWorldTerrainChunks` so near chunks are dense and distant chunks stay coarse.
+ */
+export function buildAtlasTerrainChunkMeshTriangles(
+  hf: AtlasHeightfield,
+  window: AtlasHeightfieldChunkWindow,
+  lod: AtlasTerrainLodBand,
+): readonly AtlasTerrainMeshTriangle[] {
+  const stride = window.stride ?? atlasTerrainLodStride(lod);
+  const rawTris = heightfieldChunkMeshTriangles(hf, { ...window, stride });
+  return rawTris.map(([a, b, c]) => {
+    const avg = (a[1] + b[1] + c[1]) / 3;
+    const material: 'land' | 'shore' | 'water' =
+      avg < hf.waterLevel ? 'water' : avg < hf.waterLevel + 1.5 ? 'shore' : 'land';
+    return { a, b, c, material };
+  });
 }

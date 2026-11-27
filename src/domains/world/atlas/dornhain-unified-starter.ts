@@ -1,22 +1,18 @@
 /**
- * dornhain-unified-starter — Canonical Unified Canvas for Dornhain / Donalu world.
+ * dornhain-unified-starter — Canonical Unified Canvas for Donalu / Dornhain world.
  * Location: src/domains/world/atlas/dornhain-unified-starter.ts
  *
- * v4 Golden: planetary ocean + continents + Dornhain pin + settlement LOD (`s.*`).
- * Editable product seed (`demoSeed: false`) — not Eldoria demo.
- * Pure domain — no React / Supabase.
+ * SWS Bottom-Up calibrated default world (replaces legacy hand-drawn v4 world canvas).
+ * Root ocean + continents (`w.west-core`, `w.east-core`) + rivers (`w.river-w`, `w.river-e`)
+ * + settlement pins (`w.loc.dornhain`, `s.obj.tavern`, `s.obj.crypt` secret) are all
+ * derived bottom-up from child maps via `buildCalibratedDefaultWorld()`.
+ * Pure domain — no React / Host.
  */
-
 import {
-  defaultUnifiedCanvasLayers,
-  roomFromPolygon,
-  UNIFIED_CANVAS_FORMAT,
-  type UnifiedCanvasDoc,
-  type UnifiedCanvasMaterial,
-  type UnifiedCanvasObject,
-  type UnifiedCanvasRoom,
-  type UnifiedCanvasStroke,
-} from './unified-canvas-doc';
+  ATLAS_DEFAULT_WORLD_ROOT_METERS_PER_UNIT,
+  buildCalibratedDefaultWorld,
+} from './atlas-default-world';
+import type { UnifiedCanvasDoc } from './unified-canvas-doc';
 
 /** Canvas space matches DEFAULT_ATLAS_BOUNDS (0…1000). */
 export const DORNHAIN_STARTER_CANVAS = 1000;
@@ -33,7 +29,7 @@ export const DORNHAIN_UNIFIED_LEGACY_SEEDS = [
   'dornhain.unified.v3',
 ] as const;
 
-/** Dornhain settlement anchor on the world map (for places / future LOD). */
+/** Dornhain settlement anchor on the Nordreich map (calibrated Bottom-Up reference). */
 export const DORNHAIN_WORLD_ANCHOR = { x: 360, y: 510 } as const;
 
 /** Focus rect used for zoom-into-Dornhain / LOD. */
@@ -46,53 +42,6 @@ export const DORNHAIN_SETTLEMENT_FOCUS = {
 
 /** Canonical display title for the root world layer. */
 export const DORNHAIN_WORLD_LAYER_TITLE = 'Welt';
-
-function land(
-  id: string,
-  material: UnifiedCanvasRoom['material'],
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  secret = false,
-): UnifiedCanvasRoom {
-  return secret ? { id, material, x, y, w, h, secret: true } : { id, material, x, y, w, h };
-}
-
-function landPoly(
-  id: string,
-  material: UnifiedCanvasMaterial,
-  points: readonly (readonly [number, number])[],
-): UnifiedCanvasRoom {
-  const room = roomFromPolygon(id, material, points);
-  if (!room) {
-    throw new Error(`Invalid Golden polygon room: ${id}`);
-  }
-  return room;
-}
-
-function stroke(
-  id: string,
-  material: UnifiedCanvasStroke['material'],
-  width: number,
-  points: readonly (readonly [number, number])[],
-): UnifiedCanvasStroke {
-  return { id, material, width, points };
-}
-
-function obj(
-  id: string,
-  type: UnifiedCanvasObject['type'],
-  x: number,
-  y: number,
-  size: number,
-  height?: number,
-  secret = false,
-): UnifiedCanvasObject {
-  const base =
-    height === undefined ? { id, type, x, y, size } : { id, type, x, y, size, height };
-  return secret ? { ...base, secret: true } : base;
-}
 
 /**
  * True when the doc is still the blank planetary ocean starter (v3).
@@ -114,160 +63,13 @@ export function isBlankDornhainOceanDoc(doc: UnifiedCanvasDoc | null | undefined
 }
 
 /**
- * Canonical Donalu / Dornhain **Golden** world canvas — editable reference geography.
+ * Canonical Donalu / Dornhain **Bottom-Up Calibrated** world canvas.
+ * Derived strictly from Westmark & Ostmark (no independent hand-drawn contradictions).
+ * Contains `w.ocean`, `w.west-core`, `w.east-core`, `w.river-w`, `w.loc.dornhain`,
+ * `s.obj.tavern`, and `s.obj.crypt` / `s.crypt` (`secret: true`).
  */
 export function buildDornhainUnifiedCanvasDoc(): UnifiedCanvasDoc {
-  return {
-    format: UNIFIED_CANVAS_FORMAT,
-    layers: defaultUnifiedCanvasLayers(),
-    strokes: [
-      stroke('w.river-w', 'wasser', 10, [
-        [220, 120],
-        [240, 280],
-        [210, 420],
-        [250, 560],
-        [200, 720],
-      ]),
-      stroke('w.river-e', 'wasser', 12, [
-        [780, 80],
-        [760, 220],
-        [800, 400],
-        [740, 580],
-        [780, 760],
-      ]),
-      stroke('s.rd.plaza', 'pflaster', 9, [
-        [330, 530],
-        [350, 510],
-        [370, 490],
-      ]),
-      stroke('w.rd.whisper', 'pflaster', 8, [
-        [360, 510],
-        [420, 480],
-        [520, 460],
-        [640, 440],
-      ]),
-    ],
-    objects: [
-      obj('w.loc.dornhain', 'haus', 360, 510, 0.42, 1.2),
-      obj('w.loc.northkeep', 'turm', 220, 160, 0.36, 1.4),
-      obj('w.loc.eastport', 'haus', 820, 480, 0.38, 1.1),
-      obj('w.loc.southmarsh', 'fels', 180, 720, 0.34),
-      obj('w.loc.highpass', 'fels', 700, 120, 0.32),
-      obj('s.obj.tavern', 'haus', 328, 528, 0.55, 1.2),
-      obj('s.obj.market', 'haus', 378, 488, 0.5, 1.1),
-      obj('s.obj.woods', 'tanne', 410, 550, 0.65),
-      obj('s.obj.crypt', 'fels', 406, 462, 0.55, undefined, true),
-      obj('s.obj.tree-a', 'baum', 304, 460, 0.4),
-      obj('s.obj.tree-b', 'tanne', 420, 500, 0.45),
-    ],
-    rooms: [
-      land('w.ocean', 'wasser', 0, 0, DORNHAIN_STARTER_CANVAS, DORNHAIN_STARTER_CANVAS),
-      // Main west / east coasts as polygons (Step 2) — bbox still used for LOD.
-      landPoly('w.west-core', 'gras', [
-        [70, 200],
-        [160, 110],
-        [310, 95],
-        [390, 180],
-        [430, 310],
-        [410, 450],
-        [440, 560],
-        [380, 680],
-        [280, 760],
-        [140, 740],
-        [70, 620],
-        [55, 420],
-        [90, 280],
-      ]),
-      landPoly('w.west-north', 'erde', [
-        [110, 100],
-        [220, 70],
-        [340, 90],
-        [360, 160],
-        [280, 210],
-        [150, 200],
-        [100, 150],
-      ]),
-      landPoly('w.west-south', 'sand', [
-        [90, 660],
-        [200, 640],
-        [330, 670],
-        [360, 760],
-        [250, 820],
-        [120, 800],
-        [70, 720],
-      ]),
-      landPoly('w.east-core', 'gras', [
-        [540, 160],
-        [680, 110],
-        [820, 140],
-        [900, 250],
-        [920, 420],
-        [880, 580],
-        [820, 700],
-        [700, 760],
-        [580, 700],
-        [520, 560],
-        [500, 400],
-        [520, 260],
-      ]),
-      landPoly('w.east-north', 'stein', [
-        [600, 40],
-        [740, 30],
-        [860, 70],
-        [880, 150],
-        [780, 190],
-        [640, 170],
-        [580, 100],
-      ]),
-      landPoly('w.east-south', 'erde', [
-        [580, 660],
-        [720, 640],
-        [860, 680],
-        [880, 800],
-        [760, 860],
-        [620, 840],
-        [560, 740],
-      ]),
-      landPoly('w.east-bay', 'sand', [
-        [480, 360],
-        [560, 340],
-        [580, 420],
-        [540, 500],
-        [480, 480],
-      ]),
-      landPoly('w.isle-n', 'holz', [
-        [430, 40],
-        [510, 25],
-        [540, 80],
-        [500, 120],
-        [430, 100],
-      ]),
-      landPoly('w.isle-sw', 'gras', [
-        [40, 800],
-        [110, 780],
-        [140, 860],
-        [90, 900],
-        [40, 860],
-      ]),
-      landPoly('w.isle-se', 'sand', [
-        [870, 830],
-        [950, 820],
-        [970, 900],
-        [910, 930],
-        [850, 890],
-      ]),
-      land('w.lake-w', 'wasser', 180, 320, 70, 50),
-      land('w.lake-e', 'wasser', 700, 280, 90, 60),
-      land('s.ground', 'gras', 280, 430, 160, 160),
-      land('s.plaza', 'pflaster', 320, 480, 70, 60),
-      land('s.tavern', 'erde', 310, 510, 36, 36),
-      land('s.market', 'sand', 360, 470, 36, 36),
-      land('s.woods', 'holz', 390, 530, 40, 40),
-      land('s.crypt', 'stein', 390, 446, 32, 32, true),
-    ],
-    walls: [],
-    demoSeed: false,
-  };
+  return buildCalibratedDefaultWorld().rootDoc;
 }
 
 /** True when a room/object belongs to settlement LOD (hidden at planet zoom). */
@@ -275,7 +77,7 @@ export function isSettlementLodId(id: string): boolean {
   return id.startsWith('s.');
 }
 
-/** generator_meta envelope for world_atlas_maps. */
+/** generator_meta envelope for world_atlas_maps (calibrated from Day 1). */
 export function buildDornhainUnifiedGeneratorMeta(): Record<string, unknown> {
   return {
     engine: 'unified_canvas',
@@ -285,6 +87,11 @@ export function buildDornhainUnifiedGeneratorMeta(): Record<string, unknown> {
     mapStatus: 'ready',
     nativeTag: 'SagaTree Native',
     golden: true,
+    worldSpace: {
+      calibrated: true,
+      metersPerUnit: ATLAS_DEFAULT_WORLD_ROOT_METERS_PER_UNIT,
+      derivation: 'bottom-up',
+    },
     unifiedCanvas: buildDornhainUnifiedCanvasDoc(),
   };
 }

@@ -24,9 +24,14 @@ const read = (rel) => readFileSync(join(root, rel), 'utf8');
 const FROZEN = ['Kontinent Westmark', 'Nordreich', 'Dornhain', 'Taverne Zum Flüstern', 'Krypta unter dem Hügel'];
 const LEGACY = 'Land Westmark';
 
-// 1) FE domain Golden maps + G04 fixtures use the frozen names; seed keys unchanged.
+// 1) FE domain Golden maps + G04 fixtures preserve all frozen titles in order; seed keys unchanged.
 const fe = jiti(join(root, 'src/domains/world/atlas/dornhain-golden-hierarchy.ts'));
-assert.deepEqual(fe.DORNHAIN_GOLDEN_MAPS.map((m) => m.title), FROZEN, 'FE Golden map titles (frozen order)');
+const feTitles = fe.DORNHAIN_GOLDEN_MAPS.map((m) => m.title);
+assert.deepEqual(
+  feTitles.filter((t) => FROZEN.includes(t)),
+  FROZEN,
+  'FE Golden map titles preserve frozen reference order',
+);
 const feCountry = fe.DORNHAIN_GOLDEN_MAPS.find((m) => m.title === 'Nordreich');
 assert.equal(feCountry.seedKey, 'dornhain.map.country.westmark', 'seed key stays (no data migration)');
 const visual = jiti(join(root, 'src/domains/world/atlas/atlas-golden-visual.ts'));
@@ -36,10 +41,10 @@ const countryFixture = fixtures.find((f) => f.id === 'country');
 assert.equal(countryFixture.uiMapTitleDe, 'Nordreich', 'G04 country fixture title');
 assert.ok(!JSON.stringify(fixtures.map((f) => [f.labelDe, f.uiMapTitleDe])).includes(LEGACY), 'no legacy name in G04');
 
-// 2) Host seed mirrors the FE titles (host must not import FE code).
+// 2) Host seed mirrors the FE titles 1:1 (host must not import FE code).
 const seedUrl = pathToFileURL(join(root, 'server/src/bootstrap/dornhain-golden-hierarchy-seed.ts')).href;
 const seed = await import(seedUrl);
-assert.deepEqual(seed.DORHAIN_GOLDEN_MAP_SEEDS.map((m) => m.title), FROZEN, 'host Golden map titles');
+assert.deepEqual(seed.DORHAIN_GOLDEN_MAP_SEEDS.map((m) => m.title), feTitles, 'host Golden map titles match FE 1:1');
 const countryPlace = seed.DORHAIN_GOLDEN_PLACE_SEEDS.find((p) => p.seedKey === 'country.westmark');
 assert.equal(countryPlace.name, 'Nordreich');
 assert.equal(countryPlace.stableId, 'dh-place-country-westmark', 'stable place id unchanged');

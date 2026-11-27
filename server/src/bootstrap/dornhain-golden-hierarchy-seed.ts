@@ -1,15 +1,18 @@
 /**
- * dornhain-golden-hierarchy-seed — Host-side Golden six-level map/place seeds.
+ * dornhain-golden-hierarchy-seed — Host-side Calibrated Bottom-Up Default World seeds.
  * Location: server/src/bootstrap/dornhain-golden-hierarchy-seed.ts
  *
- * Mirrors FE `dornhain-golden-hierarchy` / `dornhain-golden-reset` place+map
- * contracts without importing frontend domains (architecture boundary).
+ * Mirrors FE `atlas-default-world` / `dornhain-golden-hierarchy` / `dornhain-golden-reset`
+ * via generated `dornhain-default-world-mirror.ts` without importing FE domains
+ * (architecture boundary). Includes full calibrated 23-map hierarchy (reference chain:
+ * `continent.westmark` → `country.westmark` → `place.dornhain` →
+ * `dornhain.map.loc.tavern` → `dornhain.map.room.taproom` / `dornhain.map.loc.crypt`).
  */
 import type { HostDatabase } from '../persistence/index.ts';
 import {
-  GOLDEN_KRYPTA_FORGE_DUNGEON_META,
-  GOLDEN_KRYPTA_FORGE_FEATURES,
-} from './dornhain-golden-krypta-forge.ts';
+  DEFAULT_WORLD_MAP_DATA,
+  DEFAULT_WORLD_PLACE_SEEDS,
+} from './dornhain-default-world-mirror.ts';
 import { isUntouchedLegacyGoldenCanvas } from './dornhain-golden-content-upgrade.ts';
 
 export const DORHAIN_UNIFIED_SEED = 'dornhain.unified.v4';
@@ -27,79 +30,18 @@ export type DornhainGoldenPlaceSeed = {
   readonly sortOrder: number;
 };
 
-/** Ordered parent→child (matches FE DORNHAIN_GOLDEN_PLACES). */
-export const DORHAIN_GOLDEN_PLACE_SEEDS: readonly DornhainGoldenPlaceSeed[] = [
-  {
-    stableId: 'dh-place-continent-westmark',
-    seedKey: 'continent.westmark',
-    name: 'Kontinent Westmark',
-    kind: 'continent',
-    description: 'Westlicher Kontinent Donalu (Golden-Platzhaltername).',
-    parentSeedKey: null,
-    anchor: { x: 260, y: 420 },
-    sortOrder: 0,
-  },
-  {
-    stableId: 'dh-place-country-westmark',
-    seedKey: 'country.westmark',
-    name: 'Nordreich',
-    kind: 'country',
-    description: 'Land Nordreich auf dem Kontinent Westmark (Golden-Name, Owner-Freeze 2026-11-15 / ATL2-H03 #1236).',
-    parentSeedKey: 'continent.westmark',
-    anchor: { x: 430, y: 400 },
-    sortOrder: 5,
-  },
-  {
-    stableId: 'dh-place-dornhain',
-    seedKey: 'place.dornhain',
-    name: 'Dornhain',
-    kind: 'settlement',
-    description: 'Stadt in Donalu — Starterschauplatz.',
-    parentSeedKey: 'country.westmark',
-    anchor: DORHAIN_WORLD_ANCHOR,
-    sortOrder: 10,
-  },
-  {
-    stableId: 'dh-place-square',
-    seedKey: 'dornhain.marktplatz',
-    name: 'Marktplatz',
-    kind: 'settlement',
-    description: 'Dornhain Marktplatz — Startpunkt der Whisper-Road.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 378, y: 488 },
-    sortOrder: 15,
-  },
-  {
-    stableId: 'dh-place-whisper',
-    seedKey: 'dornhain.whisper-road',
-    name: 'Whisper Road',
-    kind: 'region',
-    description: 'Die Whisper Road führt hinaus aus Dornhain.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 420, y: 480 },
-    sortOrder: 20,
-  },
-  {
-    stableId: 'dh-place-tavern',
-    seedKey: 'loc.tavern',
-    name: 'Taverne Zum Flüstern',
-    kind: 'building',
-    description: 'Treffpunkt der Helden.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 328, y: 528 },
-    sortOrder: 30,
-  },
-  {
-    stableId: 'dh-place-crypt',
-    seedKey: 'loc.crypt',
-    name: 'Krypta unter dem Hügel',
-    kind: 'building',
-    description: 'GM-Geheimnis — Reliktort unter Dornhain.',
-    parentSeedKey: 'place.dornhain',
-    anchor: { x: 406, y: 462 },
-    sortOrder: 40,
-  },
-];
+/** Ordered parent→child (mirrors FE DORNHAIN_GOLDEN_PLACES 1:1). */
+export const DORHAIN_GOLDEN_PLACE_SEEDS: readonly DornhainGoldenPlaceSeed[] =
+  DEFAULT_WORLD_PLACE_SEEDS.map((p) => ({
+    stableId: p.stableId,
+    seedKey: p.seedKey,
+    name: p.name,
+    kind: p.kind,
+    description: p.description,
+    parentSeedKey: p.parentSeedKey,
+    anchor: p.anchor ? { x: p.anchor.x, y: p.anchor.y } : null,
+    sortOrder: p.sortOrder,
+  }));
 
 type UnifiedCanvasDoc = {
   readonly format: 'sagatree-unified-atlas-v1';
@@ -112,111 +54,6 @@ type UnifiedCanvasDoc = {
   readonly heightfield?: Record<string, unknown>;
   readonly demoSeed: false;
 };
-
-/** ATL3-V01 — mirrors FE `GOLDEN_DORNHAIN_HILLS` / `buildGoldenDornhainHeightfield` 1:1. */
-const GOLDEN_DORNHAIN_HILLS = [
-  { x: 360, z: 300, radius: 110, peak: 28 },
-  { x: 490, z: 285, radius: 90, peak: 22 },
-  { x: 650, z: 520, radius: 80, peak: 16 },
-  { x: 210, z: 650, radius: 80, peak: 12 },
-] as const;
-
-function goldenDornhainHeightfield(): Record<string, unknown> {
-  const originX = 100;
-  const originZ = 180;
-  const cellSize = 20;
-  const cols = 41;
-  const rows = 33;
-  const base = -4;
-  const heights: number[] = [];
-  for (let row = 0; row < rows; row += 1) {
-    for (let col = 0; col < cols; col += 1) {
-      const x = originX + col * cellSize;
-      const z = originZ + row * cellSize;
-      let h: number = base;
-      for (const hill of GOLDEN_DORNHAIN_HILLS) {
-        const d2 = ((x - hill.x) ** 2 + (z - hill.z) ** 2) / hill.radius ** 2;
-        const s = Math.max(0, 1 - d2);
-        h = Math.max(h, base + (hill.peak - base) * s * s);
-      }
-      heights.push(Math.round(h * 10) / 10);
-    }
-  }
-  return {
-    format: 'sagatree-atlas-heightfield-v1',
-    version: 1,
-    assetRef: { kind: 'inline', version: 1 },
-    originX,
-    originZ,
-    cellSize,
-    cols,
-    rows,
-    heights,
-    waterLevel: -3,
-  };
-}
-
-function emptyLayers(): UnifiedCanvasDoc['layers'] {
-  return {
-    terrain: true,
-    roads: true,
-    region: true,
-    city: true,
-    interior: true,
-    drawings: true,
-    objects: true,
-    grid: false,
-  };
-}
-
-function rect(
-  id: string,
-  material: string,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  extra: Record<string, unknown> = {},
-) {
-  return { id, material, x, y, w, h, ...extra };
-}
-
-function stroke(
-  id: string,
-  material: string,
-  width: number,
-  points: readonly (readonly [number, number])[],
-) {
-  return { id, material, width, points };
-}
-
-function stamp(
-  id: string,
-  type: string,
-  x: number,
-  y: number,
-  size: number,
-  extra: Record<string, unknown> = {},
-) {
-  return { id, type, x, y, size, ...extra };
-}
-
-function baseDoc(
-  rooms: unknown[],
-  strokes: unknown[] = [],
-  objects: unknown[] = [],
-  walls: unknown[] = [],
-): UnifiedCanvasDoc {
-  return {
-    format: 'sagatree-unified-atlas-v1',
-    layers: emptyLayers(),
-    rooms: [rect('g.ocean', 'wasser', 0, 0, 1000, 1000), ...rooms],
-    strokes,
-    objects,
-    walls,
-    demoSeed: false,
-  };
-}
 
 export type DornhainGoldenMapSeed = {
   readonly stableId: string;
@@ -231,13 +68,14 @@ export type DornhainGoldenMapSeed = {
     readonly centerY: number;
     readonly extentX: number;
     readonly extentY: number;
+    readonly rotationRad: number;
+    readonly metersPerUnit: number;
   };
   readonly buildCanvas: () => UnifiedCanvasDoc;
   /** Committed Dungeon-Forge meta stored under generatorMeta.dungeon. */
   readonly dungeonMeta?: Readonly<Record<string, unknown>>;
 };
 
-/** Ordered parent→child so cold bootstrap upserts without forward refs. */
 /**
  * Pre-freeze Golden map titles (ATL2-H03 #1236, owner freeze 2026-11-15). Existing worlds
  * whose map still carries exactly the old Golden title get the frozen title on bootstrap;
@@ -247,171 +85,28 @@ export const DORHAIN_GOLDEN_LEGACY_MAP_TITLES: Readonly<Record<string, readonly 
   'dornhain.map.country.westmark': ['Land Westmark'],
 };
 
-export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] = [
-  {
-    stableId: 'dh-map-continent-westmark',
-    seedKey: 'dornhain.map.continent.westmark',
-    placeSeedKey: 'continent.westmark',
-    title: 'Kontinent Westmark',
-    kind: 'region',
-    parentMapSeedKey: null,
-    parentAnchor: { centerX: 260, centerY: 420, extentX: 160, extentY: 220 },
-    buildCanvas: () =>
-      baseDoc(
-        [
-          {
-            id: 'g.land.westmark',
-            material: 'gras',
-            x: 100,
-            y: 120,
-            w: 640,
-            h: 640,
-            points: [
-              [120, 180],
-              [280, 120],
-              [520, 140],
-              [700, 260],
-              [740, 480],
-              [620, 700],
-              [360, 760],
-              [160, 620],
-              [100, 400],
-            ],
-          },
-          rect('g.country.westmark', 'erde', 320, 300, 220, 200),
-        ],
-        [
-          stroke('g.ridge', 'stein', 14, [
-            [200, 220],
-            [340, 300],
-            [480, 280],
-            [620, 360],
-          ]),
-          stroke('g.river', 'wasser', 10, [
-            [260, 160],
-            [300, 320],
-            [280, 520],
-            [340, 700],
-          ]),
-        ],
-        [stamp('g.forest', 'tanne', 420, 420, 0.7)],
-      ),
-  },
-  {
-    stableId: 'dh-map-country-westmark',
-    seedKey: 'dornhain.map.country.westmark',
-    placeSeedKey: 'country.westmark',
-    title: 'Nordreich',
-    kind: 'region',
-    parentMapSeedKey: 'dornhain.map.continent.westmark',
-    parentAnchor: { centerX: 430, centerY: 400, extentX: 110, extentY: 100 },
-    buildCanvas: () =>
-      baseDoc(
-        [rect('g.country.core', 'gras', 180, 180, 640, 640)],
-        [
-          stroke('g.whisper', 'pflaster', 10, [
-            [220, 520],
-            [360, 500],
-            [520, 480],
-            [700, 460],
-          ]),
-        ],
-        [
-          stamp('g.pin.dornhain', 'haus', 360, 510, 0.55),
-          stamp('g.pin.road', 'fels', 420, 480, 0.35),
-          stamp('g.pin.keep', 'turm', 560, 360, 0.4),
-        ],
-      ),
-  },
-  {
-    stableId: 'dh-map-place-dornhain',
-    seedKey: 'dornhain.map.place.dornhain',
-    placeSeedKey: 'place.dornhain',
-    title: 'Dornhain',
-    kind: 'settlement',
-    parentMapSeedKey: 'dornhain.map.country.westmark',
-    parentAnchor: { centerX: 360, centerY: 510, extentX: 55, extentY: 55 },
-    buildCanvas: () => ({
-      ...baseDoc(
-        [
-          rect('g.town.plaza', 'pflaster', 300, 420, 180, 140),
-          rect('g.town.block-a', 'stein', 220, 380, 90, 80),
-          rect('g.town.block-b', 'holz', 460, 400, 100, 90),
-        ],
-        [
-          stroke('g.street', 'pflaster', 12, [
-            [240, 500],
-            [360, 500],
-            [480, 480],
-          ]),
-        ],
-        [
-          stamp('g.tavern', 'haus', 328, 528, 0.6),
-          stamp('g.market', 'haus', 378, 488, 0.5),
-          stamp('g.watch', 'turm', 452, 430, 0.45),
-          stamp('g.crypt', 'fels', 406, 462, 0.55),
-          stamp('g.oak-a', 'baum', 280, 460, 0.55),
-          stamp('g.oak-b', 'baum', 500, 520, 0.5),
-          stamp('g.pine-a', 'tanne', 250, 540, 0.48),
-          stamp('g.outcrop', 'fels', 430, 540, 0.4),
-        ],
-      ),
-      heightfield: goldenDornhainHeightfield(),
-    }),
-  },
-  {
-    stableId: 'dh-map-loc-tavern',
-    seedKey: 'dornhain.map.loc.tavern',
-    placeSeedKey: 'loc.tavern',
-    title: 'Taverne Zum Flüstern',
-    kind: 'scene',
-    parentMapSeedKey: 'dornhain.map.place.dornhain',
-    parentAnchor: { centerX: 328, centerY: 528, extentX: 24, extentY: 24 },
-    buildCanvas: () => ({
-      format: 'sagatree-unified-atlas-v1',
-      layers: emptyLayers(),
-      rooms: [
-        rect('g.tav.common', 'holz', 200, 200, 400, 320),
-        rect('g.tav.bar', 'stein', 220, 220, 140, 80),
-      ],
-      walls: [
-        { id: 'g.tav.w1', x1: 200, y1: 200, x2: 600, y2: 200, width: 8 },
-        { id: 'g.tav.w2', x1: 200, y1: 200, x2: 200, y2: 520, width: 8 },
-        { id: 'g.tav.w3', x1: 600, y1: 200, x2: 600, y2: 520, width: 8 },
-        { id: 'g.tav.w4', x1: 200, y1: 520, x2: 600, y2: 520, width: 8 },
-      ],
-      objects: [
-        stamp('g.tav.table', 'tisch', 360, 360, 0.7),
-        stamp('g.tav.chair-a', 'stuhl', 320, 340, 0.4),
-        stamp('g.tav.chair-b', 'stuhl', 400, 340, 0.4),
-        stamp('g.tav.barrel', 'fass', 260, 280, 0.45),
-      ],
-      strokes: [],
-      demoSeed: false,
-    }),
-  },
-  {
-    stableId: 'dh-map-loc-crypt',
-    seedKey: 'dornhain.map.loc.crypt',
-    placeSeedKey: 'loc.crypt',
-    title: 'Krypta unter dem Hügel',
-    kind: 'scene',
-    parentMapSeedKey: 'dornhain.map.place.dornhain',
-    parentAnchor: { centerX: 406, centerY: 462, extentX: 28, extentY: 28 },
-    /* ATL3-V01 — committed Dungeon-Forge crypt (generated mirror, see file header). */
-    buildCanvas: () => ({
-      format: 'sagatree-unified-atlas-v1',
-      layers: emptyLayers(),
-      rooms: GOLDEN_KRYPTA_FORGE_FEATURES.rooms.map((r) => ({ ...r })),
-      walls: GOLDEN_KRYPTA_FORGE_FEATURES.walls.map((w) => ({ ...w })),
-      doors: GOLDEN_KRYPTA_FORGE_FEATURES.doors.map((d) => ({ ...d })),
-      objects: GOLDEN_KRYPTA_FORGE_FEATURES.objects.map((o) => ({ ...o })),
-      strokes: [],
-      demoSeed: false,
-    }),
-    dungeonMeta: GOLDEN_KRYPTA_FORGE_DUNGEON_META,
-  },
-];
+/** Ordered parent→child calibrated Bottom-Up default world maps (mirrors FE 1:1). */
+export const DORHAIN_GOLDEN_MAP_SEEDS: readonly DornhainGoldenMapSeed[] =
+  DEFAULT_WORLD_MAP_DATA.map((entry) => ({
+    stableId: entry.stableId,
+    seedKey: entry.seedKey,
+    placeSeedKey: entry.placeSeedKey,
+    title: entry.title,
+    kind: entry.kind,
+    parentMapSeedKey: entry.parentMapSeedKey,
+    parentAnchor: {
+      centerX: entry.parentAnchor.centerX,
+      centerY: entry.parentAnchor.centerY,
+      extentX: entry.parentAnchor.extentX,
+      extentY: entry.parentAnchor.extentY,
+      rotationRad: entry.parentAnchor.rotationRad,
+      metersPerUnit: entry.parentAnchor.metersPerUnit,
+    },
+    buildCanvas: () => structuredClone(entry.canvas) as unknown as UnifiedCanvasDoc,
+    ...('dungeonMeta' in entry && entry.dungeonMeta
+      ? { dungeonMeta: entry.dungeonMeta as Readonly<Record<string, unknown>> }
+      : {}),
+  }));
 
 export function buildGoldenChildGeneratorMeta(
   spec: DornhainGoldenMapSeed,
@@ -435,8 +130,8 @@ export function buildGoldenChildGeneratorMeta(
         centerY: spec.parentAnchor.centerY,
         extentX: spec.parentAnchor.extentX,
         extentY: spec.parentAnchor.extentY,
-        rotationRad: 0,
-        metersPerUnit: null,
+        rotationRad: spec.parentAnchor.rotationRad,
+        metersPerUnit: spec.parentAnchor.metersPerUnit,
       },
     },
   };
@@ -557,7 +252,6 @@ export function seedDornhainGoldenHierarchy(
       const nextMeta = {
         ...prevMeta,
         ...generatorMeta,
-        // Keep any non-canvas authored keys; Golden canvas wins when blank/wrong seed.
         unifiedCanvas: generatorMeta.unifiedCanvas,
         mapFrame: generatorMeta.mapFrame,
         seed: spec.seedKey,
@@ -578,8 +272,6 @@ export function seedDornhainGoldenHierarchy(
         worldId,
       );
     } else if (isUntouchedLegacyGoldenCanvas(spec.seedKey, prevMeta.unifiedCanvas, generatorMeta.unifiedCanvas)) {
-      // ATL3-V01 round 3 (#1295): untouched superseded Golden canvas (pre-V01 crypt / Dornhain
-      // without heightfield) → current Golden canvas (+ forge meta). User-edited canvases never match.
       const legacyTitle = (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title);
       const nextMeta = {
         ...prevMeta,
@@ -595,7 +287,6 @@ export function seedDornhainGoldenHierarchy(
       existing.title !== spec.title &&
       (DORHAIN_GOLDEN_LEGACY_MAP_TITLES[spec.seedKey] ?? []).includes(existing.title)
     ) {
-      // Title-only rename to the frozen Golden name; canvas/revision semantics unchanged.
       db.prepare(
         `UPDATE world_atlas_maps SET title = ?, revision = revision + 1, updated_at = ?
          WHERE id = ? AND world_profile_id = ?`,
@@ -681,8 +372,6 @@ export function seedDornhainGoldenHierarchy(
     }
 
     if (place.anchor) {
-      // Places with their own Golden map: overview on parent map.
-      // Mapless children (Marktplatz / Whisper Road): overview on parent place's primary map.
       let overviewMapId: string = worldRootMapId;
       if (mapSpec?.parentMapSeedKey) {
         overviewMapId = mapIdsBySeed.get(mapSpec.parentMapSeedKey) ?? worldRootMapId;

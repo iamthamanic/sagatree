@@ -1,0 +1,179 @@
+{
+  "capturedAt": "2026-11-26T08:24:23.769Z",
+  "spec": "e2e/sws-vertical-slice.spec.ts",
+  "hardwareProfile": "target-desktop",
+  "rendererInfo": {
+    "webglRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+    "webglVendor": "Google Inc. (Apple)",
+    "isSoftwareWebgl": false
+  },
+  "hardwareVerified": true,
+  "budgetsA2": {
+    "maxSimultaneousActiveMaps": 6,
+    "frameP95MsSoft": 33.3,
+    "frameP95MsTarget": 16.7,
+    "clearRootCountTarget": 0,
+    "maxHeapDriftPct": 10
+  },
+  "measured": {
+    "frameSamples": 51,
+    "frameP50Ms": 16.7,
+    "frameP95Ms": 16.8,
+    "frameMaxMs": 33.4,
+    "frameAvgMs": 17.32,
+    "avgFps": 57.7,
+    "p95Fps": 59.5,
+    "clearRootCount": 0,
+    "portalOverlayTriggered": false,
+    "maxSimultaneousActiveMaps": 6,
+    "maxYawDriftRad": 0,
+    "maxFocusJumpWorldUnits": 0,
+    "heapSamplesMb": [
+      117.3,
+      117.3,
+      117.3,
+      117.3,
+      117.3,
+      117.3
+    ],
+    "heapDriftPct": 0
+  },
+  "budgetChecks": {
+    "activeMapsWithinBudget": true,
+    "clearRootZero": true,
+    "portalOverlayZero": true,
+    "frameP95Within30FpsSoft": true,
+    "frameP95Within60FpsTarget": false,
+    "heapWithin10PctDrift": true
+  },
+  "checkpoints": [
+    {
+      "id": "welt",
+      "span": 500,
+      "focusX": 500,
+      "focusY": 500,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-ostmark__327cb59eac60",
+        "dh-map-continent-westmark__30bc68ef970d"
+      ],
+      "activeEditorMapId": "dh-atlas-root__5dccba2c6f60",
+      "activeMapCount": 3,
+      "groupCount": 3,
+      "calls": 36,
+      "triangles": 15890
+    },
+    {
+      "id": "westmark",
+      "span": 160,
+      "focusX": 270,
+      "focusY": 480,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-suedmark__378d79339a16",
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-ostmark__327cb59eac60"
+      ],
+      "activeEditorMapId": "dh-map-continent-westmark__30bc68ef970d",
+      "activeMapCount": 5,
+      "groupCount": 5,
+      "calls": 56,
+      "triangles": 29286
+    },
+    {
+      "id": "nordreich",
+      "span": 40,
+      "focusX": 254,
+      "focusY": 408,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d"
+      ],
+      "activeEditorMapId": "dh-map-country-westmark__e3eabdfc6f27",
+      "activeMapCount": 3,
+      "groupCount": 3,
+      "calls": 30,
+      "triangles": 19696
+    },
+    {
+      "id": "dornhain",
+      "span": 2.5,
+      "focusX": 240,
+      "focusY": 409,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-place-dornhain__59b982739219",
+        "dh-map-country-westmark__e3eabdfc6f27"
+      ],
+      "activeEditorMapId": "dh-map-place-dornhain__59b982739219",
+      "activeMapCount": 4,
+      "groupCount": 4,
+      "calls": 66,
+      "triangles": 24502
+    },
+    {
+      "id": "taverne",
+      "span": 0.25,
+      "focusX": 239.312,
+      "focusY": 409.112,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-map-loc-crypt__be4825b85be8",
+        "dh-map-place-dornhain__59b982739219",
+        "dh-map-loc-tavern__1d3e26df066c"
+      ],
+      "activeEditorMapId": "dh-map-loc-tavern__1d3e26df066c",
+      "activeMapCount": 6,
+      "groupCount": 6,
+      "calls": 84,
+      "triangles": 55088
+    },
+    {
+      "id": "schankraum",
+      "span": 0.06,
+      "focusX": 239.2944,
+      "focusY": 409.088,
+      "yawRad": 0.58,
+      "clearRootCount": 0,
+      "portalTransitionVisible": false,
+      "activeMapIds": [
+        "dh-atlas-root__5dccba2c6f60",
+        "dh-map-continent-westmark__30bc68ef970d",
+        "dh-map-country-westmark__e3eabdfc6f27",
+        "dh-map-place-dornhain__59b982739219",
+        "dh-map-room-taproom__7430f22a1f2e",
+        "dh-map-loc-tavern__1d3e26df066c"
+      ],
+      "activeEditorMapId": "dh-map-room-taproom__7430f22a1f2e",
+      "activeMapCount": 6,
+      "groupCount": 6,
+      "calls": 73,
+      "triangles": 31686
+    }
+  ],
+  "modeSwitch2d3d": {
+    "yawPreserved": true,
+    "focusPreserved": true,
+    "spanPreserved": true
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "capturedAt": "2026-11-26T10:21:08.925Z",
+  "contrast": {
+    "darkMode": true,
+    "backgroundColor": "rgb(6, 182, 212)",
+    "labelColor": "rgb(15, 23, 42)",
+    "subtitleColor": "rgb(15, 23, 42)",
+    "fontWeight": "700",
+    "labelContrast": 7.35,
+    "subtitleContrast": 7.35
+  },
+  "observed": [
+    {
+      "step": "welt",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Karte · Dornhain",
+      "activeDepth": 1,
+      "domZoomActiveText": "Karte · DornhainWeltkarte"
+    },
+    {
+      "step": "westmark",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Kontinent Westmark",
+      "activeDepth": 2,
+      "domZoomActiveText": "Kontinent WestmarkKontinent"
+    },
+    {
+      "step": "nordreich",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Nordreich",
+      "activeDepth": 3,
+      "domZoomActiveText": "NordreichLand"
+    },
+    {
+      "step": "dornhain",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Dornhain",
+      "activeDepth": 4,
+      "domZoomActiveText": "DornhainOrt"
+    },
+    {
+      "step": "taverne",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Taverne Zum Flüstern",
+      "activeDepth": 5,
+      "domZoomActiveText": "Taverne Zum FlüsternGebäude"
+    },
+    {
+      "step": "schankraum",
+      "clearRootCount": 0,
+      "layersOpen": true,
+      "activeLabelDe": "Schankraum",
+      "activeDepth": 6,
+      "domZoomActiveText": "SchankraumRaum"
+    }
+  ]
+}

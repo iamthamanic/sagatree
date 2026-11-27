@@ -1,44 +1,35 @@
 /**
- * dornhain-golden-hierarchy — Golden child-map seeds + canvases (Steps 5+6).
+ * dornhain-golden-hierarchy — Calibrated Bottom-Up Default World hierarchy (SWS-02 / C1–C6).
  * Location: src/domains/world/atlas/dornhain-golden-hierarchy.ts
  *
- * Pure domain — no React / Host. Golden names (owner freeze 2026-11-15, ATL2-H03 #1236):
- * Kontinent Westmark / Nordreich under Donalu. The country was the "Land Westmark"
- * placeholder before; seed keys and stable ids are unchanged (no data migration).
- *
- * ATL3-V01 round 2 (#1295, Ben 2026-11-15): Dornhain carries a canonical
- * heightfield (hills around the town, never under rooms/stamps) and the Krypta
- * is a committed Dungeon-Forge crypt (seed 1425, theme ancient). Both change
- * the G04 / V01 data fingerprints deliberately. Host mirror:
- * `server/src/bootstrap/dornhain-golden-hierarchy-seed.ts` (parity self-test).
+ * Pure domain — no React / Host. Replaces the legacy 5-map Dornhain Golden world
+ * with the calibrated Bottom-Up default world (`atlas-default-world.ts`):
+ *  - 2 Kontinente × 2 Länder × 2–3 Orte (10 Orte), 1 tiefer Referenz-Ort (Dornhain
+ *    → Taverne Zum Flüstern → Schankraum → Tisch), 4 prozedurale Dungeons.
+ *  - Preserves canonical Dornhain heightfield + Dungeon-Forge Krypta (seed 1425)
+ *    for ATL3-V01 visual contract compatibility.
+ *  - Every anchor is calibrated from Day 1 (`metersPerUnit > 0`).
  */
 import {
-  ATLAS_HEIGHTFIELD_FORMAT,
-  ATLAS_HEIGHTFIELD_VERSION,
-  type AtlasHeightfield,
-} from './atlas-heightfield';
+  buildCalibratedDefaultWorld,
+  buildDefaultDornhainCanvas,
+  buildDefaultDornhainHeightfield,
+  buildDefaultTavernCanvas,
+  DEFAULT_DORNHAIN_HILLS,
+  DEFAULT_KRYPTA_FORGE_PARAMS,
+  type DefaultWorldMapSpec,
+} from './atlas-default-world';
+import type { AtlasHeightfield } from './atlas-heightfield';
 import {
-  buildDungeonGeneratorMeta,
-  generateDungeon,
   mergeDungeonMetaIntoGeneratorMeta,
   type DungeonGenerateParams,
   type DungeonGeneratorMeta,
 } from './dungeon-generator';
-import { rasterizeDungeonGenerateResult } from './dungeon-grid';
-import { commitDungeonFeaturesToDoc, dungeonCommitPayloadFromResults } from './dungeon-forge-workflow';
 import {
   mergeMapFrameIntoGeneratorMeta,
   type ParentSpatialAnchor,
 } from './map-frame';
-import {
-  emptyUnifiedCanvasDoc,
-  roomFromPolygon,
-  type UnifiedCanvasDoc,
-  type UnifiedCanvasMaterial,
-  type UnifiedCanvasObject,
-  type UnifiedCanvasRoom,
-  type UnifiedCanvasStroke,
-} from './unified-canvas-doc';
+import type { UnifiedCanvasDoc } from './unified-canvas-doc';
 import { DEFAULT_ATLAS_BOUNDS, type WorldAtlasMapKind } from './world-atlas.types';
 
 export const DORNHAIN_WORLD_MAP_SEED = 'dornhain.unified.v4' as const;
@@ -52,313 +43,83 @@ export type DornhainGoldenMapSpec = {
   readonly parentMapSeedKey: string | null;
   readonly parentAnchor: Omit<ParentSpatialAnchor, 'parentMapId' | 'metersPerUnit' | 'rotationRad'> & {
     readonly rotationRad?: number;
+    readonly metersPerUnit?: number | null;
   };
   readonly buildCanvas: () => UnifiedCanvasDoc;
   /** Committed Dungeon-Forge meta (`generatorMeta.dungeon`) for forge-built Golden maps. */
   readonly buildDungeonMeta?: () => DungeonGeneratorMeta;
 };
 
-function rectRoom(
-  id: string,
-  material: UnifiedCanvasMaterial,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-): UnifiedCanvasRoom {
-  return { id, material, x, y, w, h };
-}
+export const GOLDEN_DORNHAIN_HILLS = DEFAULT_DORNHAIN_HILLS;
 
-function stroke(
-  id: string,
-  material: UnifiedCanvasMaterial,
-  width: number,
-  points: readonly (readonly [number, number])[],
-): UnifiedCanvasStroke {
-  return { id, material, width, points };
-}
+export const GOLDEN_KRYPTA_FORGE_PARAMS: DungeonGenerateParams = DEFAULT_KRYPTA_FORGE_PARAMS;
 
-function stamp(
-  id: string,
-  type: UnifiedCanvasObject['type'],
-  x: number,
-  y: number,
-  size: number,
-): UnifiedCanvasObject {
-  return { id, type, x, y, size };
-}
-
-function mustPoly(
-  id: string,
-  material: UnifiedCanvasMaterial,
-  points: readonly (readonly [number, number])[],
-): UnifiedCanvasRoom {
-  const room = roomFromPolygon(id, material, points);
-  if (!room) {
-    throw new Error(`Golden polygon invalid: ${id}`);
-  }
-  return room;
-}
-
-function baseDoc(rooms: UnifiedCanvasRoom[], strokes: UnifiedCanvasStroke[] = [], objects: UnifiedCanvasObject[] = []): UnifiedCanvasDoc {
-  const empty = emptyUnifiedCanvasDoc(false);
-  return {
-    ...empty,
-    rooms: [rectRoom('g.ocean', 'wasser', 0, 0, 1000, 1000), ...rooms],
-    strokes,
-    objects,
-  };
+export function buildGoldenDornhainHeightfield(): AtlasHeightfield {
+  return buildDefaultDornhainHeightfield();
 }
 
 export function buildGoldenContinentCanvas(): UnifiedCanvasDoc {
-  return baseDoc(
-    [
-      mustPoly('g.land.westmark', 'gras', [
-        [120, 180],
-        [280, 120],
-        [520, 140],
-        [700, 260],
-        [740, 480],
-        [620, 700],
-        [360, 760],
-        [160, 620],
-        [100, 400],
-      ]),
-      rectRoom('g.country.westmark', 'erde', 320, 300, 220, 200),
-    ],
-    [
-      stroke('g.ridge', 'stein', 14, [
-        [200, 220],
-        [340, 300],
-        [480, 280],
-        [620, 360],
-      ]),
-      stroke('g.river', 'wasser', 10, [
-        [260, 160],
-        [300, 320],
-        [280, 520],
-        [340, 700],
-      ]),
-    ],
-    [stamp('g.forest', 'tanne', 420, 420, 0.7)],
+  const m = buildCalibratedDefaultWorld().maps.find(
+    (x) => x.seedKey === 'dornhain.map.continent.westmark',
   );
+  if (!m) throw new Error('Missing Kontinent Westmark in calibrated default world');
+  return m.buildCanvas();
 }
 
 export function buildGoldenCountryCanvas(): UnifiedCanvasDoc {
-  return baseDoc(
-    [rectRoom('g.country.core', 'gras', 180, 180, 640, 640)],
-    [
-      stroke('g.whisper', 'pflaster', 10, [
-        [220, 520],
-        [360, 500],
-        [520, 480],
-        [700, 460],
-      ]),
-    ],
-    [
-      stamp('g.pin.dornhain', 'haus', 360, 510, 0.55),
-      stamp('g.pin.road', 'fels', 420, 480, 0.35),
-      stamp('g.pin.keep', 'turm', 560, 360, 0.4),
-    ],
+  const m = buildCalibratedDefaultWorld().maps.find(
+    (x) => x.seedKey === 'dornhain.map.country.westmark',
   );
-}
-
-/**
- * Golden Dornhain hills (canonical terrain, ATL3-V01 D-GEO-03). Compact smooth
- * bumps over a submerged base (-4): only the hill tops rise above the map sheet
- * (y ≈ -0.5), so rooms, streets and stamps stay on flat ground (self-test checks
- * clearance). Mirrored 1:1 in the Host seed.
- */
-export const GOLDEN_DORNHAIN_HILLS: readonly {
-  readonly id: string;
-  readonly x: number;
-  readonly z: number;
-  readonly radius: number;
-  readonly peak: number;
-}[] = [
-  { id: 'hill.north', x: 360, z: 300, radius: 110, peak: 28 },
-  { id: 'hill.north-east', x: 490, z: 285, radius: 90, peak: 22 },
-  { id: 'hill.east', x: 650, z: 520, radius: 80, peak: 16 },
-  { id: 'hill.south-west', x: 210, z: 650, radius: 80, peak: 12 },
-];
-
-const GOLDEN_DORNHAIN_HF = {
-  originX: 100,
-  originZ: 180,
-  cellSize: 20,
-  cols: 41,
-  rows: 33,
-  base: -4,
-  waterLevel: -3,
-} as const;
-
-export function buildGoldenDornhainHeightfield(): AtlasHeightfield {
-  const f = GOLDEN_DORNHAIN_HF;
-  const heights: number[] = [];
-  for (let row = 0; row < f.rows; row += 1) {
-    for (let col = 0; col < f.cols; col += 1) {
-      const x = f.originX + col * f.cellSize;
-      const z = f.originZ + row * f.cellSize;
-      let h: number = f.base;
-      for (const hill of GOLDEN_DORNHAIN_HILLS) {
-        const d2 = ((x - hill.x) ** 2 + (z - hill.z) ** 2) / hill.radius ** 2;
-        const s = Math.max(0, 1 - d2);
-        h = Math.max(h, f.base + (hill.peak - f.base) * s * s);
-      }
-      heights.push(Math.round(h * 10) / 10);
-    }
-  }
-  return {
-    format: ATLAS_HEIGHTFIELD_FORMAT,
-    version: ATLAS_HEIGHTFIELD_VERSION,
-    assetRef: { kind: 'inline', version: ATLAS_HEIGHTFIELD_VERSION },
-    originX: f.originX,
-    originZ: f.originZ,
-    cellSize: f.cellSize,
-    cols: f.cols,
-    rows: f.rows,
-    heights,
-    waterLevel: f.waterLevel,
-  };
+  if (!m) throw new Error('Missing Nordreich in calibrated default world');
+  return m.buildCanvas();
 }
 
 export function buildGoldenDornhainCanvas(): UnifiedCanvasDoc {
-  const doc = baseDoc(
-    [
-      rectRoom('g.town.plaza', 'pflaster', 300, 420, 180, 140),
-      rectRoom('g.town.block-a', 'stein', 220, 380, 90, 80),
-      rectRoom('g.town.block-b', 'holz', 460, 400, 100, 90),
-    ],
-    [
-      stroke('g.street', 'pflaster', 12, [
-        [240, 500],
-        [360, 500],
-        [480, 480],
-      ]),
-    ],
-    [
-      stamp('g.tavern', 'haus', 328, 528, 0.6),
-      stamp('g.market', 'haus', 378, 488, 0.5),
-      stamp('g.watch', 'turm', 452, 430, 0.45),
-      stamp('g.crypt', 'fels', 406, 462, 0.55),
-      stamp('g.oak-a', 'baum', 280, 460, 0.55),
-      stamp('g.oak-b', 'baum', 500, 520, 0.5),
-      stamp('g.pine-a', 'tanne', 250, 540, 0.48),
-      stamp('g.outcrop', 'fels', 430, 540, 0.4),
-    ],
-  );
-  return { ...doc, heightfield: buildGoldenDornhainHeightfield() };
+  return buildDefaultDornhainCanvas();
 }
 
 export function buildGoldenTavernCanvas(): UnifiedCanvasDoc {
-  const empty = emptyUnifiedCanvasDoc(false);
-  return {
-    ...empty,
-    rooms: [
-      rectRoom('g.tav.common', 'holz', 200, 200, 400, 320),
-      rectRoom('g.tav.bar', 'stein', 220, 220, 140, 80),
-    ],
-    walls: [
-      { id: 'g.tav.w1', x1: 200, y1: 200, x2: 600, y2: 200, width: 8 },
-      { id: 'g.tav.w2', x1: 200, y1: 200, x2: 200, y2: 520, width: 8 },
-      { id: 'g.tav.w3', x1: 600, y1: 200, x2: 600, y2: 520, width: 8 },
-      { id: 'g.tav.w4', x1: 200, y1: 520, x2: 600, y2: 520, width: 8 },
-    ],
-    objects: [
-      stamp('g.tav.table', 'tisch', 360, 360, 0.7),
-      stamp('g.tav.chair-a', 'stuhl', 320, 340, 0.4),
-      stamp('g.tav.chair-b', 'stuhl', 400, 340, 0.4),
-      stamp('g.tav.barrel', 'fass', 260, 280, 0.45),
-    ],
-  };
-}
-
-/**
- * Golden Krypta = committed Dungeon-Forge crypt (ATL3-V01 decision 4). Same
- * generate → rasterize → commit path as the product forge; layout centred in
- * the 0–1000 frame. Untouched forge output (round 3, #1295): props keep their
- * real-world size for any `unitScale` (`dungeonPropStampSize`), corridors are
- * `dcorr-*` floor runs between their perimeter walls (no centerline bars).
- */
-export const GOLDEN_KRYPTA_FORGE_PARAMS: DungeonGenerateParams = {
-  seed: 1425,
-  roomCount: 5,
-  loopChance: 0.18,
-  themeKey: 'ancient',
-  originX: 464,
-  originY: 545,
-  unitScale: 18,
-};
-
-function forgeGoldenKrypta() {
-  const generate = generateDungeon(GOLDEN_KRYPTA_FORGE_PARAMS);
-  const raster = rasterizeDungeonGenerateResult(generate);
-  const payload = dungeonCommitPayloadFromResults(generate, raster);
-  if (!payload || generate.seed !== GOLDEN_KRYPTA_FORGE_PARAMS.seed) {
-    throw new Error('Golden Krypta forge failed — seed/params no longer produce a valid crypt');
-  }
-  return { generate, payload };
+  return buildDefaultTavernCanvas();
 }
 
 export function buildGoldenCryptCanvas(): UnifiedCanvasDoc {
-  const { payload } = forgeGoldenKrypta();
-  return commitDungeonFeaturesToDoc(emptyUnifiedCanvasDoc(false), payload, true);
+  const m = buildCalibratedDefaultWorld().maps.find((x) => x.seedKey === 'dornhain.map.loc.crypt');
+  if (!m) throw new Error('Missing Krypta in calibrated default world');
+  return m.buildCanvas();
 }
 
-/** `generatorMeta.dungeon` of the committed Golden Krypta (confirmed forge run). */
 export function buildGoldenCryptDungeonMeta(): DungeonGeneratorMeta {
-  return buildDungeonGeneratorMeta(forgeGoldenKrypta().generate, true);
+  const m = buildCalibratedDefaultWorld().maps.find((x) => x.seedKey === 'dornhain.map.loc.crypt');
+  if (!m?.buildDungeonMeta) throw new Error('Missing Krypta dungeon meta in calibrated default world');
+  return m.buildDungeonMeta();
 }
 
-/** Ordered parent→child so reset can upsert without forward refs. */
-export const DORNHAIN_GOLDEN_MAPS: readonly DornhainGoldenMapSpec[] = [
-  {
-    seedKey: 'dornhain.map.continent.westmark',
-    placeSeedKey: 'continent.westmark',
-    title: 'Kontinent Westmark',
-    kind: 'region',
-    parentMapSeedKey: null,
-    parentAnchor: { centerX: 260, centerY: 420, extentX: 160, extentY: 220 },
-    buildCanvas: buildGoldenContinentCanvas,
-  },
-  {
-    seedKey: 'dornhain.map.country.westmark',
-    placeSeedKey: 'country.westmark',
-    title: 'Nordreich',
-    kind: 'region',
-    parentMapSeedKey: 'dornhain.map.continent.westmark',
-    parentAnchor: { centerX: 430, centerY: 400, extentX: 110, extentY: 100 },
-    buildCanvas: buildGoldenCountryCanvas,
-  },
-  {
-    seedKey: 'dornhain.map.place.dornhain',
-    placeSeedKey: 'place.dornhain',
-    title: 'Dornhain',
-    kind: 'settlement',
-    parentMapSeedKey: 'dornhain.map.country.westmark',
-    parentAnchor: { centerX: 360, centerY: 510, extentX: 55, extentY: 55 },
-    buildCanvas: buildGoldenDornhainCanvas,
-  },
-  {
-    seedKey: 'dornhain.map.loc.tavern',
-    placeSeedKey: 'loc.tavern',
-    title: 'Taverne Zum Flüstern',
-    kind: 'scene',
-    parentMapSeedKey: 'dornhain.map.place.dornhain',
-    parentAnchor: { centerX: 328, centerY: 528, extentX: 24, extentY: 24 },
-    buildCanvas: buildGoldenTavernCanvas,
-  },
-  {
-    seedKey: 'dornhain.map.loc.crypt',
-    placeSeedKey: 'loc.crypt',
-    title: 'Krypta unter dem Hügel',
-    kind: 'scene',
-    parentMapSeedKey: 'dornhain.map.place.dornhain',
-    parentAnchor: { centerX: 406, centerY: 462, extentX: 28, extentY: 28 },
-    buildCanvas: buildGoldenCryptCanvas,
-    buildDungeonMeta: buildGoldenCryptDungeonMeta,
-  },
-];
+/** Ordered parent→child calibrated Bottom-Up world maps (replaces legacy 5-map Golden). */
+export const DORNHAIN_GOLDEN_MAPS: readonly DornhainGoldenMapSpec[] =
+  buildCalibratedDefaultWorld().maps.map(
+    (spec: DefaultWorldMapSpec): DornhainGoldenMapSpec => ({
+      seedKey: spec.seedKey,
+      placeSeedKey: spec.placeSeedKey,
+      title: spec.title,
+      kind: spec.kind,
+      parentMapSeedKey: spec.parentMapSeedKey,
+      parentAnchor: {
+        centerX: spec.parentAnchor.centerX,
+        centerY: spec.parentAnchor.centerY,
+        extentX: spec.parentAnchor.extentX,
+        extentY: spec.parentAnchor.extentY,
+        rotationRad: spec.parentAnchor.rotationRad,
+        metersPerUnit: spec.parentAnchor.metersPerUnit,
+      },
+      buildCanvas:
+        spec.seedKey === 'dornhain.map.place.dornhain'
+          ? buildGoldenDornhainCanvas
+          : spec.seedKey === 'dornhain.map.loc.crypt'
+            ? buildGoldenCryptCanvas
+            : spec.buildCanvas,
+      ...(spec.buildDungeonMeta ? { buildDungeonMeta: spec.buildDungeonMeta } : {}),
+    }),
+  );
 
 export function isDornhainGoldenMapSeed(seed: string | null | undefined): boolean {
   if (!seed) return false;
@@ -378,7 +139,7 @@ export function buildDornhainGoldenChildGeneratorMeta(
     extentX: spec.parentAnchor.extentX,
     extentY: spec.parentAnchor.extentY,
     rotationRad: spec.parentAnchor.rotationRad ?? 0,
-    metersPerUnit: null,
+    metersPerUnit: spec.parentAnchor.metersPerUnit ?? null,
   };
   const base: Record<string, unknown> = {
     engine: 'unified_canvas',
