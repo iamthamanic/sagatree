@@ -402,10 +402,100 @@ test.describe('Shared World Space — Continuous Zoom & Focus Journey', () => {
     expect(j3Room.camera.span).toBeLessThan(j3Tavern.camera.span);
     expect(j3Room.zoomLayer.activeLabelDe).toContain('Schankraum');
     expect(j3Room.clearRootCount).toBe(0);
-    // Phase B: truthful scale HUD never saturates at fake 2500%
+    // Phase B & D: truthful calibrated scale HUD (default world = 250 m/WE -> never saturates at 2500%)
     const roomScaleText = await page.locator('[data-atlas-scale-readout]').first().textContent();
     expect(roomScaleText).toBeTruthy();
     expect(roomScaleText).not.toContain('2500%');
+    expect(roomScaleText).toMatch(/~\d+(,\d+)?\s*(m|km)/);
+
+    // ─── Journey 3B: Moorbrück World-Space Pin, Zero-Ghost Macro Separation & Ebenen Auto-Scroll ───
+    await page.evaluate(() => {
+      (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.setView(
+        { mode: 'diorama-oblique', x: 500, z: 500, span: 530, yawRad: 0.42 },
+        false,
+      );
+    });
+    await waitRaf(page, 10);
+    // World overview shows continents without overloading all 10 settlements
+    const overviewPinLabels = await page
+      .locator('[data-atlas-3d-pin]')
+      .evaluateAll((els) => els.map((e) => e.textContent?.trim() ?? ''));
+    expect(overviewPinLabels.length).toBeLessThanOrEqual(4);
+    expect(overviewPinLabels.some((t) => t.includes('Westmark'))).toBe(true);
+    const worldScaleText = await page.locator('[data-atlas-scale-readout]').first().textContent();
+    expect(worldScaleText).toMatch(/~\d+\s*km/);
+
+    // Focus Südmark countryside -> honest Südmark badge & Moorbrück pin becomes visible
+    await page.evaluate(() => {
+      (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.setView(
+        { mode: 'diorama-oblique', x: 266, z: 546, span: 48, yawRad: 0.42 },
+        false,
+      );
+    });
+    await waitRaf(page, 14);
+    const suedmarkState = await getBridgeState(page);
+    expect(suedmarkState.zoomLayer.activeLabelDe).toContain('Südmark');
+    await expect(
+      page.locator('[data-atlas-3d-pin]').filter({ hasText: 'Moorbrück' }).first(),
+    ).toBeVisible();
+
+    // Free wheel-zoom onto Moorbrück (works straight through map pin!) -> activates Moorbrück + 0 macro ghost!
+    await page.evaluate(() => {
+      (window as unknown as { __sagatreeAtlas?: AtlasBridge }).__sagatreeAtlas?.setView(
+        { mode: 'diorama-oblique', x: 282, z: 544, span: 36, yawRad: 0.42 },
+        false,
+      );
+    });
+    await waitRaf(page, 10);
+    await assertAnchoredZoom({
+      label: 'Moorbrück free wheel zoom IN',
+      targetWorld: { x: 282, z: 544 },
+      wheelDeltaY: -135,
+      steps: 11,
+    });
+    await waitRaf(page, 20);
+    const moorFree = await getBridgeState(page);
+    expect(moorFree.zoomLayer.activeLabelDe).toContain('Moorbrück');
+    expect(moorFree.clearRootCount).toBe(0);
+    expect(moorFree.multiMap.ownPerMapTerrainCount).toBe(0);
+    const moorOpacities = (
+      moorFree.multiMap as unknown as {
+        groupOpacities?: Record<string, { depth: number; opacity: number }>;
+      }
+    ).groupOpacities;
+    if (moorOpacities) {
+      for (const snap of Object.values(moorOpacities)) {
+        if (snap.depth <= 3) {
+          expect(snap.opacity).toBeLessThanOrEqual(0.02);
+        }
+      }
+    }
+
+    // Ebenen drawer auto-scrolls inside its own scroll container to Moorbrück with zero page scroll
+    const drawerClosedFirst = page.locator('aside[aria-label="Welthierarchie und Ebenen"]');
+    if (await drawerClosedFirst.isVisible().catch(() => false)) {
+      await page.locator('[data-atlas-panel-fold="layers"]').click();
+      await waitRaf(page, 4);
+    }
+    const pageScrollBefore = await page.evaluate(() => window.scrollY);
+    await page.locator('[data-atlas-panel-fold="layers"]').click();
+    await waitRaf(page, 10);
+    const drawerScrollState = await page.evaluate(() => {
+      const cont = document.querySelector('[data-atlas-layers-scroll]');
+      const active = cont?.querySelector('[data-atlas-zoom-active="true"]');
+      const cRect = cont?.getBoundingClientRect();
+      const aRect = active?.getBoundingClientRect();
+      return {
+        pageScrollY: window.scrollY,
+        activeText: active?.textContent?.trim() ?? '',
+        inView: Boolean(cRect && aRect && aRect.top >= cRect.top - 2 && aRect.bottom <= cRect.bottom + 2),
+        focusedToNode: document.activeElement === active,
+      };
+    });
+    expect(drawerScrollState.pageScrollY).toBe(pageScrollBefore);
+    expect(drawerScrollState.activeText).toContain('Moorbrück');
+    expect(drawerScrollState.inView).toBe(true);
+    expect(drawerScrollState.focusedToNode).toBe(false);
 
     // ─── Journey 4: Focus vs Edit Separation ("Bearbeiten" → "Zurück zur Welt") ───
     await navButtons.filter({ hasText: 'Dornhain' }).first().click();
