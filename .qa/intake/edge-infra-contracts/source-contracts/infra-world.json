@@ -25,7 +25,7 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "sha256": "471de3d4e6bd78bc9a7f23c7642d4107c082f60482bf3eead4f95d90e182ce58"
+      "sha256": "b3fe20cb5d7c925c82092eca20ea420cffca239e0e9beb1fec17c7ab0834841e"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -375,11 +375,11 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "sha256": "060e03785a1b39bbe2de76cb61ad9088a523e0edca58ba0355ec7a26ced66af9"
+      "sha256": "541600e4e00ccf5fd4aac59e4a2328ee434eb53dccc4dccdb55da70c6d5e4cc2"
     },
     {
       "path": "src/domains/world/atlas/atlas-world-space.ts",
-      "sha256": "9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af"
+      "sha256": "e2942ca8e4d46e8dcd9e8e665232a99535d792855570c72c85b08ce3b3ba27ec"
     },
     {
       "path": "src/domains/world/atlas/atlas-world-terrain-chunks.ts",
@@ -2732,55 +2732,55 @@
       "name": "AtlasLocalCutoutRect",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
       "line": 54,
-      "endLine": 60,
-      "text": "export type AtlasLocalCutoutRect = {\n  readonly childMapId: string;\n  readonly minX: number;\n  readonly minY: number;\n  readonly maxX: number;\n  readonly maxY: number;\n};"
+      "endLine": 71,
+      "text": "export type AtlasLocalCutoutRect = {\n  readonly childMapId: string;\n  readonly minX: number;\n  readonly minY: number;\n  readonly maxX: number;\n  readonly maxY: number;\n  /**\n   * Present when the child's `ParentSpatialAnchor` has nonzero rotation so parent cutout\n   * filtering/clipping operates on the exact oriented footprint rather than its enlarged AABB.\n   */\n  readonly oriented?: {\n    readonly centerX: number;\n    readonly centerY: number;\n    readonly extentX: number;\n    readonly extentY: number;\n    readonly rotationRad: number;\n  };\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasSceneMapLodState",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 62,
-      "endLine": 62,
+      "line": 73,
+      "endLine": 73,
       "text": "export type AtlasSceneMapLodState = 'coarse' | 'active';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldSceneGroupPlan",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 64,
-      "endLine": 79,
+      "line": 75,
+      "endLine": 90,
       "text": "export type AtlasWorldSceneGroupPlan = {\n  readonly mapId: string;\n  readonly parentMapId: string | null;\n  readonly depth: number;\n  readonly lodState: AtlasSceneMapLodState;\n  readonly ssePx: number;\n  /** 0..1 opacity / detail blend factor for smooth additive fade-in. */\n  readonly detailWeight: number;\n  readonly worldTransform: AtlasWorldTransform2D;\n  readonly worldAabb: AtlasWorldAabb;\n  /**\n   * Local-space rects on THIS map where an active child replaces coarse parent\n   * geometry (Replacement-Refinement against Z-fighting, ADR-SWS-01 §5.2 / D4).\n   */\n  readonly cutoutRectsLocal: readonly AtlasLocalCutoutRect[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldSceneExclusionReason",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 81,
-      "endLine": 86,
+      "line": 92,
+      "endLine": 97,
       "text": "export type AtlasWorldSceneExclusionReason =\n  | AtlasWorldTransformError\n  | 'culled'\n  | 'portal'\n  | 'below-sse'\n  | 'budget';"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldSceneExclusion",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 88,
-      "endLine": 91,
+      "line": 99,
+      "endLine": 102,
       "text": "export type AtlasWorldSceneExclusion = {\n  readonly mapId: string;\n  readonly reason: AtlasWorldSceneExclusionReason;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldScenePlanConfig",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 93,
-      "endLine": 104,
+      "line": 104,
+      "endLine": 115,
       "text": "export type AtlasWorldScenePlanConfig = {\n  /** Maximum simultaneously rendered maps (Vertical Slice A.2 default = 6). */\n  readonly maxActiveMaps: number;\n  /** Screen-space span (px) above which a child map refines into view. */\n  readonly sseRefinePx: number;\n  /** Screen-space span (px) below which an already-active child coarsens out (hysteresis). */\n  readonly sseCoarsenPx: number;\n  /** Screen-space span (px) above which a child punches a replacement cutout on its parent. */\n  readonly sseReplaceParentPx: number;\n  /** Extra frustum padding ratio around camera view AABB for prefetch/continuity. */\n  readonly frustumPadRatio: number;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldScenePlan",
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-      "line": 114,
-      "endLine": 125,
+      "line": 125,
+      "endLine": 136,
       "text": "export type AtlasWorldScenePlan = {\n  readonly rootMapId: string | null;\n  /** Deepest visible active map containing camera focus (editor context, D5). */\n  readonly activeEditorMapId: string | null;\n  readonly entries: readonly AtlasWorldSceneGroupPlan[];\n  readonly excluded: readonly AtlasWorldSceneExclusion[];\n  readonly budget: {\n    readonly maxActiveMaps: number;\n    readonly activeCount: number;\n    readonly candidateCount: number;\n  };\n};"
     },
     {
@@ -2827,8 +2827,8 @@
       "kind": "TypeAliasDeclaration",
       "name": "AtlasWorldTransformChain",
       "path": "src/domains/world/atlas/atlas-world-space.ts",
-      "line": 163,
-      "endLine": 167,
+      "line": 181,
+      "endLine": 185,
       "text": "export type AtlasWorldTransformChain = {\n  readonly mapId: string;\n  readonly depth: number;\n  readonly nodeIds: readonly string[]; // map → … → root\n};"
     },
     {
@@ -4775,26 +4775,26 @@
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 203,
-      "endLine": 292,
-      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  // Also clip parent walls outside replacement cutouts and retain/remap only doors on surviving segments.\n  const walls: typeof doc.walls[number][] = [];\n  const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();\n  for (const wall of doc.walls) {\n    const clippedWallSegs = clipPolylineOutsideRects(\n      [\n        [wall.x1, wall.y1],\n        [wall.x2, wall.y2],\n      ],\n      cutouts,\n    );\n    const created: Array<typeof doc.walls[number]> = [];\n    for (let i = 0; i < clippedWallSegs.length; i += 1) {\n      const seg = clippedWallSegs[i]!;\n      if (seg.length < 2) continue;\n      const p0 = seg[0]!;\n      const p1 = seg[seg.length - 1]!;\n      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-4) continue;\n      const nextWall = {\n        ...wall,\n        id: i === 0 ? wall.id : `${wall.id}#clip${i}`,\n        x1: p0[0],\n        y1: p0[1],\n        x2: p1[0],\n        y2: p1[1],\n      };\n      walls.push(nextWall);\n      created.push(nextWall);\n    }\n    if (created.length > 0) {\n      clippedWallsByOrigId.set(wall.id, created);\n    }\n  }\n  const origWallsById = new Map(doc.walls.map((w) => [w.id, w] as const));\n  const doors = doc.doors\n    ? doc.doors.flatMap((door) => {\n        const origWall = origWallsById.get(door.wallId);\n        const candidates = clippedWallsByOrigId.get(door.wallId);\n        if (!origWall || !candidates || candidates.length === 0) return [];\n        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;\n        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;\n        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];\n        for (const segWall of candidates) {\n          const sx = segWall.x2 - segWall.x1;\n          const sy = segWall.y2 - segWall.y1;\n          const lenSq = sx * sx + sy * sy;\n          if (lenSq < 1e-8) continue;\n          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;\n          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;\n          const px = segWall.x1 + sx * tSeg;\n          const py = segWall.y1 + sy * tSeg;\n          if (Math.hypot(dx - px, dy - py) <= 0.5) {\n            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];\n          }\n        }\n        return [];\n      })\n    : doc.doors;\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n    walls,\n    ...(doors !== undefined ? { doors } : {}),\n  };\n}"
+      "line": 271,
+      "endLine": 360,
+      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideCutouts(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  // Also clip parent walls outside replacement cutouts and retain/remap only doors on surviving segments.\n  const walls: typeof doc.walls[number][] = [];\n  const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();\n  for (const wall of doc.walls) {\n    const clippedWallSegs = clipPolylineOutsideCutouts(\n      [\n        [wall.x1, wall.y1],\n        [wall.x2, wall.y2],\n      ],\n      cutouts,\n    );\n    const created: Array<typeof doc.walls[number]> = [];\n    for (let i = 0; i < clippedWallSegs.length; i += 1) {\n      const seg = clippedWallSegs[i]!;\n      if (seg.length < 2) continue;\n      const p0 = seg[0]!;\n      const p1 = seg[seg.length - 1]!;\n      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-4) continue;\n      const nextWall = {\n        ...wall,\n        id: i === 0 ? wall.id : `${wall.id}#clip${i}`,\n        x1: p0[0],\n        y1: p0[1],\n        x2: p1[0],\n        y2: p1[1],\n      };\n      walls.push(nextWall);\n      created.push(nextWall);\n    }\n    if (created.length > 0) {\n      clippedWallsByOrigId.set(wall.id, created);\n    }\n  }\n  const origWallsById = new Map(doc.walls.map((w) => [w.id, w] as const));\n  const doors = doc.doors\n    ? doc.doors.flatMap((door) => {\n        const origWall = origWallsById.get(door.wallId);\n        const candidates = clippedWallsByOrigId.get(door.wallId);\n        if (!origWall || !candidates || candidates.length === 0) return [];\n        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;\n        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;\n        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];\n        for (const segWall of candidates) {\n          const sx = segWall.x2 - segWall.x1;\n          const sy = segWall.y2 - segWall.y1;\n          const lenSq = sx * sx + sy * sy;\n          if (lenSq < 1e-8) continue;\n          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;\n          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;\n          const px = segWall.x1 + sx * tSeg;\n          const py = segWall.y1 + sy * tSeg;\n          if (Math.hypot(dx - px, dy - py) <= 0.5) {\n            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];\n          }\n        }\n        return [];\n      })\n    : doc.doors;\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n    walls,\n    ...(doors !== undefined ? { doors } : {}),\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 306,
-      "endLine": 311,
+      "line": 377,
+      "endLine": 382,
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.08, 0.14, 0.18, 0.184, 0.187];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.187 + (idx - (table.length - 1)) * 0.003;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 317,
-      "endLine": 335,
+      "line": 388,
+      "endLine": 406,
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n  baseElevationY = 0,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, baseElevationY + depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 365,
-      "endLine": 1039,
+      "line": 436,
+      "endLine": 1110,
       "text": "export class AtlasThreeMultiMapGraph {\n  readonly rootGroup = new THREE.Group();\n  readonly worldTerrain: AtlasThreeWorldTerrain;\n  private readonly groups = new Map<string, AtlasThreeMapGroupNode>();\n  private activeEditorMapId: string | null = null;\n  private clearRootCount = 0;\n  private incrementalSyncCount = 0;\n  private lastTerrainSourceKey = '';\n\n  constructor(\n    private readonly getMaterial: (key: AtlasThreeSurfaceKey) => THREE.Material,\n    private readonly waterMaterial: THREE.Material,\n    private readonly aoMaterial?: THREE.Material,\n  ) {\n    this.rootGroup.name = 'atlas3:multimap-root';\n    this.worldTerrain = new AtlasThreeWorldTerrain(() => this.getMaterial('terrain'));\n    this.rootGroup.add(this.worldTerrain.rootGroup);\n  }\n\n  /**\n   * Synchronize the shared chunked world terrain source from the root map's heightfield\n   * plus any localized fine heightfield overlays (e.g. Dornhain hills) projected into World Space.\n   */\n  private ensureSharedWorldTerrainSource(\n    scenePlan: AtlasWorldScenePlan,\n    sources: ReadonlyMap<string, AtlasThreeWorldMapSource>,\n  ): void {\n    const rootId = scenePlan.rootMapId;\n    const rootSource = rootId ? sources.get(rootId) : undefined;\n    const rootHf = rootSource?.doc.heightfield ?? null;\n    if (!rootHf || !rootSource) {\n      if (this.lastTerrainSourceKey !== '') {\n        this.lastTerrainSourceKey = '';\n        this.worldTerrain.setSource(null);\n      }\n      return;\n    }\n\n    const overlays: AtlasWorldHeightfieldOverlay[] = [];\n    const overlayParts: string[] = [];\n    for (const entry of scenePlan.entries) {\n      if (entry.depth === 1) continue;\n      const src = sources.get(entry.mapId);\n      if (!src || src.look !== 'outdoor' || !src.doc.heightfield) continue;\n      const hf = src.doc.heightfield;\n      const verticalScale = Math.sqrt(\n        Math.max(1e-8, entry.worldTransform.scaleX * entry.worldTransform.scaleY),\n      );\n      const elevationScale = Math.max(0.012, Math.min(0.06, verticalScale * 4));\n      const srcBounds = src.bounds ?? DEFAULT_ATLAS_BOUNDS;\n      const wt = entry.worldTransform;\n      overlays.push({\n        id: entry.mapId,\n        worldBounds: {\n          minX: entry.worldAabb.minX,\n          minZ: entry.worldAabb.minY,\n          maxX: entry.worldAabb.maxX,\n          maxZ: entry.worldAabb.maxY,\n        },\n        heightfield: hf,\n        elevationScale,\n        featherRatio: 0.24,\n        worldTransform: {\n          centerX: wt.centerX,\n          centerZ: wt.centerY,\n          scaleX: wt.scaleX,\n          scaleZ: wt.scaleY,\n          rotationRad: wt.rotationRad,\n          localBounds: {\n            minX: srcBounds.minX,\n            minZ: srcBounds.minY,\n            maxX: srcBounds.maxX,\n            maxZ: srcBounds.maxY,\n          },\n        },\n      });\n      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(elevationScale * 10000)}`;\n      overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);\n    }\n\n    const key = `${rootId}:${hfVersionKey(rootHf)}|${overlayParts.sort().join(',')}`;\n    if (key === this.lastTerrainSourceKey) return;\n    this.lastTerrainSourceKey = key;\n\n    this.worldTerrain.setSource(\n      createAtlasWorldHeightfieldSource({\n        rootHeightfield: rootHf,\n        revisionKey: key,\n        overlays,\n      }),\n    );\n  }\n\n  /**\n   * Incrementally sync the shared chunked world terrain AND Three.js overlay groups\n   * to match `scenePlan`.\n   *\n   * - Never calls `clearRoot()`.\n   * - Consumes `entry.detailWeight` continuously via per-group cloned materials without\n   *   rebuilding geometry when only opacity/transform changes.\n   * - When `dtSec` is provided (live render loop), smoothly damps opacity (~180 ms)\n   *   and fades exiting groups out to 0 before disposing them.\n   */\n  sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n    readonly camera?: AtlasWorldCameraState;\n    readonly viewportPx?: { readonly width: number; readonly height: number };\n    readonly dtSec?: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    // 0) Sync the ONE shared chunked world terrain (Phase 1.3)\n    this.ensureSharedWorldTerrainSource(input.scenePlan, input.sources);\n    const hasSharedTerrain = Boolean(this.worldTerrain.getSource());\n    if (hasSharedTerrain && input.camera && input.viewportPx) {\n      this.worldTerrain.sync({\n        camera: input.camera,\n        viewportPx: input.viewportPx,\n      });\n    }\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n    const useSmoothDamp = typeof input.dtSec === 'number' && Number.isFinite(input.dtSec);\n    const dampAlpha = useSmoothDamp\n      ? 1 - Math.exp(-OPACITY_DAMP_RATE * Math.max(0.001, Math.min(0.1, input.dtSec!)))\n      : 1;\n\n    // 1) Fade out or dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (wantedIds.has(mapId)) continue;\n      if (\n        useSmoothDamp &&\n        node.depth > 1 &&\n        (node.currentOpacity > OPACITY_EXIT_EPSILON || node.currentWaterOpacity > OPACITY_EXIT_EPSILON)\n      ) {\n        node.exiting = true;\n        node.targetOpacity = 0;\n        node.targetWaterOpacity = 0;\n        node.detailWeight = 0;\n        node.currentOpacity += (0 - node.currentOpacity) * dampAlpha;\n        node.currentWaterOpacity += (0 - node.currentWaterOpacity) * dampAlpha;\n        this.applyOpacityToNode(node);\n        if (\n          node.currentOpacity <= OPACITY_EXIT_EPSILON &&\n          node.currentWaterOpacity <= OPACITY_EXIT_EPSILON\n        ) {\n          this.disposeGroupNode(node);\n          this.groups.delete(mapId);\n        }\n      } else {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // Compute highest active child detailWeight per parent so coarse outdoor parent overlays\n    // (coarse land roads, world landmark icons) smoothly yield to detailed settlements/buildings\n    // while the ONE shared chunked world terrain stays 100% opaque underneath!\n    const maxChildWeightByParent = new Map<string, number>();\n    const hasIndoorChildByParent = new Map<string, boolean>();\n    let hasActiveSettlementOrDeeper = false;\n    for (const e of input.scenePlan.entries) {\n      if (e.depth >= 4 && e.detailWeight > 0.25) {\n        hasActiveSettlementOrDeeper = true;\n      }\n      if (!e.parentMapId) continue;\n      const prev = maxChildWeightByParent.get(e.parentMapId) ?? 0;\n      if (e.detailWeight > prev) {\n        maxChildWeightByParent.set(e.parentMapId, e.detailWeight);\n      }\n      const childSrc = input.sources.get(e.mapId);\n      if (childSrc?.look === 'indoor' && e.detailWeight > 0.25) {\n        hasIndoorChildByParent.set(e.parentMapId, true);\n      }\n    }\n\n    // 2) Mount new groups or incrementally update transform & continuous opacity\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';\n      // Auto roof-cutaway on a settlement when an interior building/room inside it is active!\n      const effectiveHideRoofs =\n        input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;\n\n      const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;\n      // Scale-aware 2-channel handover:\n      //  - Macro non-water overlays (macro landmark markers & coarse roads on depth 1..3) fade\n      //    completely to exact `0` before settlement scale (ZERO `0.08` ghost geometry!).\n      //  - Macro rivers (`water`) stay active on the immediate regional carrier around Liang-Barsky\n      //    settlement cutouts so calibrated local settlement rivers hand off without abrupt breaks.\n      const isSharedMacroOutdoor =\n        hasSharedTerrain && source.look === 'outdoor' && source.mapScale === 'world';\n      let targetOpacity: number;\n      let targetWaterOpacity: number;\n      if (isSharedMacroOutdoor) {\n        targetOpacity = computeMacroOverlayTargetOpacity({\n          depth: entry.depth,\n          detailWeight: entry.detailWeight,\n          viewSpan: input.viewSpan,\n          childWeight,\n          hasActiveSettlementOrDeeper,\n        });\n        targetWaterOpacity = computeMacroWaterTargetOpacity({\n          depth: entry.depth,\n          detailWeight: entry.detailWeight,\n          viewSpan: input.viewSpan,\n          childWeight,\n          hasActiveSettlementOrDeeper,\n        });\n      } else if (entry.depth === 1) {\n        targetOpacity = 1;\n        targetWaterOpacity = 1;\n      } else if (source.look === 'outdoor' && hasIndoorChildByParent.get(entry.mapId)) {\n        // Keep settlement surroundings gently visible as context around an active indoor building\n        targetOpacity = Math.max(0.45, Math.min(1, entry.detailWeight * 0.72));\n        targetWaterOpacity = targetOpacity;\n      } else {\n        targetOpacity = Math.max(0, Math.min(1, entry.detailWeight));\n        targetWaterOpacity = targetOpacity;\n      }\n\n      const baseElevationY =\n        hasSharedTerrain && source.look === 'indoor'\n          ? this.worldTerrain.sampleElevation(\n            entry.worldTransform.centerX,\n            entry.worldTransform.centerY,\n          ) + 0.003\n          : 0;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: update world transform AND smoothly ramp continuous opacity!\n        existing.exiting = false;\n        existing.lodState = entry.lodState;\n        existing.detailWeight = entry.detailWeight;\n        existing.targetOpacity = targetOpacity;\n        existing.targetWaterOpacity = targetWaterOpacity;\n        existing.currentOpacity =\n          useSmoothDamp\n            ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha\n            : targetOpacity;\n        existing.currentWaterOpacity =\n          useSmoothDamp\n            ? existing.currentWaterOpacity +\n            (targetWaterOpacity - existing.currentWaterOpacity) * dampAlpha\n            : targetWaterOpacity;\n        if (Math.abs(existing.currentOpacity - targetOpacity) < 0.004) {\n          existing.currentOpacity = targetOpacity;\n        }\n        if (Math.abs(existing.currentWaterOpacity - targetWaterOpacity) < 0.004) {\n          existing.currentWaterOpacity = targetWaterOpacity;\n        }\n        applyWorldTransformToGroup(\n          existing.pivot,\n          existing.content,\n          entry,\n          source.bounds,\n          baseElevationY,\n        );\n        this.applyOpacityToNode(existing);\n        continue;\n      }\n\n      const prevOpacity = existing?.currentOpacity;\n      const prevWaterOpacity = existing?.currentWaterOpacity;\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const bounds = source.bounds ?? DEFAULT_ATLAS_BOUNDS;\n      const midX = (bounds.minX + bounds.maxX) / 2;\n      const midY = (bounds.minY + bounds.maxY) / 2;\n      const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n      const cosR = Math.cos(rotationRad);\n      const sinR = Math.sin(rotationRad);\n      const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n      const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n      const sharedWorldTerrain: SharedWorldTerrainBinding | undefined =\n        hasSharedTerrain && source.look === 'outdoor'\n          ? {\n            sampleElevationWorld: (wx, wz) => this.worldTerrain.sampleElevation(wx, wz),\n            mapToWorld: (lx, lz) => {\n              const dx = (lx - midX) * scaleX;\n              const dz = (lz - midY) * scaleY;\n              return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;\n            },\n            verticalScale,\n            depthLiftY,\n            waterLevel: this.worldTerrain.getSource()?.waterLevel ?? 0,\n          }\n          : undefined;\n\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: effectiveHideRoofs,\n        warmWindows: true,\n        sharedWorldTerrain,\n        exclusionRects: entry.cutoutRectsLocal,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const overlayMeshes: THREE.Object3D[] = [];\n      const waterMeshes: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n      const materials: ClonedGroupMaterial[] = [];\n\n      const clonedMatCache = new Map<AtlasThreeSurfaceKey, THREE.Material>();\n      const cloneSurfaceMat = (surfaceKey: AtlasThreeSurfaceKey): THREE.Material => {\n        const cached = clonedMatCache.get(surfaceKey);\n        if (cached) return cached;\n        const cloned = this.getMaterial(surfaceKey).clone();\n        clonedMatCache.set(surfaceKey, cloned);\n        materials.push({ material: cloned, surfaceKey });\n        return cloned;\n      };\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mat = cloneSurfaceMat(surfaceKey);\n        const mesh = new THREE.Mesh(geo, mat);\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        overlayMeshes.push(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const waterClone = this.waterMaterial.clone();\n        materials.push({ material: waterClone, surfaceKey: 'water' });\n        const mesh = new THREE.Mesh(geo, waterClone);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        waterMeshes.push(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.doorInstances.matrices.length > 0) {\n        const doorGeo = new THREE.BoxGeometry(1, 1, 1);\n        geometries.push(doorGeo);\n        const inst = new THREE.InstancedMesh(\n          doorGeo,\n          cloneSurfaceMat('wood-dark'),\n          plan.doorInstances.matrices.length,\n        );\n        plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n        inst.instanceMatrix.needsUpdate = true;\n        inst.computeBoundingSphere();\n        inst.castShadow = true;\n        inst.receiveShadow = true;\n        inst.userData.instanceIds = plan.doorInstances.ids;\n        inst.userData.mapId = entry.mapId;\n        inst.name = `atlas3:${entry.mapId}:doors`;\n        content.add(inst);\n        overlayMeshes.push(inst);\n        pickables.push(inst);\n      }\n\n      // Suggestive scatter (settlement perimeter woods/bushes/flowers & interior rubble)\n      // — skip coarse world-level scatter on depth 1–3 outdoor overview maps when shared terrain\n      // is active so zooming in never lingers on giant coarse trees before reaching Dornhain!\n      const emitScatterForGroup =\n        !hasSharedTerrain || source.mapScale === 'settlement' || source.look === 'indoor';\n      if (emitScatterForGroup) {\n        for (const batch of plan.scatterBatches) {\n          const { parts } = buildAtlasScatterGeometry(batch.kind);\n          for (const part of parts) {\n            geometries.push(part.geo);\n            const inst = new THREE.InstancedMesh(\n              part.geo,\n              cloneSurfaceMat(part.surface),\n              batch.matrices.length,\n            );\n            batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n            inst.instanceMatrix.needsUpdate = true;\n            inst.computeBoundingSphere();\n            inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';\n            inst.receiveShadow = true;\n            inst.userData.mapId = entry.mapId;\n            inst.name = `atlas3:${entry.mapId}:scatter:${batch.kind}`;\n            content.add(inst);\n            overlayMeshes.push(inst);\n          }\n        }\n      }\n\n      if (this.aoMaterial && plan.aoDiscs.length > 0 && source.mapScale !== 'world') {\n        const discGeo = new THREE.PlaneGeometry(2, 2);\n        discGeo.rotateX(-Math.PI / 2);\n        geometries.push(discGeo);\n        const aoClone = this.aoMaterial.clone();\n        materials.push({ material: aoClone, surfaceKey: 'ao' });\n        const aoInst = new THREE.InstancedMesh(discGeo, aoClone, plan.aoDiscs.length);\n        const mat4 = new THREE.Matrix4();\n        const quat = new THREE.Quaternion();\n        plan.aoDiscs.forEach((d, i) => {\n          mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n          aoInst.setMatrixAt(i, mat4);\n        });\n        aoInst.instanceMatrix.needsUpdate = true;\n        aoInst.computeBoundingSphere();\n        aoInst.renderOrder = 2;\n        aoInst.name = `atlas3:${entry.mapId}:ao`;\n        content.add(aoInst);\n        overlayMeshes.push(aoInst);\n      }\n\n      // Per-map terrain only if no shared world terrain source exists (legacy fallback)\n      let hasOwnTerrain = false;\n      if (plan.terrain) {\n        hasOwnTerrain = true;\n        geometries.push(plan.terrain);\n        const mat = cloneSurfaceMat('terrain');\n        const mesh = new THREE.Mesh(plan.terrain, mat);\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n        overlayMeshes.push(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds, baseElevationY);\n      this.rootGroup.add(pivot);\n\n      // Start freshly entering child maps from 0 (damped fade-in) instead of jumping 0→100%\n      const initialOpacity =\n        prevOpacity !== undefined\n          ? prevOpacity\n          : entry.depth === 1\n            ? targetOpacity\n            : useSmoothDamp\n              ? targetOpacity * dampAlpha\n              : targetOpacity;\n      const initialWaterOpacity =\n        prevWaterOpacity !== undefined\n          ? prevWaterOpacity\n          : entry.depth === 1\n            ? targetWaterOpacity\n            : useSmoothDamp\n              ? targetWaterOpacity * dampAlpha\n              : targetWaterOpacity;\n\n      const node: AtlasThreeMapGroupNode = {\n        mapId: entry.mapId,\n        depth: entry.depth,\n        pivot,\n        content,\n        pickables,\n        overlayMeshes,\n        waterMeshes,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        materials,\n        cutoutSignature: cSig,\n        hasOwnTerrain,\n        lodState: entry.lodState,\n        detailWeight: entry.detailWeight,\n        targetOpacity,\n        currentOpacity: initialOpacity,\n        targetWaterOpacity,\n        currentWaterOpacity: initialWaterOpacity,\n        exiting: false,\n      };\n      this.applyOpacityToNode(node);\n      this.groups.set(entry.mapId, node);\n    }\n  }\n\n  /** Propagate lighting/style roughness & normalScale updates to cloned per-group materials. */\n  applyStyleMode(styleMode: 'pbr' | 'illustrated' | 'cel'): void {\n    for (const node of this.groups.values()) {\n      for (const entry of node.materials) {\n        if (entry.surfaceKey === 'water' || entry.surfaceKey === 'ao') continue;\n        if (!(entry.material instanceof THREE.MeshStandardMaterial)) continue;\n        const spec = ATLAS_THREE_SURFACES[entry.surfaceKey];\n        if (!spec) continue;\n        if (styleMode === 'cel') {\n          entry.material.roughness = Math.min(1, spec.roughness + 0.08);\n          entry.material.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);\n        } else if (styleMode === 'illustrated') {\n          entry.material.roughness = Math.min(1, spec.roughness + 0.03);\n          entry.material.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);\n        } else {\n          entry.material.roughness = spec.roughness;\n          entry.material.normalScale.set(spec.normalScale, spec.normalScale);\n        }\n      }\n    }\n  }\n\n  /** Propagate animated water shader uniforms to cloned per-group river/water materials. */\n  syncWaterUniforms(sourceWater: THREE.ShaderMaterial): void {\n    for (const node of this.groups.values()) {\n      for (const entry of node.materials) {\n        if (entry.surfaceKey !== 'water' || !(entry.material instanceof THREE.ShaderMaterial)) continue;\n        const dst = entry.material.uniforms;\n        const src = sourceWater.uniforms;\n        if (dst.uTime && src.uTime) dst.uTime.value = src.uTime.value;\n        if (dst.uDeep && src.uDeep) dst.uDeep.value.copy(src.uDeep.value);\n        if (dst.uShallow && src.uShallow) dst.uShallow.value.copy(src.uShallow.value);\n        if (dst.uSky && src.uSky) dst.uSky.value.copy(src.uSky.value);\n        if (dst.uSunDir && src.uSunDir) dst.uSunDir.value.copy(src.uSunDir.value);\n        if (dst.uFogColor && src.uFogColor) dst.uFogColor.value.copy(src.uFogColor.value);\n        if (dst.uFocus && src.uFocus) dst.uFocus.value.copy(src.uFocus.value);\n        if (dst.uSpan && src.uSpan) dst.uSpan.value = src.uSpan.value;\n        if (dst.uWorldHeightTex && src.uWorldHeightTex) dst.uWorldHeightTex.value = src.uWorldHeightTex.value;\n        if (dst.uHasWorldHeight && src.uHasWorldHeight) dst.uHasWorldHeight.value = src.uHasWorldHeight.value;\n        if (dst.uHeightMin && src.uHeightMin) dst.uHeightMin.value = src.uHeightMin.value;\n        if (dst.uHeightMax && src.uHeightMax) dst.uHeightMax.value = src.uHeightMax.value;\n        if (dst.uWaterLevel && src.uWaterLevel) dst.uWaterLevel.value = src.uWaterLevel.value;\n      }\n    }\n  }\n\n  private applyOpacityToNode(node: AtlasThreeMapGroupNode): void {\n    const op = Math.max(0, Math.min(1, node.currentOpacity));\n    const waterOp = Math.max(0, Math.min(1, node.currentWaterOpacity));\n    const showOverlay = op > 0.005;\n    const showWater = waterOp > 0.005;\n    for (const m of node.materials) {\n      applyMaterialOpacity(m, m.surfaceKey === 'water' ? waterOp : op);\n    }\n    for (const mesh of node.overlayMeshes) {\n      mesh.visible = showOverlay;\n    }\n    for (const mesh of node.waterMeshes) {\n      mesh.visible = showWater;\n    }\n    node.pivot.visible = showOverlay || showWater;\n  }\n\n  getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }\n\n  getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      if (!g.pivot.visible || g.exiting) continue;\n      for (const p of g.pickables) {\n        if (p.visible) out.push(p);\n      }\n    }\n    return out;\n  }\n\n  getActiveEditorElevationY(focusX?: number, focusZ?: number): number {\n    const activeGroup = this.activeEditorMapId ? this.groups.get(this.activeEditorMapId) : undefined;\n    if (activeGroup && activeGroup.pivot.position.y > 0.5) {\n      return activeGroup.pivot.position.y;\n    }\n    const terrainSource = this.worldTerrain.getSource();\n    if (terrainSource && focusX !== undefined && focusZ !== undefined) {\n      return Math.max(terrainSource.waterLevel, this.worldTerrain.sampleElevation(focusX, focusZ));\n    }\n    return activeGroup ? activeGroup.pivot.position.y : 0;\n  }\n\n  getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }\n\n  getStats(): AtlasThreeMultiMapStats {\n    const terrain = this.worldTerrain.getStats();\n    let liveGeometryCount = terrain.liveGeometryCount;\n    let ownPerMapTerrainCount = 0;\n    const groupOpacities: Record<string, AtlasThreeGroupOpacitySnapshot> = {};\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n      if (g.hasOwnTerrain) ownPerMapTerrainCount += 1;\n      groupOpacities[g.mapId] = {\n        detailWeight: Math.round(g.detailWeight * 1000) / 1000,\n        opacity: Math.round(g.currentOpacity * 1000) / 1000,\n        waterOpacity: Math.round(g.currentWaterOpacity * 1000) / 1000,\n        depth: g.depth,\n        lodState: g.lodState,\n        exiting: g.exiting,\n      };\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n      ownPerMapTerrainCount,\n      terrain,\n      groupOpacities,\n    };\n  }\n\n  /** True while any group is still smoothly fading opacity in or out (keeps 60fps during transitions). */\n  hasPendingOpacityTransition(): boolean {\n    for (const node of this.groups.values()) {\n      if (\n        node.exiting ||\n        Math.abs(node.currentOpacity - node.targetOpacity) > OPACITY_EXIT_EPSILON ||\n        Math.abs(node.currentWaterOpacity - node.targetWaterOpacity) > OPACITY_EXIT_EPSILON\n      ) {\n        return true;\n      }\n    }\n    return false;\n  }\n\n  /** Teardown all groups + shared terrain chunks and release 100% of GPU geometries & cloned materials. */\n  dispose(): void {\n    this.worldTerrain.dispose();\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n    this.lastTerrainSourceKey = '';\n  }\n\n  private disposeGroupNode(node: AtlasThreeMapGroupNode): void {\n    this.rootGroup.remove(node.pivot);\n    for (const geo of node.geometries) {\n      geo.dispose();\n    }\n    for (const entry of node.materials) {\n      entry.material.dispose();\n    }\n    node.geometries.length = 0;\n    node.materials.length = 0;\n    node.pickables.length = 0;\n    node.overlayMeshes.length = 0;\n    node.waterMeshes.length = 0;\n  }\n}"
     },
     {
@@ -5956,217 +5956,245 @@
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
       "line": 173,
-      "endLine": 182,
-      "name": "pointInsideAnyCutout",
-      "text": "function pointInsideAnyCutout(\n  x: number,\n  y: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (x >= c.minX && x <= c.maxX && y >= c.minY && y <= c.maxY) return true;\n  }\n  return false;\n}"
+      "endLine": 184,
+      "name": "pointInsideCutout",
+      "text": "function pointInsideCutout(x: number, y: number, c: AtlasLocalCutoutRect): boolean {\n  if (x < c.minX || x > c.maxX || y < c.minY || y > c.maxY) return false;\n  if (!c.oriented) return true;\n  const o = c.oriented;\n  const dx = x - o.centerX;\n  const dy = y - o.centerY;\n  const cos = Math.cos(o.rotationRad);\n  const sin = Math.sin(o.rotationRad);\n  const ux = dx * cos + dy * sin;\n  const uy = -dx * sin + dy * cos;\n  return Math.abs(ux) <= o.extentX && Math.abs(uy) <= o.extentY;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 184,
+      "line": 186,
       "endLine": 195,
+      "name": "pointInsideAnyCutout",
+      "text": "function pointInsideAnyCutout(\n  x: number,\n  y: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (pointInsideCutout(x, y, c)) return true;\n  }\n  return false;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+      "line": 197,
+      "endLine": 220,
       "name": "rectFullyInsideAnyCutout",
-      "text": "function rectFullyInsideAnyCutout(\n  x: number,\n  y: number,\n  w: number,\n  h: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (x >= c.minX && y >= c.minY && x + w <= c.maxX && y + h <= c.maxY) return true;\n  }\n  return false;\n}"
+      "text": "function rectFullyInsideAnyCutout(\n  x: number,\n  y: number,\n  w: number,\n  h: number,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): boolean {\n  for (const c of cutouts) {\n    if (!c.oriented) {\n      if (x >= c.minX && y >= c.minY && x + w <= c.maxX && y + h <= c.maxY) return true;\n      continue;\n    }\n    // An oriented rectangle is convex, so an axis-aligned rect lies fully inside iff all 4 corners do.\n    if (\n      pointInsideCutout(x, y, c) &&\n      pointInsideCutout(x + w, y, c) &&\n      pointInsideCutout(x + w, y + h, c) &&\n      pointInsideCutout(x, y + h, c)\n    ) {\n      return true;\n    }\n  }\n  return false;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 203,
-      "endLine": 292,
+      "line": 222,
+      "endLine": 263,
+      "name": "clipPolylineOutsideCutouts",
+      "text": "function clipPolylineOutsideCutouts(\n  points: readonly (readonly [number, number])[],\n  cutouts: readonly AtlasLocalCutoutRect[],\n): readonly (readonly (readonly [number, number])[])[] {\n  let segments: (readonly (readonly [number, number])[])[] = [points];\n  for (const c of cutouts) {\n    const next: (readonly (readonly [number, number])[])[] = [];\n    if (!c.oriented) {\n      for (const seg of segments) {\n        next.push(...clipPolylineOutsideRects(seg, [c]));\n      }\n    } else {\n      const o = c.oriented;\n      const cos = Math.cos(o.rotationRad);\n      const sin = Math.sin(o.rotationRad);\n      const localRect = {\n        minX: -o.extentX,\n        minY: -o.extentY,\n        maxX: o.extentX,\n        maxY: o.extentY,\n      };\n      for (const seg of segments) {\n        const unrot: [number, number][] = seg.map(([px, py]) => {\n          const dx = px - o.centerX;\n          const dy = py - o.centerY;\n          return [dx * cos + dy * sin, -dx * sin + dy * cos];\n        });\n        for (const clipped of clipPolylineOutsideRects(unrot, [localRect])) {\n          next.push(\n            clipped.map(([ux, uy]) => [\n              o.centerX + ux * cos - uy * sin,\n              o.centerY + ux * sin + uy * cos,\n            ] as const),\n          );\n        }\n      }\n    }\n    segments = next;\n    if (segments.length === 0) break;\n  }\n  return segments;\n}"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+      "line": 244,
+      "endLine": 248,
+      "name": "callback",
+      "text": "([px, py]) => {\n          const dx = px - o.centerX;\n          const dy = py - o.centerY;\n          return [dx * cos + dy * sin, -dx * sin + dy * cos];\n        }"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+      "line": 251,
+      "endLine": 254,
+      "name": "callback",
+      "text": "([ux, uy]) => [\n              o.centerX + ux * cos - uy * sin,\n              o.centerY + ux * sin + uy * cos,\n            ] as const"
+    },
+    {
+      "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+      "line": 271,
+      "endLine": 360,
       "name": "applyLocalCutoutFilter",
-      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  // Also clip parent walls outside replacement cutouts and retain/remap only doors on surviving segments.\n  const walls: typeof doc.walls[number][] = [];\n  const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();\n  for (const wall of doc.walls) {\n    const clippedWallSegs = clipPolylineOutsideRects(\n      [\n        [wall.x1, wall.y1],\n        [wall.x2, wall.y2],\n      ],\n      cutouts,\n    );\n    const created: Array<typeof doc.walls[number]> = [];\n    for (let i = 0; i < clippedWallSegs.length; i += 1) {\n      const seg = clippedWallSegs[i]!;\n      if (seg.length < 2) continue;\n      const p0 = seg[0]!;\n      const p1 = seg[seg.length - 1]!;\n      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-4) continue;\n      const nextWall = {\n        ...wall,\n        id: i === 0 ? wall.id : `${wall.id}#clip${i}`,\n        x1: p0[0],\n        y1: p0[1],\n        x2: p1[0],\n        y2: p1[1],\n      };\n      walls.push(nextWall);\n      created.push(nextWall);\n    }\n    if (created.length > 0) {\n      clippedWallsByOrigId.set(wall.id, created);\n    }\n  }\n  const origWallsById = new Map(doc.walls.map((w) => [w.id, w] as const));\n  const doors = doc.doors\n    ? doc.doors.flatMap((door) => {\n        const origWall = origWallsById.get(door.wallId);\n        const candidates = clippedWallsByOrigId.get(door.wallId);\n        if (!origWall || !candidates || candidates.length === 0) return [];\n        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;\n        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;\n        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];\n        for (const segWall of candidates) {\n          const sx = segWall.x2 - segWall.x1;\n          const sy = segWall.y2 - segWall.y1;\n          const lenSq = sx * sx + sy * sy;\n          if (lenSq < 1e-8) continue;\n          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;\n          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;\n          const px = segWall.x1 + sx * tSeg;\n          const py = segWall.y1 + sy * tSeg;\n          if (Math.hypot(dx - px, dy - py) <= 0.5) {\n            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];\n          }\n        }\n        return [];\n      })\n    : doc.doors;\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n    walls,\n    ...(doors !== undefined ? { doors } : {}),\n  };\n}"
+      "text": "export function applyLocalCutoutFilter(\n  doc: UnifiedCanvasDoc,\n  cutouts: readonly AtlasLocalCutoutRect[],\n): UnifiedCanvasDoc {\n  if (cutouts.length === 0) return doc;\n  const rooms = doc.rooms.filter((r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  });\n  const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));\n  const strokes: UnifiedCanvasStroke[] = [];\n  for (const s of doc.strokes) {\n    const clippedSegments = clipPolylineOutsideCutouts(s.points, cutouts);\n    for (let i = 0; i < clippedSegments.length; i += 1) {\n      const seg = clippedSegments[i]!;\n      if (seg.length < 2) continue;\n      strokes.push({\n        ...s,\n        id: i === 0 ? s.id : `${s.id}#clip${i}`,\n        points: seg,\n      });\n    }\n  }\n  // Also clip parent walls outside replacement cutouts and retain/remap only doors on surviving segments.\n  const walls: typeof doc.walls[number][] = [];\n  const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();\n  for (const wall of doc.walls) {\n    const clippedWallSegs = clipPolylineOutsideCutouts(\n      [\n        [wall.x1, wall.y1],\n        [wall.x2, wall.y2],\n      ],\n      cutouts,\n    );\n    const created: Array<typeof doc.walls[number]> = [];\n    for (let i = 0; i < clippedWallSegs.length; i += 1) {\n      const seg = clippedWallSegs[i]!;\n      if (seg.length < 2) continue;\n      const p0 = seg[0]!;\n      const p1 = seg[seg.length - 1]!;\n      if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-4) continue;\n      const nextWall = {\n        ...wall,\n        id: i === 0 ? wall.id : `${wall.id}#clip${i}`,\n        x1: p0[0],\n        y1: p0[1],\n        x2: p1[0],\n        y2: p1[1],\n      };\n      walls.push(nextWall);\n      created.push(nextWall);\n    }\n    if (created.length > 0) {\n      clippedWallsByOrigId.set(wall.id, created);\n    }\n  }\n  const origWallsById = new Map(doc.walls.map((w) => [w.id, w] as const));\n  const doors = doc.doors\n    ? doc.doors.flatMap((door) => {\n        const origWall = origWallsById.get(door.wallId);\n        const candidates = clippedWallsByOrigId.get(door.wallId);\n        if (!origWall || !candidates || candidates.length === 0) return [];\n        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;\n        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;\n        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];\n        for (const segWall of candidates) {\n          const sx = segWall.x2 - segWall.x1;\n          const sy = segWall.y2 - segWall.y1;\n          const lenSq = sx * sx + sy * sy;\n          if (lenSq < 1e-8) continue;\n          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;\n          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;\n          const px = segWall.x1 + sx * tSeg;\n          const py = segWall.y1 + sy * tSeg;\n          if (Math.hypot(dx - px, dy - py) <= 0.5) {\n            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];\n          }\n        }\n        return [];\n      })\n    : doc.doors;\n  return {\n    ...doc,\n    rooms,\n    objects,\n    strokes,\n    walls,\n    ...(doors !== undefined ? { doors } : {}),\n  };\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 208,
-      "endLine": 211,
+      "line": 276,
+      "endLine": 279,
       "name": "callback",
       "text": "(r) => {\n    if (r.id === 'w.ocean' || r.id === 'g.ocean') return true;\n    return !rectFullyInsideAnyCutout(r.x, r.y, r.w, r.h, cutouts);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 212,
-      "endLine": 212,
+      "line": 280,
+      "endLine": 280,
       "name": "callback",
       "text": "(o) => !pointInsideAnyCutout(o.x, o.y, cutouts)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 259,
-      "endLine": 259,
+      "line": 327,
+      "endLine": 327,
       "name": "callback",
       "text": "(w) => [w.id, w] as const"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 261,
-      "endLine": 282,
+      "line": 329,
+      "endLine": 350,
       "name": "callback",
       "text": "(door) => {\n        const origWall = origWallsById.get(door.wallId);\n        const candidates = clippedWallsByOrigId.get(door.wallId);\n        if (!origWall || !candidates || candidates.length === 0) return [];\n        const dx = origWall.x1 + (origWall.x2 - origWall.x1) * door.t;\n        const dy = origWall.y1 + (origWall.y2 - origWall.y1) * door.t;\n        if (pointInsideAnyCutout(dx, dy, cutouts)) return [];\n        for (const segWall of candidates) {\n          const sx = segWall.x2 - segWall.x1;\n          const sy = segWall.y2 - segWall.y1;\n          const lenSq = sx * sx + sy * sy;\n          if (lenSq < 1e-8) continue;\n          const tSeg = ((dx - segWall.x1) * sx + (dy - segWall.y1) * sy) / lenSq;\n          if (tSeg < -1e-4 || tSeg > 1 + 1e-4) continue;\n          const px = segWall.x1 + sx * tSeg;\n          const py = segWall.y1 + sy * tSeg;\n          if (Math.hypot(dx - px, dy - py) <= 0.5) {\n            return [{ ...door, wallId: segWall.id, t: Math.max(0, Math.min(1, tSeg)) }];\n          }\n        }\n        return [];\n      }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 294,
-      "endLine": 300,
+      "line": 362,
+      "endLine": 371,
       "name": "cutoutSignature",
-      "text": "function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {\n  if (cutouts.length === 0) return '';\n  return cutouts\n    .map((c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`)\n    .sort()\n    .join('|');\n}"
+      "text": "function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {\n  if (cutouts.length === 0) return '';\n  return cutouts\n    .map((c) => {\n      const rot = c.oriented ? `@${Math.round(c.oriented.rotationRad * 10000)}` : '';\n      return `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}${rot}`;\n    })\n    .sort()\n    .join('|');\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 297,
-      "endLine": 297,
+      "line": 365,
+      "endLine": 368,
       "name": "callback",
-      "text": "(c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`"
+      "text": "(c) => {\n      const rot = c.oriented ? `@${Math.round(c.oriented.rotationRad * 10000)}` : '';\n      return `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}${rot}`;\n    }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 306,
-      "endLine": 311,
+      "line": 377,
+      "endLine": 382,
       "name": "multiMapDepthLiftY",
       "text": "export function multiMapDepthLiftY(depth: number): number {\n  const table = [0, 0.08, 0.14, 0.18, 0.184, 0.187];\n  const idx = Math.max(0, depth - 1);\n  if (idx < table.length) return table[idx]!;\n  return 0.187 + (idx - (table.length - 1)) * 0.003;\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 317,
-      "endLine": 335,
+      "line": 388,
+      "endLine": 406,
       "name": "applyWorldTransformToGroup",
       "text": "export function applyWorldTransformToGroup(\n  pivot: THREE.Group,\n  content: THREE.Group,\n  entry: AtlasWorldSceneGroupPlan,\n  bounds: WorldAtlasBounds = DEFAULT_ATLAS_BOUNDS,\n  baseElevationY = 0,\n): void {\n  const midX = (bounds.minX + bounds.maxX) / 2;\n  const midY = (bounds.minY + bounds.maxY) / 2;\n  const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n  const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n  const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n  pivot.position.set(centerX, baseElevationY + depthLiftY, centerY);\n  pivot.rotation.set(0, -rotationRad, 0);\n  pivot.scale.set(scaleX, verticalScale, scaleY);\n  content.position.set(-midX, 0, -midY);\n  pivot.updateMatrixWorld(true);\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 337,
-      "endLine": 363,
+      "line": 408,
+      "endLine": 434,
       "name": "applyMaterialOpacity",
       "text": "function applyMaterialOpacity(entry: ClonedGroupMaterial, opacity: number): void {\n  const clamped = Math.max(0, Math.min(1, opacity));\n  const mat = entry.material;\n  if (entry.surfaceKey === 'ao') {\n    mat.opacity = clamped * 0.72;\n    mat.transparent = true;\n    mat.depthWrite = false;\n    return;\n  }\n  const isTranslucent = clamped < 0.999;\n  if (mat instanceof THREE.ShaderMaterial && mat.uniforms?.uOpacity) {\n    mat.uniforms.uOpacity.value = clamped;\n    if (mat.transparent !== isTranslucent) {\n      mat.transparent = isTranslucent;\n      mat.depthWrite = !isTranslucent;\n      mat.needsUpdate = true;\n    }\n    return;\n  }\n  const prevTransparent = mat.transparent;\n  mat.opacity = clamped;\n  mat.transparent = isTranslucent;\n  mat.depthWrite = !isTranslucent;\n  if (prevTransparent !== isTranslucent) {\n    mat.needsUpdate = true;\n  }\n}"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 380,
-      "endLine": 380,
+      "line": 451,
+      "endLine": 451,
       "name": "callback",
       "text": "() => this.getMaterial('terrain')"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 468,
-      "endLine": 870,
+      "line": 539,
+      "endLine": 941,
       "name": "sync",
       "text": "sync(input: {\n    readonly scenePlan: AtlasWorldScenePlan;\n    readonly sources: ReadonlyMap<string, AtlasThreeWorldMapSource>;\n    readonly presetId: AtlasGraphicsPresetId;\n    readonly hideRoofs: boolean;\n    readonly viewSpan: number;\n    readonly camera?: AtlasWorldCameraState;\n    readonly viewportPx?: { readonly width: number; readonly height: number };\n    readonly dtSec?: number;\n  }): void {\n    this.incrementalSyncCount += 1;\n    this.activeEditorMapId = input.scenePlan.activeEditorMapId;\n\n    // 0) Sync the ONE shared chunked world terrain (Phase 1.3)\n    this.ensureSharedWorldTerrainSource(input.scenePlan, input.sources);\n    const hasSharedTerrain = Boolean(this.worldTerrain.getSource());\n    if (hasSharedTerrain && input.camera && input.viewportPx) {\n      this.worldTerrain.sync({\n        camera: input.camera,\n        viewportPx: input.viewportPx,\n      });\n    }\n\n    const wantedIds = new Set(input.scenePlan.entries.map((e) => e.mapId));\n    const useSmoothDamp = typeof input.dtSec === 'number' && Number.isFinite(input.dtSec);\n    const dampAlpha = useSmoothDamp\n      ? 1 - Math.exp(-OPACITY_DAMP_RATE * Math.max(0.001, Math.min(0.1, input.dtSec!)))\n      : 1;\n\n    // 1) Fade out or dispose groups that left the active scene plan\n    for (const [mapId, node] of [...this.groups.entries()]) {\n      if (wantedIds.has(mapId)) continue;\n      if (\n        useSmoothDamp &&\n        node.depth > 1 &&\n        (node.currentOpacity > OPACITY_EXIT_EPSILON || node.currentWaterOpacity > OPACITY_EXIT_EPSILON)\n      ) {\n        node.exiting = true;\n        node.targetOpacity = 0;\n        node.targetWaterOpacity = 0;\n        node.detailWeight = 0;\n        node.currentOpacity += (0 - node.currentOpacity) * dampAlpha;\n        node.currentWaterOpacity += (0 - node.currentWaterOpacity) * dampAlpha;\n        this.applyOpacityToNode(node);\n        if (\n          node.currentOpacity <= OPACITY_EXIT_EPSILON &&\n          node.currentWaterOpacity <= OPACITY_EXIT_EPSILON\n        ) {\n          this.disposeGroupNode(node);\n          this.groups.delete(mapId);\n        }\n      } else {\n        this.disposeGroupNode(node);\n        this.groups.delete(mapId);\n      }\n    }\n\n    // Compute highest active child detailWeight per parent so coarse outdoor parent overlays\n    // (coarse land roads, world landmark icons) smoothly yield to detailed settlements/buildings\n    // while the ONE shared chunked world terrain stays 100% opaque underneath!\n    const maxChildWeightByParent = new Map<string, number>();\n    const hasIndoorChildByParent = new Map<string, boolean>();\n    let hasActiveSettlementOrDeeper = false;\n    for (const e of input.scenePlan.entries) {\n      if (e.depth >= 4 && e.detailWeight > 0.25) {\n        hasActiveSettlementOrDeeper = true;\n      }\n      if (!e.parentMapId) continue;\n      const prev = maxChildWeightByParent.get(e.parentMapId) ?? 0;\n      if (e.detailWeight > prev) {\n        maxChildWeightByParent.set(e.parentMapId, e.detailWeight);\n      }\n      const childSrc = input.sources.get(e.mapId);\n      if (childSrc?.look === 'indoor' && e.detailWeight > 0.25) {\n        hasIndoorChildByParent.set(e.parentMapId, true);\n      }\n    }\n\n    // 2) Mount new groups or incrementally update transform & continuous opacity\n    for (const entry of input.scenePlan.entries) {\n      const source = input.sources.get(entry.mapId);\n      if (!source) continue;\n\n      const cSig = cutoutSignature(entry.cutoutRectsLocal);\n      const rev = source.revisionKey ?? 'v0';\n      const terrainSig = hasSharedTerrain ? this.lastTerrainSourceKey : 'local';\n      // Auto roof-cutaway on a settlement when an interior building/room inside it is active!\n      const effectiveHideRoofs =\n        input.hideRoofs || Boolean(hasIndoorChildByParent.get(entry.mapId));\n      const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;\n\n      const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;\n      // Scale-aware 2-channel handover:\n      //  - Macro non-water overlays (macro landmark markers & coarse roads on depth 1..3) fade\n      //    completely to exact `0` before settlement scale (ZERO `0.08` ghost geometry!).\n      //  - Macro rivers (`water`) stay active on the immediate regional carrier around Liang-Barsky\n      //    settlement cutouts so calibrated local settlement rivers hand off without abrupt breaks.\n      const isSharedMacroOutdoor =\n        hasSharedTerrain && source.look === 'outdoor' && source.mapScale === 'world';\n      let targetOpacity: number;\n      let targetWaterOpacity: number;\n      if (isSharedMacroOutdoor) {\n        targetOpacity = computeMacroOverlayTargetOpacity({\n          depth: entry.depth,\n          detailWeight: entry.detailWeight,\n          viewSpan: input.viewSpan,\n          childWeight,\n          hasActiveSettlementOrDeeper,\n        });\n        targetWaterOpacity = computeMacroWaterTargetOpacity({\n          depth: entry.depth,\n          detailWeight: entry.detailWeight,\n          viewSpan: input.viewSpan,\n          childWeight,\n          hasActiveSettlementOrDeeper,\n        });\n      } else if (entry.depth === 1) {\n        targetOpacity = 1;\n        targetWaterOpacity = 1;\n      } else if (source.look === 'outdoor' && hasIndoorChildByParent.get(entry.mapId)) {\n        // Keep settlement surroundings gently visible as context around an active indoor building\n        targetOpacity = Math.max(0.45, Math.min(1, entry.detailWeight * 0.72));\n        targetWaterOpacity = targetOpacity;\n      } else {\n        targetOpacity = Math.max(0, Math.min(1, entry.detailWeight));\n        targetWaterOpacity = targetOpacity;\n      }\n\n      const baseElevationY =\n        hasSharedTerrain && source.look === 'indoor'\n          ? this.worldTerrain.sampleElevation(\n            entry.worldTransform.centerX,\n            entry.worldTransform.centerY,\n          ) + 0.003\n          : 0;\n\n      const existing = this.groups.get(entry.mapId);\n      if (existing && existing.buildSignature === sig) {\n        // Zero rebuild: update world transform AND smoothly ramp continuous opacity!\n        existing.exiting = false;\n        existing.lodState = entry.lodState;\n        existing.detailWeight = entry.detailWeight;\n        existing.targetOpacity = targetOpacity;\n        existing.targetWaterOpacity = targetWaterOpacity;\n        existing.currentOpacity =\n          useSmoothDamp\n            ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha\n            : targetOpacity;\n        existing.currentWaterOpacity =\n          useSmoothDamp\n            ? existing.currentWaterOpacity +\n            (targetWaterOpacity - existing.currentWaterOpacity) * dampAlpha\n            : targetWaterOpacity;\n        if (Math.abs(existing.currentOpacity - targetOpacity) < 0.004) {\n          existing.currentOpacity = targetOpacity;\n        }\n        if (Math.abs(existing.currentWaterOpacity - targetWaterOpacity) < 0.004) {\n          existing.currentWaterOpacity = targetWaterOpacity;\n        }\n        applyWorldTransformToGroup(\n          existing.pivot,\n          existing.content,\n          entry,\n          source.bounds,\n          baseElevationY,\n        );\n        this.applyOpacityToNode(existing);\n        continue;\n      }\n\n      const prevOpacity = existing?.currentOpacity;\n      const prevWaterOpacity = existing?.currentWaterOpacity;\n      if (existing) {\n        this.disposeGroupNode(existing);\n        this.groups.delete(entry.mapId);\n      }\n\n      const filteredDoc = applyLocalCutoutFilter(source.doc, entry.cutoutRectsLocal);\n      const bounds = source.bounds ?? DEFAULT_ATLAS_BOUNDS;\n      const midX = (bounds.minX + bounds.maxX) / 2;\n      const midY = (bounds.minY + bounds.maxY) / 2;\n      const { centerX, centerY, scaleX, scaleY, rotationRad } = entry.worldTransform;\n      const cosR = Math.cos(rotationRad);\n      const sinR = Math.sin(rotationRad);\n      const verticalScale = Math.sqrt(Math.max(1e-8, scaleX * scaleY));\n      const depthLiftY = multiMapDepthLiftY(entry.depth);\n\n      const sharedWorldTerrain: SharedWorldTerrainBinding | undefined =\n        hasSharedTerrain && source.look === 'outdoor'\n          ? {\n            sampleElevationWorld: (wx, wz) => this.worldTerrain.sampleElevation(wx, wz),\n            mapToWorld: (lx, lz) => {\n              const dx = (lx - midX) * scaleX;\n              const dz = (lz - midY) * scaleY;\n              return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;\n            },\n            verticalScale,\n            depthLiftY,\n            waterLevel: this.worldTerrain.getSource()?.waterLevel ?? 0,\n          }\n          : undefined;\n\n      const plan = buildAtlasThreeScenePlan(filteredDoc, {\n        mapScale: source.mapScale,\n        look: source.look,\n        span: Math.max(24, input.viewSpan / Math.max(1e-4, entry.worldTransform.scaleX)),\n        presetId: input.presetId,\n        seed: entry.mapId,\n        hideRoofs: effectiveHideRoofs,\n        warmWindows: true,\n        sharedWorldTerrain,\n        exclusionRects: entry.cutoutRectsLocal,\n      });\n\n      const pivot = new THREE.Group();\n      pivot.name = `atlas3:map-pivot:${entry.mapId}`;\n      pivot.userData.mapId = entry.mapId;\n      pivot.userData.depth = entry.depth;\n\n      const content = new THREE.Group();\n      content.name = `atlas3:map-content:${entry.mapId}`;\n      pivot.add(content);\n\n      const pickables: THREE.Object3D[] = [];\n      const overlayMeshes: THREE.Object3D[] = [];\n      const waterMeshes: THREE.Object3D[] = [];\n      const geometries: THREE.BufferGeometry[] = [];\n      const materials: ClonedGroupMaterial[] = [];\n\n      const clonedMatCache = new Map<AtlasThreeSurfaceKey, THREE.Material>();\n      const cloneSurfaceMat = (surfaceKey: AtlasThreeSurfaceKey): THREE.Material => {\n        const cached = clonedMatCache.get(surfaceKey);\n        if (cached) return cached;\n        const cloned = this.getMaterial(surfaceKey).clone();\n        clonedMatCache.set(surfaceKey, cloned);\n        materials.push({ material: cloned, surfaceKey });\n        return cloned;\n      };\n\n      for (const [surfaceKey, builder] of plan.builders) {\n        if (builder.triangleCount === 0) continue;\n        const geo = builder.build();\n        geometries.push(geo);\n        const mat = cloneSurfaceMat(surfaceKey);\n        const mesh = new THREE.Mesh(geo, mat);\n        const flat = surfaceKey.startsWith('sheet') || surfaceKey.startsWith('floor');\n        mesh.castShadow = !flat;\n        mesh.receiveShadow = true;\n        mesh.userData.triIds = builder.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;\n        content.add(mesh);\n        overlayMeshes.push(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.water.triangleCount > 0) {\n        const geo = plan.water.build();\n        geometries.push(geo);\n        const waterClone = this.waterMaterial.clone();\n        materials.push({ material: waterClone, surfaceKey: 'water' });\n        const mesh = new THREE.Mesh(geo, waterClone);\n        mesh.userData.triIds = plan.water.triIds;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:water`;\n        mesh.renderOrder = 2;\n        content.add(mesh);\n        waterMeshes.push(mesh);\n        pickables.push(mesh);\n      }\n\n      if (plan.doorInstances.matrices.length > 0) {\n        const doorGeo = new THREE.BoxGeometry(1, 1, 1);\n        geometries.push(doorGeo);\n        const inst = new THREE.InstancedMesh(\n          doorGeo,\n          cloneSurfaceMat('wood-dark'),\n          plan.doorInstances.matrices.length,\n        );\n        plan.doorInstances.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n        inst.instanceMatrix.needsUpdate = true;\n        inst.computeBoundingSphere();\n        inst.castShadow = true;\n        inst.receiveShadow = true;\n        inst.userData.instanceIds = plan.doorInstances.ids;\n        inst.userData.mapId = entry.mapId;\n        inst.name = `atlas3:${entry.mapId}:doors`;\n        content.add(inst);\n        overlayMeshes.push(inst);\n        pickables.push(inst);\n      }\n\n      // Suggestive scatter (settlement perimeter woods/bushes/flowers & interior rubble)\n      // — skip coarse world-level scatter on depth 1–3 outdoor overview maps when shared terrain\n      // is active so zooming in never lingers on giant coarse trees before reaching Dornhain!\n      const emitScatterForGroup =\n        !hasSharedTerrain || source.mapScale === 'settlement' || source.look === 'indoor';\n      if (emitScatterForGroup) {\n        for (const batch of plan.scatterBatches) {\n          const { parts } = buildAtlasScatterGeometry(batch.kind);\n          for (const part of parts) {\n            geometries.push(part.geo);\n            const inst = new THREE.InstancedMesh(\n              part.geo,\n              cloneSurfaceMat(part.surface),\n              batch.matrices.length,\n            );\n            batch.matrices.forEach((m, i) => inst.setMatrixAt(i, m));\n            inst.instanceMatrix.needsUpdate = true;\n            inst.computeBoundingSphere();\n            inst.castShadow = batch.kind !== 'flower' && batch.kind !== 'rubble';\n            inst.receiveShadow = true;\n            inst.userData.mapId = entry.mapId;\n            inst.name = `atlas3:${entry.mapId}:scatter:${batch.kind}`;\n            content.add(inst);\n            overlayMeshes.push(inst);\n          }\n        }\n      }\n\n      if (this.aoMaterial && plan.aoDiscs.length > 0 && source.mapScale !== 'world') {\n        const discGeo = new THREE.PlaneGeometry(2, 2);\n        discGeo.rotateX(-Math.PI / 2);\n        geometries.push(discGeo);\n        const aoClone = this.aoMaterial.clone();\n        materials.push({ material: aoClone, surfaceKey: 'ao' });\n        const aoInst = new THREE.InstancedMesh(discGeo, aoClone, plan.aoDiscs.length);\n        const mat4 = new THREE.Matrix4();\n        const quat = new THREE.Quaternion();\n        plan.aoDiscs.forEach((d, i) => {\n          mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n          aoInst.setMatrixAt(i, mat4);\n        });\n        aoInst.instanceMatrix.needsUpdate = true;\n        aoInst.computeBoundingSphere();\n        aoInst.renderOrder = 2;\n        aoInst.name = `atlas3:${entry.mapId}:ao`;\n        content.add(aoInst);\n        overlayMeshes.push(aoInst);\n      }\n\n      // Per-map terrain only if no shared world terrain source exists (legacy fallback)\n      let hasOwnTerrain = false;\n      if (plan.terrain) {\n        hasOwnTerrain = true;\n        geometries.push(plan.terrain);\n        const mat = cloneSurfaceMat('terrain');\n        const mesh = new THREE.Mesh(plan.terrain, mat);\n        mesh.castShadow = true;\n        mesh.receiveShadow = true;\n        mesh.userData.mapId = entry.mapId;\n        mesh.name = `atlas3:${entry.mapId}:terrain`;\n        content.add(mesh);\n        overlayMeshes.push(mesh);\n      }\n\n      applyWorldTransformToGroup(pivot, content, entry, source.bounds, baseElevationY);\n      this.rootGroup.add(pivot);\n\n      // Start freshly entering child maps from 0 (damped fade-in) instead of jumping 0→100%\n      const initialOpacity =\n        prevOpacity !== undefined\n          ? prevOpacity\n          : entry.depth === 1\n            ? targetOpacity\n            : useSmoothDamp\n              ? targetOpacity * dampAlpha\n              : targetOpacity;\n      const initialWaterOpacity =\n        prevWaterOpacity !== undefined\n          ? prevWaterOpacity\n          : entry.depth === 1\n            ? targetWaterOpacity\n            : useSmoothDamp\n              ? targetWaterOpacity * dampAlpha\n              : targetWaterOpacity;\n\n      const node: AtlasThreeMapGroupNode = {\n        mapId: entry.mapId,\n        depth: entry.depth,\n        pivot,\n        content,\n        pickables,\n        overlayMeshes,\n        waterMeshes,\n        scenePlan: plan,\n        buildSignature: sig,\n        geometries,\n        materials,\n        cutoutSignature: cSig,\n        hasOwnTerrain,\n        lodState: entry.lodState,\n        detailWeight: entry.detailWeight,\n        targetOpacity,\n        currentOpacity: initialOpacity,\n        targetWaterOpacity,\n        currentWaterOpacity: initialWaterOpacity,\n        exiting: false,\n      };\n      this.applyOpacityToNode(node);\n      this.groups.set(entry.mapId, node);\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 491,
-      "endLine": 491,
+      "line": 562,
+      "endLine": 562,
       "name": "callback",
       "text": "(e) => e.mapId"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 658,
-      "endLine": 658,
+      "line": 729,
+      "endLine": 729,
       "name": "callback",
       "text": "(wx, wz) => this.worldTerrain.sampleElevation(wx, wz)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 659,
-      "endLine": 663,
+      "line": 730,
+      "endLine": 734,
       "name": "callback",
       "text": "(lx, lz) => {\n              const dx = (lx - midX) * scaleX;\n              const dz = (lz - midY) * scaleY;\n              return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;\n            }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 698,
-      "endLine": 705,
+      "line": 769,
+      "endLine": 776,
       "name": "cloneSurfaceMat",
       "text": "(surfaceKey: AtlasThreeSurfaceKey): THREE.Material => {\n        const cached = clonedMatCache.get(surfaceKey);\n        if (cached) return cached;\n        const cloned = this.getMaterial(surfaceKey).clone();\n        clonedMatCache.set(surfaceKey, cloned);\n        materials.push({ material: cloned, surfaceKey });\n        return cloned;\n      }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 747,
-      "endLine": 747,
+      "line": 818,
+      "endLine": 818,
       "name": "callback",
       "text": "(m, i) => inst.setMatrixAt(i, m)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 775,
-      "endLine": 775,
+      "line": 846,
+      "endLine": 846,
       "name": "callback",
       "text": "(m, i) => inst.setMatrixAt(i, m)"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 797,
-      "endLine": 800,
+      "line": 868,
+      "endLine": 871,
       "name": "callback",
       "text": "(d, i) => {\n          mat4.compose(new THREE.Vector3(d.x, d.y, d.z), quat, new THREE.Vector3(d.radius, 1, d.radius));\n          aoInst.setMatrixAt(i, mat4);\n        }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 873,
-      "endLine": 892,
+      "line": 944,
+      "endLine": 963,
       "name": "applyStyleMode",
       "text": "applyStyleMode(styleMode: 'pbr' | 'illustrated' | 'cel'): void {\n    for (const node of this.groups.values()) {\n      for (const entry of node.materials) {\n        if (entry.surfaceKey === 'water' || entry.surfaceKey === 'ao') continue;\n        if (!(entry.material instanceof THREE.MeshStandardMaterial)) continue;\n        const spec = ATLAS_THREE_SURFACES[entry.surfaceKey];\n        if (!spec) continue;\n        if (styleMode === 'cel') {\n          entry.material.roughness = Math.min(1, spec.roughness + 0.08);\n          entry.material.normalScale.set(spec.normalScale * 0.35, spec.normalScale * 0.35);\n        } else if (styleMode === 'illustrated') {\n          entry.material.roughness = Math.min(1, spec.roughness + 0.03);\n          entry.material.normalScale.set(spec.normalScale * 0.72, spec.normalScale * 0.72);\n        } else {\n          entry.material.roughness = spec.roughness;\n          entry.material.normalScale.set(spec.normalScale, spec.normalScale);\n        }\n      }\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 895,
-      "endLine": 916,
+      "line": 966,
+      "endLine": 987,
       "name": "syncWaterUniforms",
       "text": "syncWaterUniforms(sourceWater: THREE.ShaderMaterial): void {\n    for (const node of this.groups.values()) {\n      for (const entry of node.materials) {\n        if (entry.surfaceKey !== 'water' || !(entry.material instanceof THREE.ShaderMaterial)) continue;\n        const dst = entry.material.uniforms;\n        const src = sourceWater.uniforms;\n        if (dst.uTime && src.uTime) dst.uTime.value = src.uTime.value;\n        if (dst.uDeep && src.uDeep) dst.uDeep.value.copy(src.uDeep.value);\n        if (dst.uShallow && src.uShallow) dst.uShallow.value.copy(src.uShallow.value);\n        if (dst.uSky && src.uSky) dst.uSky.value.copy(src.uSky.value);\n        if (dst.uSunDir && src.uSunDir) dst.uSunDir.value.copy(src.uSunDir.value);\n        if (dst.uFogColor && src.uFogColor) dst.uFogColor.value.copy(src.uFogColor.value);\n        if (dst.uFocus && src.uFocus) dst.uFocus.value.copy(src.uFocus.value);\n        if (dst.uSpan && src.uSpan) dst.uSpan.value = src.uSpan.value;\n        if (dst.uWorldHeightTex && src.uWorldHeightTex) dst.uWorldHeightTex.value = src.uWorldHeightTex.value;\n        if (dst.uHasWorldHeight && src.uHasWorldHeight) dst.uHasWorldHeight.value = src.uHasWorldHeight.value;\n        if (dst.uHeightMin && src.uHeightMin) dst.uHeightMin.value = src.uHeightMin.value;\n        if (dst.uHeightMax && src.uHeightMax) dst.uHeightMax.value = src.uHeightMax.value;\n        if (dst.uWaterLevel && src.uWaterLevel) dst.uWaterLevel.value = src.uWaterLevel.value;\n      }\n    }\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 935,
-      "endLine": 937,
+      "line": 1006,
+      "endLine": 1008,
       "name": "getGroup",
       "text": "getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {\n    return this.groups.get(mapId);\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 939,
-      "endLine": 948,
+      "line": 1010,
+      "endLine": 1019,
       "name": "getAllPickables",
       "text": "getAllPickables(): readonly THREE.Object3D[] {\n    const out: THREE.Object3D[] = [];\n    for (const g of this.groups.values()) {\n      if (!g.pivot.visible || g.exiting) continue;\n      for (const p of g.pickables) {\n        if (p.visible) out.push(p);\n      }\n    }\n    return out;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 950,
-      "endLine": 960,
+      "line": 1021,
+      "endLine": 1031,
       "name": "getActiveEditorElevationY",
       "text": "getActiveEditorElevationY(focusX?: number, focusZ?: number): number {\n    const activeGroup = this.activeEditorMapId ? this.groups.get(this.activeEditorMapId) : undefined;\n    if (activeGroup && activeGroup.pivot.position.y > 0.5) {\n      return activeGroup.pivot.position.y;\n    }\n    const terrainSource = this.worldTerrain.getSource();\n    if (terrainSource && focusX !== undefined && focusZ !== undefined) {\n      return Math.max(terrainSource.waterLevel, this.worldTerrain.sampleElevation(focusX, focusZ));\n    }\n    return activeGroup ? activeGroup.pivot.position.y : 0;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 962,
-      "endLine": 968,
+      "line": 1033,
+      "endLine": 1039,
       "name": "getRenderedIds",
       "text": "getRenderedIds(): string[] {\n    const out = new Set<string>();\n    for (const g of this.groups.values()) {\n      for (const id of g.scenePlan.ids) out.add(id);\n    }\n    return [...out].sort();\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 970,
-      "endLine": 998,
+      "line": 1041,
+      "endLine": 1069,
       "name": "getStats",
       "text": "getStats(): AtlasThreeMultiMapStats {\n    const terrain = this.worldTerrain.getStats();\n    let liveGeometryCount = terrain.liveGeometryCount;\n    let ownPerMapTerrainCount = 0;\n    const groupOpacities: Record<string, AtlasThreeGroupOpacitySnapshot> = {};\n    for (const g of this.groups.values()) {\n      liveGeometryCount += g.geometries.length;\n      if (g.hasOwnTerrain) ownPerMapTerrainCount += 1;\n      groupOpacities[g.mapId] = {\n        detailWeight: Math.round(g.detailWeight * 1000) / 1000,\n        opacity: Math.round(g.currentOpacity * 1000) / 1000,\n        waterOpacity: Math.round(g.currentWaterOpacity * 1000) / 1000,\n        depth: g.depth,\n        lodState: g.lodState,\n        exiting: g.exiting,\n      };\n    }\n    return {\n      activeMapIds: [...this.groups.keys()],\n      activeEditorMapId: this.activeEditorMapId,\n      groupCount: this.groups.size,\n      liveGeometryCount,\n      clearRootCount: this.clearRootCount,\n      incrementalSyncCount: this.incrementalSyncCount,\n      ownPerMapTerrainCount,\n      terrain,\n      groupOpacities,\n    };\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 1001,
-      "endLine": 1012,
+      "line": 1072,
+      "endLine": 1083,
       "name": "hasPendingOpacityTransition",
       "text": "hasPendingOpacityTransition(): boolean {\n    for (const node of this.groups.values()) {\n      if (\n        node.exiting ||\n        Math.abs(node.currentOpacity - node.targetOpacity) > OPACITY_EXIT_EPSILON ||\n        Math.abs(node.currentWaterOpacity - node.targetWaterOpacity) > OPACITY_EXIT_EPSILON\n      ) {\n        return true;\n      }\n    }\n    return false;\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 1015,
-      "endLine": 1023,
+      "line": 1086,
+      "endLine": 1094,
       "name": "dispose",
       "text": "dispose(): void {\n    this.worldTerrain.dispose();\n    for (const node of this.groups.values()) {\n      this.disposeGroupNode(node);\n    }\n    this.groups.clear();\n    this.activeEditorMapId = null;\n    this.lastTerrainSourceKey = '';\n  }"
     },
     {
       "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-      "line": 1041,
-      "endLine": 1043,
+      "line": 1112,
+      "endLine": 1114,
       "name": "hfVersionKey",
       "text": "function hfVersionKey(hf: { readonly cols: number; readonly rows: number; readonly assetRef: { readonly version: number } }): string {\n  return `${hf.cols}x${hf.rows}v${hf.assetRef.version}`;\n}"
     },

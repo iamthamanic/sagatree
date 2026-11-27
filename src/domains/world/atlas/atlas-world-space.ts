@@ -92,6 +92,7 @@ export function resolveWorldChain(
   const chain: AtlasWorldSpaceNode[] = [];
   const visited = new Set<string>();
   let cur: AtlasWorldSpaceNode | undefined = start;
+  let descendantRotated = false;
 
   while (cur) {
     if (visited.has(cur.id)) return { ok: false, error: 'cycle', atMapId: cur.id };
@@ -101,6 +102,23 @@ export function resolveWorldChain(
     const anchor = cur.parentAnchor;
     if (!anchor) return { ok: true, value: chain, depth: chain.length }; // Wurzel erreicht
     if (anchorHasShear(anchor)) return { ok: false, error: 'shear', atMapId: cur.id };
+
+    // Composed-chain shear guard: an unrotated non-uniformly scaled ancestor applied after
+    // a rotated descendant shears the child's orthogonal axes in World Space.
+    if (descendantRotated) {
+      const b = cur.bounds ?? DEFAULT_ATLAS_BOUNDS;
+      const spanX = Math.max(Number.EPSILON, b.maxX - b.minX);
+      const spanY = Math.max(Number.EPSILON, b.maxY - b.minY);
+      const scaleX = (2 * anchor.extentX) / spanX;
+      const scaleY = (2 * anchor.extentY) / spanY;
+      const rel = Math.abs(scaleX - scaleY) / Math.max(Math.abs(scaleX), Math.abs(scaleY), Number.EPSILON);
+      if (rel > ATLAS_UNIFORM_EXTENT_EPSILON) {
+        return { ok: false, error: 'shear', atMapId: cur.id };
+      }
+    }
+    if (Math.abs(anchor.rotationRad) > ATLAS_UNIFORM_EXTENT_EPSILON) {
+      descendantRotated = true;
+    }
 
     const parentId = anchor.parentMapId.trim();
     const parent: AtlasWorldSpaceNode | undefined = get(parentId);

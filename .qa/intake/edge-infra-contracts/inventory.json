@@ -37794,11 +37794,11 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
-            "sha256": "060e03785a1b39bbe2de76cb61ad9088a523e0edca58ba0355ec7a26ced66af9"
+            "sha256": "541600e4e00ccf5fd4aac59e4a2328ee434eb53dccc4dccdb55da70c6d5e4cc2"
           },
           {
             "path": "src/domains/world/atlas/atlas-world-space.ts",
-            "sha256": "9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af"
+            "sha256": "e2942ca8e4d46e8dcd9e8e665232a99535d792855570c72c85b08ce3b3ba27ec"
           },
           {
             "path": "src/domains/world/atlas/atlas-world-terrain-chunks.ts",
@@ -38042,7 +38042,7 @@
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-            "sha256": "471de3d4e6bd78bc9a7f23c7642d4107c082f60482bf3eead4f95d90e182ce58"
+            "sha256": "b3fe20cb5d7c925c82092eca20ea420cffca239e0e9beb1fec17c7ab0834841e"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -38106,7 +38106,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "98e405f4c46d4df8e430fd7c5924eabcdae04315ecacdc8d364d6c210ff16a26",
+      "sourceContractSha256": "9b93bdbc1cffc6ce66383079d808cf57063fa54721e73093f2b6d4e19c6ec6cd",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -38596,115 +38596,127 @@
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
           "line": 173,
-          "endLine": 182,
+          "endLine": 184,
+          "name": "pointInsideCutout"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+          "line": 186,
+          "endLine": 195,
           "name": "pointInsideAnyCutout"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 184,
-          "endLine": 195,
+          "line": 197,
+          "endLine": 220,
           "name": "rectFullyInsideAnyCutout"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 203,
-          "endLine": 292,
+          "line": 222,
+          "endLine": 263,
+          "name": "clipPolylineOutsideCutouts"
+        },
+        {
+          "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
+          "line": 271,
+          "endLine": 360,
           "name": "applyLocalCutoutFilter"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 294,
-          "endLine": 300,
+          "line": 362,
+          "endLine": 371,
           "name": "cutoutSignature"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 306,
-          "endLine": 311,
+          "line": 377,
+          "endLine": 382,
           "name": "multiMapDepthLiftY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 317,
-          "endLine": 335,
+          "line": 388,
+          "endLine": 406,
           "name": "applyWorldTransformToGroup"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 337,
-          "endLine": 363,
+          "line": 408,
+          "endLine": 434,
           "name": "applyMaterialOpacity"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 468,
-          "endLine": 870,
+          "line": 539,
+          "endLine": 941,
           "name": "sync"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 698,
-          "endLine": 705,
+          "line": 769,
+          "endLine": 776,
           "name": "cloneSurfaceMat"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 873,
-          "endLine": 892,
+          "line": 944,
+          "endLine": 963,
           "name": "applyStyleMode"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 895,
-          "endLine": 916,
+          "line": 966,
+          "endLine": 987,
           "name": "syncWaterUniforms"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 935,
-          "endLine": 937,
+          "line": 1006,
+          "endLine": 1008,
           "name": "getGroup"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 939,
-          "endLine": 948,
+          "line": 1010,
+          "endLine": 1019,
           "name": "getAllPickables"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 950,
-          "endLine": 960,
+          "line": 1021,
+          "endLine": 1031,
           "name": "getActiveEditorElevationY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 962,
-          "endLine": 968,
+          "line": 1033,
+          "endLine": 1039,
           "name": "getRenderedIds"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 970,
-          "endLine": 998,
+          "line": 1041,
+          "endLine": 1069,
           "name": "getStats"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 1001,
-          "endLine": 1012,
+          "line": 1072,
+          "endLine": 1083,
           "name": "hasPendingOpacityTransition"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 1015,
-          "endLine": 1023,
+          "line": 1086,
+          "endLine": 1094,
           "name": "dispose"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-          "line": 1041,
-          "endLine": 1043,
+          "line": 1112,
+          "endLine": 1114,
           "name": "hfVersionKey"
         },
         {

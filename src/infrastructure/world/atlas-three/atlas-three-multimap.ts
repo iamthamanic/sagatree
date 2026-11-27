@@ -170,13 +170,26 @@ export type AtlasThreeMultiMapStats = {
 const OPACITY_DAMP_RATE = 10.5;
 const OPACITY_EXIT_EPSILON = 0.015;
 
+function pointInsideCutout(x: number, y: number, c: AtlasLocalCutoutRect): boolean {
+  if (x < c.minX || x > c.maxX || y < c.minY || y > c.maxY) return false;
+  if (!c.oriented) return true;
+  const o = c.oriented;
+  const dx = x - o.centerX;
+  const dy = y - o.centerY;
+  const cos = Math.cos(o.rotationRad);
+  const sin = Math.sin(o.rotationRad);
+  const ux = dx * cos + dy * sin;
+  const uy = -dx * sin + dy * cos;
+  return Math.abs(ux) <= o.extentX && Math.abs(uy) <= o.extentY;
+}
+
 function pointInsideAnyCutout(
   x: number,
   y: number,
   cutouts: readonly AtlasLocalCutoutRect[],
 ): boolean {
   for (const c of cutouts) {
-    if (x >= c.minX && x <= c.maxX && y >= c.minY && y <= c.maxY) return true;
+    if (pointInsideCutout(x, y, c)) return true;
   }
   return false;
 }
@@ -189,16 +202,71 @@ function rectFullyInsideAnyCutout(
   cutouts: readonly AtlasLocalCutoutRect[],
 ): boolean {
   for (const c of cutouts) {
-    if (x >= c.minX && y >= c.minY && x + w <= c.maxX && y + h <= c.maxY) return true;
+    if (!c.oriented) {
+      if (x >= c.minX && y >= c.minY && x + w <= c.maxX && y + h <= c.maxY) return true;
+      continue;
+    }
+    // An oriented rectangle is convex, so an axis-aligned rect lies fully inside iff all 4 corners do.
+    if (
+      pointInsideCutout(x, y, c) &&
+      pointInsideCutout(x + w, y, c) &&
+      pointInsideCutout(x + w, y + h, c) &&
+      pointInsideCutout(x, y + h, c)
+    ) {
+      return true;
+    }
   }
   return false;
+}
+
+function clipPolylineOutsideCutouts(
+  points: readonly (readonly [number, number])[],
+  cutouts: readonly AtlasLocalCutoutRect[],
+): readonly (readonly (readonly [number, number])[])[] {
+  let segments: (readonly (readonly [number, number])[])[] = [points];
+  for (const c of cutouts) {
+    const next: (readonly (readonly [number, number])[])[] = [];
+    if (!c.oriented) {
+      for (const seg of segments) {
+        next.push(...clipPolylineOutsideRects(seg, [c]));
+      }
+    } else {
+      const o = c.oriented;
+      const cos = Math.cos(o.rotationRad);
+      const sin = Math.sin(o.rotationRad);
+      const localRect = {
+        minX: -o.extentX,
+        minY: -o.extentY,
+        maxX: o.extentX,
+        maxY: o.extentY,
+      };
+      for (const seg of segments) {
+        const unrot: [number, number][] = seg.map(([px, py]) => {
+          const dx = px - o.centerX;
+          const dy = py - o.centerY;
+          return [dx * cos + dy * sin, -dx * sin + dy * cos];
+        });
+        for (const clipped of clipPolylineOutsideRects(unrot, [localRect])) {
+          next.push(
+            clipped.map(([ux, uy]) => [
+              o.centerX + ux * cos - uy * sin,
+              o.centerY + ux * sin + uy * cos,
+            ] as const),
+          );
+        }
+      }
+    }
+    segments = next;
+    if (segments.length === 0) break;
+  }
+  return segments;
 }
 
 /**
  * Replacement-Refinement overlay filter (ADR-SWS-01 §5.2 / D4 + SCM Finding M-2):
  * removes coarse parent objects/rooms superseded by an active child map inside
- * `cutoutRectsLocal` AND clips `freeland` strokes (rivers/roads) cleanly along cutout
- * borders via Liang-Barsky so coarse parent ribbons never protrude into finer children.
+ * `cutoutRectsLocal` AND clips `freeland` strokes (rivers/roads) & parent walls cleanly
+ * along exact (including rotated) cutout borders via Liang-Barsky.
  */
 export function applyLocalCutoutFilter(
   doc: UnifiedCanvasDoc,
@@ -212,7 +280,7 @@ export function applyLocalCutoutFilter(
   const objects = doc.objects.filter((o) => !pointInsideAnyCutout(o.x, o.y, cutouts));
   const strokes: UnifiedCanvasStroke[] = [];
   for (const s of doc.strokes) {
-    const clippedSegments = clipPolylineOutsideRects(s.points, cutouts);
+    const clippedSegments = clipPolylineOutsideCutouts(s.points, cutouts);
     for (let i = 0; i < clippedSegments.length; i += 1) {
       const seg = clippedSegments[i]!;
       if (seg.length < 2) continue;
@@ -227,7 +295,7 @@ export function applyLocalCutoutFilter(
   const walls: typeof doc.walls[number][] = [];
   const clippedWallsByOrigId = new Map<string, Array<typeof doc.walls[number]>>();
   for (const wall of doc.walls) {
-    const clippedWallSegs = clipPolylineOutsideRects(
+    const clippedWallSegs = clipPolylineOutsideCutouts(
       [
         [wall.x1, wall.y1],
         [wall.x2, wall.y2],
@@ -294,7 +362,10 @@ export function applyLocalCutoutFilter(
 function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {
   if (cutouts.length === 0) return '';
   return cutouts
-    .map((c) => `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}`)
+    .map((c) => {
+      const rot = c.oriented ? `@${Math.round(c.oriented.rotationRad * 10000)}` : '';
+      return `${c.childMapId}:${c.minX},${c.minY},${c.maxX},${c.maxY}${rot}`;
+    })
     .sort()
     .join('|');
 }

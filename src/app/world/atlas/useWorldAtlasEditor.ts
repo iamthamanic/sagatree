@@ -1047,6 +1047,9 @@ export function useWorldAtlasEditor({
       nextMeta: Readonly<Record<string, unknown>>,
       nextBounds?: WorldAtlasMapVm['bounds'],
     ): Promise<WorldAtlasMapVm> => {
+      const sentDoc = canvasDocRef.current;
+      const sentRuntime = webglRuntimeRef.current;
+      const sentDungeon = dungeonMetaRef.current;
       const saved = await worldAtlasService.upsertMap({
         worldProfileId: vm.worldProfileId,
         mapId: vm.id,
@@ -1071,17 +1074,26 @@ export function useWorldAtlasEditor({
       if (saved.id === activeMapIdRef.current) {
         mapRef.current = saved;
         setMap(saved);
-        dirtyCanvasRef.current = false;
-        setDirtyCanvas(false);
-        pendingOpsRef.current = 0;
+        const editedDuringSave =
+          canvasDocRef.current !== sentDoc ||
+          webglRuntimeRef.current !== sentRuntime ||
+          dungeonMetaRef.current !== sentDungeon;
+        if (!editedDuringSave) {
+          dirtyCanvasRef.current = false;
+          setDirtyCanvas(false);
+          pendingOpsRef.current = 0;
+        }
         bumpPersist({ type: 'save_ok' });
+        if (editedDuringSave) {
+          noteLocalEdit();
+        }
       }
       setSummaries((prev) =>
         prev.map((s) => (s.id === saved.id ? { ...s, revision: saved.revision } : s)),
       );
       return saved;
     },
-    [bumpPersist],
+    [bumpPersist, noteLocalEdit],
   );
 
   /** ATL2-C04: contract-driven autosave decision (never save while conflicted). */

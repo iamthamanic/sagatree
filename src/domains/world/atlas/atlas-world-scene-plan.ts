@@ -57,6 +57,17 @@ export type AtlasLocalCutoutRect = {
   readonly minY: number;
   readonly maxX: number;
   readonly maxY: number;
+  /**
+   * Present when the child's `ParentSpatialAnchor` has nonzero rotation so parent cutout
+   * filtering/clipping operates on the exact oriented footprint rather than its enlarged AABB.
+   */
+  readonly oriented?: {
+    readonly centerX: number;
+    readonly centerY: number;
+    readonly extentX: number;
+    readonly extentY: number;
+    readonly rotationRad: number;
+  };
 };
 
 export type AtlasSceneMapLodState = 'coarse' | 'active';
@@ -456,7 +467,8 @@ export function buildAtlasWorldScenePlan(input: {
   for (const c of kept) {
     if (!c.parentMapId || !c.map.parentAnchor) continue;
     if (c.effectiveSsePx < cfg.sseReplaceParentPx && !c.onRequestedFocusPath) continue;
-    const rect = parentAnchorAabb(c.map.parentAnchor as ParentSpatialAnchor);
+    const anchor = c.map.parentAnchor as ParentSpatialAnchor;
+    const rect = parentAnchorAabb(anchor);
     const list = cutoutsByParent.get(c.parentMapId) ?? [];
     list.push({
       childMapId: c.map.id,
@@ -464,6 +476,17 @@ export function buildAtlasWorldScenePlan(input: {
       minY: rect.minY,
       maxX: rect.maxX,
       maxY: rect.maxY,
+      ...(Math.abs(anchor.rotationRad) > 1e-9
+        ? {
+            oriented: {
+              centerX: anchor.centerX,
+              centerY: anchor.centerY,
+              extentX: anchor.extentX,
+              extentY: anchor.extentY,
+              rotationRad: anchor.rotationRad,
+            },
+          }
+        : {}),
     });
     cutoutsByParent.set(c.parentMapId, list);
   }
