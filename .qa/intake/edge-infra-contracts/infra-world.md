@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `9b93bdbc1cffc6ce66383079d808cf57063fa54721e73093f2b6d4e19c6ec6cd`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `34092e6d0c5e0f16563e24bea31851226eaab744cbcb4746847c19b23189a49e`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -1797,7 +1797,7 @@ export class AtlasThreeMultiMapGraph {
           },
         },
       });
-      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(elevationScale * 10000)}`;
+      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(srcBounds.minX * 100)},${Math.round(srcBounds.minY * 100)},${Math.round(srcBounds.maxX * 100)},${Math.round(srcBounds.maxY * 100)},${Math.round(elevationScale * 10000)}`;
       overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);
     }
 
@@ -4268,11 +4268,18 @@ export type BuildAtlasThreeSceneOptions = {
     readonly minY: number;
     readonly maxX: number;
     readonly maxY: number;
+    readonly oriented?: {
+      readonly centerX: number;
+      readonly centerY: number;
+      readonly extentX: number;
+      readonly extentY: number;
+      readonly rotationRad: number;
+    };
   }>;
 };
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1014
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1021
 
 ```ts
 export function buildAtlasThreeScenePlan(
@@ -4830,7 +4837,7 @@ export function buildAtlasThreeScenePlan(
 }
 ```
 
-### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1569
+### src/infrastructure/world/atlas-three/atlas-three-scene.ts:1576
 
 ```ts
 export function buildAtlasScatterGeometry(kind: AtlasScatterKind): {
@@ -6311,7 +6318,7 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-prototype-lod.ts` | `2fb7c706ad2210f7a3f389f22564f60e3f22aa615ec49af49695e388ae582256` |
 | `src/domains/world/atlas/atlas-renderer-target.ts` | `f51d6dc7122851ef8b88e1c567984f50f743a1630cf5f36212205fe70c8662ff` |
 | `src/domains/world/atlas/atlas-revision-contract.ts` | `d01c356239143862f9aa8f3fd44fca79105e3ed390327c34b9be6ce1902c78d6` |
-| `src/domains/world/atlas/atlas-scene-scatter.ts` | `0e4d47d172f1cd5267691e82a97989df2bc9d4972315da008450a5d52a76d096` |
+| `src/domains/world/atlas/atlas-scene-scatter.ts` | `22594ba2ee337178cbcbac971c546109e705d03fdb05aa06918cc004430e8989` |
 | `src/domains/world/atlas/atlas-selection.ts` | `6c16fb40fe26addea8e33e718a89a019de099c6008c1000dd697d48fa12849a7` |
 | `src/domains/world/atlas/atlas-spatial-containment.ts` | `b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7` |
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `7248152b93c7b0c2748b1682bb12fd174ac64b88fda12f0d0cca588c4a21ee1c` |
@@ -6386,9 +6393,9 @@ All backend operations are included in the public declarations above.
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-runtime.ts` | `f250027a4c5a9674e377313738dac7f70a8a253464c46033f6a400a229b53c82` |
 | `src/infrastructure/world/atlas-r01b-three-poc/r01b-poc-scene.ts` | `f63e63b2be555ef8348d15141ed44a01e70670667e3d0946221db2720cc32d8c` |
 | `src/infrastructure/world/atlas-three/atlas-three-camera.ts` | `5de04e8dffb048daa6ad01466ae68c30ce7cbc1084d694fb0de510db56713faa` |
-| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `b3fe20cb5d7c925c82092eca20ea420cffca239e0e9beb1fec17c7ab0834841e` |
+| `src/infrastructure/world/atlas-three/atlas-three-multimap.ts` | `cb7fa540841eefa5271247cf37f9b842108a2ee362a6673babd8fdf6a00f3503` |
 | `src/infrastructure/world/atlas-three/atlas-three-runtime.ts` | `97bdbe7bbf8d035d22e414f641172b799597b157aff6513df2c7562c0f6ccc03` |
-| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `a5b39d21d3e6e01befdbd0f7d5f2dd73e58ddce692e23958c4dbeb7fba13e439` |
+| `src/infrastructure/world/atlas-three/atlas-three-scene.ts` | `9f5af389947c371823fe85547a512e359725a9938fd402c6064afdec266f4675` |
 | `src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts` | `05daaa14fddd5080ef6ca7abf7fd6b9db24de7cede3cf98cc2ec6bc421b78ff9` |
 | `src/infrastructure/world/atlas-three/atlas-unified-input.ts` | `ab0b8b75470742020a6bf335045118e981e831fb9a6d0358dec7148e89b63bb9` |
 | `src/infrastructure/world/atlas-three/index.ts` | `41080205df69bc1f433e5dd7928411b4e245ac0ecb730b109881cb681e46bca7` |

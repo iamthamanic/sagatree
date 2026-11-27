@@ -23,7 +23,7 @@
       "command": "edge/infra inventory 25+13",
       "result": "PASS",
       "evidenceFile": ".qa/intake/edge-infra-contracts/inventory.json",
-      "sha256": "c56a102016356bc27edeee74afd12f849984a197c0956834fb3ef7b59068c6cd"
+      "sha256": "c5bfd312ccfc5c86f381c66ff8162a5de966b136347a28537d0cc9a1f4120706"
     }
   ],
   "testedCommit": "361d3bd31d8f9cc7bf1918dda2c5d25b174eaab1"

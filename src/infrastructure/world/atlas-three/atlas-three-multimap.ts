@@ -509,7 +509,7 @@ export class AtlasThreeMultiMapGraph {
           },
         },
       });
-      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(elevationScale * 10000)}`;
+      const placementKey = `${Math.round(wt.centerX * 100)},${Math.round(wt.centerY * 100)},${Math.round(wt.scaleX * 10000)},${Math.round(wt.scaleY * 10000)},${Math.round(wt.rotationRad * 10000)},${Math.round(srcBounds.minX * 100)},${Math.round(srcBounds.minY * 100)},${Math.round(srcBounds.maxX * 100)},${Math.round(srcBounds.maxY * 100)},${Math.round(elevationScale * 10000)}`;
       overlayParts.push(`${entry.mapId}:${hfVersionKey(hf)}@${placementKey}`);
     }
 

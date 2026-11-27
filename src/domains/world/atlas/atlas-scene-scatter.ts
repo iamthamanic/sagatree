@@ -153,6 +153,13 @@ export function buildAtlasSceneScatter(input: {
     readonly minY: number;
     readonly maxX: number;
     readonly maxY: number;
+    readonly oriented?: {
+      readonly centerX: number;
+      readonly centerY: number;
+      readonly extentX: number;
+      readonly extentY: number;
+      readonly rotationRad: number;
+    };
   }>;
 }): AtlasScatterPlan {
   const { doc, seed, mapScale, presetId, elevationSampler, exclusionRects } = input;
@@ -163,7 +170,18 @@ export function buildAtlasSceneScatter(input: {
   const inExclusionRect = (x: number, y: number, pad = 12): boolean => {
     if (!exclusionRects || exclusionRects.length === 0) return false;
     for (const r of exclusionRects) {
-      if (x >= r.minX - pad && x <= r.maxX + pad && y >= r.minY - pad && y <= r.maxY + pad) {
+      if (x < r.minX - pad || x > r.maxX + pad || y < r.minY - pad || y > r.maxY + pad) {
+        continue;
+      }
+      if (!r.oriented) return true;
+      const o = r.oriented;
+      const dx = x - o.centerX;
+      const dy = y - o.centerY;
+      const cos = Math.cos(o.rotationRad);
+      const sin = Math.sin(o.rotationRad);
+      const ux = dx * cos + dy * sin;
+      const uy = -dx * sin + dy * cos;
+      if (Math.abs(ux) <= o.extentX + pad && Math.abs(uy) <= o.extentY + pad) {
         return true;
       }
     }

@@ -1008,6 +1008,13 @@ export type BuildAtlasThreeSceneOptions = {
     readonly minY: number;
     readonly maxX: number;
     readonly maxY: number;
+    readonly oriented?: {
+      readonly centerX: number;
+      readonly centerY: number;
+      readonly extentX: number;
+      readonly extentY: number;
+      readonly rotationRad: number;
+    };
   }>;
 };
 

@@ -37742,7 +37742,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-scene-scatter.ts",
-            "sha256": "0e4d47d172f1cd5267691e82a97989df2bc9d4972315da008450a5d52a76d096"
+            "sha256": "22594ba2ee337178cbcbac971c546109e705d03fdb05aa06918cc004430e8989"
           },
           {
             "path": "src/domains/world/atlas/atlas-selection.ts",
@@ -38042,7 +38042,7 @@
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-multimap.ts",
-            "sha256": "b3fe20cb5d7c925c82092eca20ea420cffca239e0e9beb1fec17c7ab0834841e"
+            "sha256": "cb7fa540841eefa5271247cf37f9b842108a2ee362a6673babd8fdf6a00f3503"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-runtime.ts",
@@ -38050,7 +38050,7 @@
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-            "sha256": "a5b39d21d3e6e01befdbd0f7d5f2dd73e58ddce692e23958c4dbeb7fba13e439"
+            "sha256": "9f5af389947c371823fe85547a512e359725a9938fd402c6064afdec266f4675"
           },
           {
             "path": "src/infrastructure/world/atlas-three/atlas-three-world-terrain.ts",
@@ -38106,7 +38106,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "9b93bdbc1cffc6ce66383079d808cf57063fa54721e73093f2b6d4e19c6ec6cd",
+      "sourceContractSha256": "34092e6d0c5e0f16563e24bea31851226eaab744cbcb4746847c19b23189a49e",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],
@@ -39063,32 +39063,32 @@
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1014,
-          "endLine": 1566,
+          "line": 1021,
+          "endLine": 1573,
           "name": "buildAtlasThreeScenePlan"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1020,
-          "endLine": 1027,
+          "line": 1027,
+          "endLine": 1034,
           "name": "get"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1050,
-          "endLine": 1062,
+          "line": 1057,
+          "endLine": 1069,
           "name": "sampleGroundY"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1374,
-          "endLine": 1377,
+          "line": 1381,
+          "endLine": 1384,
           "name": "pt"
         },
         {
           "path": "src/infrastructure/world/atlas-three/atlas-three-scene.ts",
-          "line": 1569,
-          "endLine": 1699,
+          "line": 1576,
+          "endLine": 1706,
           "name": "buildAtlasScatterGeometry"
         },
         {
