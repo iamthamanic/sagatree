@@ -378,17 +378,31 @@ export function buildAtlasSceneScatter(input: {
   const bushTarget = Math.floor(maxBudget * 0.28);
   const propTarget = Math.floor(maxBudget * 0.16);
 
-  // Scatter trees & bushes across the terrain hills and grass areas outside paved squares/buildings.
-  const boundsMinX = hf ? hf.originX + 18 : 120;
-  const boundsMaxX = hf ? hf.originX + (hf.cols - 1) * hf.cellSize - 18 : 880;
-  const boundsMinY = hf ? hf.originZ + 18 : 160;
-  const boundsMaxY = hf ? hf.originZ + (hf.rows - 1) * hf.cellSize - 18 : 840;
+  // Scatter trees & bushes in an organic undulating grove ring around the settlement
+  // (never an artificial rectangular box!) while clearing paved plazas, roads, buildings & exclusions.
+  const boundsMinX = hf ? hf.originX + 18 : 110;
+  const boundsMaxX = hf ? hf.originX + (hf.cols - 1) * hf.cellSize - 18 : 890;
+  const boundsMinY = hf ? hf.originZ + 18 : 150;
+  const boundsMaxY = hf ? hf.originZ + (hf.rows - 1) * hf.cellSize - 18 : 850;
+  const groveCx = (boundsMinX + boundsMaxX) * 0.5;
+  const groveCy = (boundsMinY + boundsMaxY) * 0.5;
+  const groveRx = (boundsMaxX - boundsMinX) * 0.5;
+  const groveRy = (boundsMaxY - boundsMinY) * 0.5;
+  const insideOrganicGrove = (x: number, y: number): boolean => {
+    const nx = (x - groveCx) / Math.max(1, groveRx);
+    const ny = (y - groveCy) / Math.max(1, groveRy);
+    const ang = Math.atan2(ny, nx);
+    // Smooth organic boundary modulation (3 lobes + subtle jitter) eliminates square forest edges
+    const maxR = 0.88 + 0.14 * Math.sin(ang * 3 + 0.7) + 0.08 * Math.cos(ang * 5 - 1.1);
+    return Math.hypot(nx, ny) <= maxR;
+  };
 
   let attempts = 0;
-  while (instances.length < treeTarget && attempts < treeTarget * 10) {
+  while (instances.length < treeTarget && attempts < treeTarget * 12) {
     attempts += 1;
     const x = boundsMinX + rng() * (boundsMaxX - boundsMinX);
     const y = boundsMinY + rng() * (boundsMaxY - boundsMinY);
+    if (!insideOrganicGrove(x, y)) continue;
     if (waterPolys.some((wp) => pointInPolygon(x, y, wp))) continue;
     if (pavedPolys.some((pp) => pointInPolygon(x, y, pp))) continue;
     if (inExclusionRect(x, y, 14)) continue;
@@ -397,17 +411,18 @@ export function buildAtlasSceneScatter(input: {
     const onLandRoom = landPolys.some((lp) => pointInPolygon(x, y, lp.pts));
     if (hf && !elevationSampler && elev < waterLevel + 0.8 && !onLandRoom) continue;
     const r = rng();
-    const kind: AtlasScatterKind = elev > 10 || r < 0.38 ? 'pine' : r < 0.78 ? 'oak' : 'birch';
-    const scale = 0.48 + rng() * 0.42;
+    const kind: AtlasScatterKind = elev > 10 || r < 0.36 ? 'pine' : r < 0.76 ? 'oak' : 'birch';
+    const scale = 0.44 + rng() * 0.44;
     pushInst(kind, x, y, Math.max(-0.4, elev), scale);
   }
 
   const bushGoal = Math.min(maxBudget, instances.length + bushTarget);
   attempts = 0;
-  while (instances.length < bushGoal && attempts < bushTarget * 10) {
+  while (instances.length < bushGoal && attempts < bushTarget * 12) {
     attempts += 1;
     const x = boundsMinX + rng() * (boundsMaxX - boundsMinX);
     const y = boundsMinY + rng() * (boundsMaxY - boundsMinY);
+    if (!insideOrganicGrove(x, y)) continue;
     if (waterPolys.some((wp) => pointInPolygon(x, y, wp))) continue;
     if (pavedPolys.some((pp) => pointInPolygon(x, y, pp))) continue;
     if (inExclusionRect(x, y, 10)) continue;
@@ -416,7 +431,7 @@ export function buildAtlasSceneScatter(input: {
     const onLandRoom = landPolys.some((lp) => pointInPolygon(x, y, lp.pts));
     if (hf && !elevationSampler && elev < waterLevel + 0.5 && !onLandRoom) continue;
     const kind: AtlasScatterKind = rng() < 0.52 ? 'bush' : rng() < 0.82 ? 'flower' : 'rock';
-    const scale = kind === 'flower' ? 0.35 + rng() * 0.3 : 0.32 + rng() * 0.36;
+    const scale = kind === 'flower' ? 0.34 + rng() * 0.28 : 0.32 + rng() * 0.36;
     pushInst(kind, x, y, Math.max(-0.4, elev), scale);
   }
 

@@ -654,7 +654,7 @@ export function AtlasThreeWorkstation({
         labelDe: payload.labelDe,
       });
 
-      if (resolved.ok === false) {
+      if (!resolved.ok) {
         // Honest unlocated handling — NEVER fake a focus jump or invent geography!
         setUnlocatedFocusNotice({
           mapId: targetMapId,
@@ -1145,20 +1145,6 @@ export function AtlasThreeWorkstation({
         setCameraMode(savedRestore.camera.projection);
         rt.setFocusTargetMapId(savedRestore.focusedMapId);
         rt.setWorldCameraState(savedRestore.camera, false, { preserveMinSpan: true });
-        if (savedRestore.focusedMapId) {
-          const restoredNode = externalNav?.nodes.find(
-            (n) =>
-              (savedRestore.focusedPlaceId && n.id === savedRestore.focusedPlaceId) ||
-              n.primaryMapId === savedRestore.focusedMapId,
-          );
-          setFocusIntent({
-            targetMapId: savedRestore.focusedMapId,
-            targetPlaceId: savedRestore.focusedPlaceId ?? restoredNode?.id ?? null,
-            labelDe: restoredNode?.label ?? externalNav?.worldLabel ?? 'Weltkarte',
-            requestedAtMs: Date.now(),
-            phase: 'arrived',
-          });
-        }
         onRestoreWorldFocusConsumedRef.current?.();
       }
     } else {
@@ -2002,11 +1988,11 @@ export function AtlasThreeWorkstation({
           : undefined;
       const isUnlocatedInWorld = Boolean(
         worldSceneGraph &&
-          node.primaryMapId &&
-          worldMapMeta &&
-          (worldMapMeta.status === 'unlocated' ||
-            (worldMapMeta.parentAnchor === null &&
-              node.primaryMapId !== externalNav.worldPrimaryMapId)),
+        node.primaryMapId &&
+        worldMapMeta &&
+        (worldMapMeta.status === 'unlocated' ||
+          (worldMapMeta.parentAnchor === null &&
+            node.primaryMapId !== externalNav.worldPrimaryMapId)),
       );
       return (
         <div key={node.id} className="space-y-0.5">
@@ -2313,7 +2299,7 @@ export function AtlasThreeWorkstation({
 
       {/* TOP-LEFT Floating Collapsible `Ebenen` Chip & Frosted-Glass Drawer (leaves bottom-left open for Vollansicht/Golden!) */}
       <div
-        className={`pointer-events-none absolute left-3 top-3 ${layersOpen ? 'z-[8] lg:z-[6]' : 'z-[6]'} flex max-h-[calc(100%-6rem)] flex-col items-start gap-2`}
+        className="pointer-events-none absolute left-3 top-3 z-[6] flex max-h-[calc(100%-5.25rem)] flex-col items-start gap-2"
         data-atlas-three-layers
       >
         <button
@@ -2518,10 +2504,10 @@ export function AtlasThreeWorkstation({
           ) : null}
 
           {!isChildDocumentEditMode &&
-          canEdit &&
-          onRequestEditMap &&
-          !zoomLayerState.isWorldRoot &&
-          zoomLayerState.activeMapId ? (
+            canEdit &&
+            onRequestEditMap &&
+            !zoomLayerState.isWorldRoot &&
+            zoomLayerState.activeMapId ? (
             <button
               type="button"
               data-atlas-open-edit-focused

@@ -173,10 +173,10 @@ function cutoutSignature(cutouts: readonly AtlasLocalCutoutRect[]): string {
  * above parent overlays with zero coplanar Z-fighting (ADR-SWS-01 §5.2).
  */
 export function multiMapDepthLiftY(depth: number): number {
-  const table = [0, 0.14, 0.24, 0.32, 0.36, 0.39];
+  const table = [0, 0.08, 0.14, 0.18, 0.184, 0.187];
   const idx = Math.max(0, depth - 1);
   if (idx < table.length) return table[idx]!;
-  return 0.39 + (idx - (table.length - 1)) * 0.02;
+  return 0.187 + (idx - (table.length - 1)) * 0.003;
 }
 
 /**
@@ -422,7 +422,7 @@ export class AtlasThreeMultiMapGraph {
           ? this.worldTerrain.sampleElevation(
               entry.worldTransform.centerX,
               entry.worldTransform.centerY,
-            ) + 0.08
+            ) + 0.003
           : 0;
 
       const existing = this.groups.get(entry.mapId);
@@ -697,6 +697,11 @@ export class AtlasThreeMultiMapGraph {
         if (dst.uFogColor && src.uFogColor) dst.uFogColor.value.copy(src.uFogColor.value);
         if (dst.uFocus && src.uFocus) dst.uFocus.value.copy(src.uFocus.value);
         if (dst.uSpan && src.uSpan) dst.uSpan.value = src.uSpan.value;
+        if (dst.uWorldHeightTex && src.uWorldHeightTex) dst.uWorldHeightTex.value = src.uWorldHeightTex.value;
+        if (dst.uHasWorldHeight && src.uHasWorldHeight) dst.uHasWorldHeight.value = src.uHasWorldHeight.value;
+        if (dst.uHeightMin && src.uHeightMin) dst.uHeightMin.value = src.uHeightMin.value;
+        if (dst.uHeightMax && src.uHeightMax) dst.uHeightMax.value = src.uHeightMax.value;
+        if (dst.uWaterLevel && src.uWaterLevel) dst.uWaterLevel.value = src.uWaterLevel.value;
       }
     }
   }

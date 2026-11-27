@@ -98,23 +98,23 @@ type LightingSpec = {
 
 const OUTDOOR_LIGHTING: Readonly<Record<AtlasThreeLightingMode, LightingSpec>> = {
   day: {
-    // Warm sunlit V7/V8 Dornhain golden-afternoon atmosphere
-    skyZenith: '#3e748c',
-    skyHorizon: '#9ec2c6',
-    sunGlow: '#fff1d1',
-    hemiSky: '#e4f0e4',
-    hemiGround: '#546949',
-    hemiIntensity: 1.85,
-    sunColor: '#ffe7c2',
-    sunIntensity: 3.45,
-    fillColor: '#9bc4da',
-    fillIntensity: 0.78,
-    exposure: 1.18,
-    waterDeep: '#154d63',
-    waterShallow: '#398899',
-    waterSky: '#a8cfd4',
-    meadowLight: '#85ad60',
-    meadowDark: '#5b8248',
+    // Balanced sunlit V8 Dornhain golden-afternoon atmosphere (crisp relief & shadows, no washout)
+    skyZenith: '#386d86',
+    skyHorizon: '#98bec3',
+    sunGlow: '#ffefd0',
+    hemiSky: '#dfece2',
+    hemiGround: '#4a5f42',
+    hemiIntensity: 1.62,
+    sunColor: '#ffe4bc',
+    sunIntensity: 3.15,
+    fillColor: '#91bcd4',
+    fillIntensity: 0.68,
+    exposure: 1.06,
+    waterDeep: '#12465d',
+    waterShallow: '#318696',
+    waterSky: '#a4cbd0',
+    meadowLight: '#83a85d',
+    meadowDark: '#567c44',
     sunDir: [-12, 16, 10],
   },
   evening: {
@@ -222,35 +222,61 @@ uniform vec3 uFogColor;
 uniform vec2 uFocus;
 uniform float uSpan;
 uniform float uOpacity;
+uniform sampler2D uWorldHeightTex;
+uniform float uHasWorldHeight;
+uniform float uHeightMin;
+uniform float uHeightMax;
+uniform float uWaterLevel;
 varying vec3 vWorld;
 
 float wave(vec2 p) {
-  return sin(p.x * 1.15 + uTime * 0.85) * 0.42
-       + sin(p.y * 1.65 - uTime * 0.65) * 0.30
-       + sin((p.x - p.y) * 2.7 + uTime * 1.15) * 0.17
-       + sin((p.x + p.y) * 4.9 - uTime * 1.45) * 0.11;
+  return sin(p.x * 1.18 + p.y * 0.34 + uTime * 0.72) * 0.36
+       + sin(p.y * 1.62 - p.x * 0.41 - uTime * 0.58) * 0.28
+       + sin((p.x - p.y) * 2.55 + uTime * 0.98) * 0.20
+       + sin((p.x * 1.3 + p.y * 0.9) * 4.7 - uTime * 1.28) * 0.16;
 }
 
 void main() {
+  // Multi-scale crisp ocean ripples (no low-res diagonal banding!)
   vec2 p = vWorld.xz / uTile;
-  float h = wave(p);
-  float h2 = wave(p * 2.4 + vec2(3.1, -1.7));
-  vec3 n = normalize(vec3(
-    (wave(p + vec2(0.05, 0.0)) - h) * 0.85 + (wave(p * 2.4 + vec2(3.18, -1.7)) - h2) * 0.28,
-    0.62,
-    (wave(p + vec2(0.0, 0.05)) - h) * 0.85 + (wave(p * 2.4 + vec2(3.1, -1.62)) - h2) * 0.28
-  ));
+  float h1 = wave(p * 1.65);
+  float h2 = wave(p * 4.2 + vec2(3.7, -2.3));
+  float eps = 0.06;
+  float gx = (wave((p + vec2(eps, 0.0)) * 1.65) - h1) * 0.65
+           + (wave((p + vec2(eps * 0.6, 0.0)) * 4.2 + vec2(3.7, -2.3)) - h2) * 0.32;
+  float gz = (wave((p + vec2(0.0, eps)) * 1.65) - h1) * 0.65
+           + (wave((p + vec2(0.0, eps * 0.6)) * 4.2 + vec2(3.7, -2.3)) - h2) * 0.32;
+  vec3 n = normalize(vec3(gx, 0.82, gz));
   vec3 v = normalize(cameraPosition - vWorld);
-  float fres = pow(1.0 - max(dot(n, v), 0.0), 3.4);
-  // Coastal turquoise bathymetry hugging the continents + deeper royal blue far out
-  float centerDist = length(vWorld.xz - vec2(500.0, 500.0));
-  float coastal = 1.0 - smoothstep(260.0, 920.0, centerDist);
-  float swell = 0.5 + 0.5 * sin(vWorld.x * 0.012 + uTime * 0.35) * cos(vWorld.z * 0.014 - uTime * 0.28);
-  vec3 col = mix(uDeep, uShallow, clamp(0.18 + coastal * 0.44 + 0.16 * h + 0.08 * swell, 0.0, 1.0));
-  col = mix(col, uSky, clamp(fres * 0.36, 0.0, 0.55));
-  // Crisp sunlit sparkle on wave crests
-  col += vec3(1.0, 0.96, 0.86) * pow(max(dot(reflect(-normalize(uSunDir), n), v), 0.0), 68.0) * 0.52;
-  // Fragment-accurate horizon fade (zero foreground washout, seamless melt at the far horizon!)
+  float fres = pow(1.0 - max(dot(n, v), 0.0), 3.6);
+
+  // Real world-heightfield bathymetry & organic shoreline surf hugging actual continents!
+  float coastal = 0.0;
+  float foam = 0.0;
+  if (uHasWorldHeight > 0.5) {
+    vec2 huv = vWorld.xz / 1000.0;
+    if (huv.x >= 0.0 && huv.x <= 1.0 && huv.y >= 0.0 && huv.y <= 1.0) {
+      float hNorm = texture2D(uWorldHeightTex, huv).r;
+      float bedH = mix(uHeightMin, uHeightMax, hNorm);
+      float depth = uWaterLevel - bedH;
+      coastal = 1.0 - smoothstep(0.0, 7.2, max(0.0, depth));
+      // Subtle animated shoreline surf ripples right where terrain emerges from the sea
+      float shoreBand = (1.0 - smoothstep(0.0, 1.35, abs(depth - 0.25)));
+      float surfWave = 0.5 + 0.5 * sin(depth * 9.5 - uTime * 2.1 + h1 * 3.0);
+      foam = shoreBand * smoothstep(0.42, 0.88, surfWave) * 0.42;
+    }
+  } else {
+    float centerDist = length(vWorld.xz - vec2(500.0, 500.0));
+    coastal = 1.0 - smoothstep(260.0, 920.0, centerDist);
+  }
+
+  float swell = 0.5 + 0.5 * sin(vWorld.x * 0.015 + uTime * 0.32) * cos(vWorld.z * 0.017 - uTime * 0.25);
+  vec3 col = mix(uDeep, uShallow, clamp(0.14 + coastal * 0.64 + 0.12 * h1 + 0.06 * swell, 0.0, 1.0));
+  col = mix(col, uSky, clamp(fres * 0.34, 0.0, 0.5));
+  col = mix(col, vec3(0.87, 0.94, 0.93), clamp(foam, 0.0, 0.48));
+  // Sunlit wave glint
+  col += vec3(1.0, 0.96, 0.86) * pow(max(dot(reflect(-normalize(uSunDir), n), v), 0.0), 76.0) * 0.44;
+  // Seamless distant horizon melt
   float horizDist = length(vWorld.xz - uFocus);
   float fogF = smoothstep(uSpan * 2.4, uSpan * 7.2, horizDist);
   col = mix(col, uFogColor, clamp(fogF * 0.86, 0.0, 1.0));
@@ -561,6 +587,11 @@ export class AtlasThreeRuntime {
         uFocus: { value: new THREE.Vector2(500, 500) },
         uSpan: { value: 430 },
         uOpacity: { value: 1.0 },
+        uWorldHeightTex: { value: null },
+        uHasWorldHeight: { value: 0.0 },
+        uHeightMin: { value: -12.0 },
+        uHeightMax: { value: 36.0 },
+        uWaterLevel: { value: 0.0 },
       },
     });
     const oceanGeo = new THREE.PlaneGeometry(28000, 28000, 1, 1);
@@ -1642,22 +1673,24 @@ export class AtlasThreeRuntime {
     this.hemi.intensity = spec.hemiIntensity;
     this.sun.color.set(spec.sunColor);
     this.sun.intensity = spec.sunIntensity * (this.styleMode === 'cel' ? 1.15 : 1.0);
-    this.sun.position.copy(at).addScaledVector(sunDir, Math.max(400, this.view.span * 2.2));
+    // Dynamic scale-tight PCF shadow frustum: crisp 2048px shadows at Planet, Village AND Tavern scales!
+    const shadowHalf = Math.max(1.4, Math.min(680, this.view.span * 1.55));
+    const sunDist = Math.max(12, shadowHalf * 2.1);
+    this.sun.position.copy(at).addScaledVector(sunDir, sunDist);
     this.sun.target.position.copy(at);
-    const shadowHalf = Math.max(220, this.view.span * 1.45);
     this.sun.shadow.camera.left = -shadowHalf;
     this.sun.shadow.camera.right = shadowHalf;
     this.sun.shadow.camera.top = shadowHalf;
     this.sun.shadow.camera.bottom = -shadowHalf;
-    this.sun.shadow.camera.near = 20;
-    this.sun.shadow.camera.far = Math.max(2400, this.view.span * 7);
-    this.sun.shadow.bias = -0.0005;
-    this.sun.shadow.normalBias = 0.025;
+    this.sun.shadow.camera.near = Math.max(0.5, sunDist * 0.08);
+    this.sun.shadow.camera.far = Math.max(40, sunDist * 3.0);
+    this.sun.shadow.bias = -0.0004;
+    this.sun.shadow.normalBias = Math.min(0.028, Math.max(0.002, shadowHalf * 0.0007));
     this.sun.shadow.camera.updateProjectionMatrix();
 
     this.fill.color.set(spec.fillColor);
     this.fill.intensity = spec.fillIntensity;
-    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(300, this.view.span * 1.8));
+    this.fill.position.copy(at).addScaledVector(fillDir, Math.max(20, this.view.span * 1.8));
     this.fill.target.position.copy(at);
 
     this.renderer.toneMappingExposure = spec.exposure * styleExp;
@@ -1670,7 +1703,15 @@ export class AtlasThreeRuntime {
     this.waterMat.uniforms.uFocus!.value.set(this.view.x, this.view.z);
     this.waterMat.uniforms.uSpan!.value = this.view.span;
     if (this.worldMaps.length > 0) {
+      const hfTex = this.multiMap.worldTerrain.getHeightFieldTexture();
+      this.waterMat.uniforms.uWorldHeightTex!.value = hfTex.texture;
+      this.waterMat.uniforms.uHasWorldHeight!.value = hfTex.texture ? 1.0 : 0.0;
+      this.waterMat.uniforms.uHeightMin!.value = hfTex.minH;
+      this.waterMat.uniforms.uHeightMax!.value = hfTex.maxH;
+      this.waterMat.uniforms.uWaterLevel!.value = hfTex.waterLevel;
       this.multiMap.syncWaterUniforms(this.waterMat);
+    } else {
+      this.waterMat.uniforms.uHasWorldHeight!.value = 0.0;
     }
 
     // Gentle rising chimney smoke animation

@@ -49,8 +49,8 @@ export const ATLAS_THREE_SURFACES = {
   },
   'sheet-outdoor': { pbr: 'grass', color: '#bdd0a8', roughness: 0.96, normalScale: 0.52, tile: 74 },
   'sheet-indoor': { pbr: 'rock', color: '#465056', roughness: 0.95, normalScale: 0.7, tile: 54 },
-  'floor-cobble': { pbr: 'cobble', color: '#e4dac2', roughness: 0.84, normalScale: 0.68, tile: 48 },
-  'floor-stone': { pbr: 'cobble', color: '#b4b0a5', roughness: 0.86, normalScale: 0.72, tile: 36 },
+  'floor-cobble': { pbr: 'cobble', color: '#e2d7be', roughness: 0.86, normalScale: 0.72, tile: 20 },
+  'floor-stone': { pbr: 'cobble', color: '#b0aca0', roughness: 0.88, normalScale: 0.74, tile: 18 },
   'floor-wood': { pbr: 'wood', color: '#deb486', roughness: 0.72, normalScale: 0.58, tile: 34 },
   'floor-dirt': { pbr: 'dirt', color: '#c8b28d', roughness: 0.96, normalScale: 0.58, tile: 42 },
   'floor-sand': { pbr: 'sand', color: '#e4d5af', roughness: 0.9, normalScale: 0.54, tile: 46 },
@@ -230,37 +230,48 @@ export type AtlasThreeScenePlan = {
   readonly mapScale: AtlasMapScale;
 };
 
-/** Smooth elevation + slope-based vertex colors for lush fantasy terrain. */
+/** Smooth elevation + slope-based vertex colors for lush fantasy terrain (ATL3-M01 / V8 palette). */
 export function terrainColorAt(height: number, waterLevel: number, slope: number): THREE.Color {
   const c = new THREE.Color();
-  if (height < waterLevel - 0.6) {
-    const depthT = Math.min(1, (waterLevel - 0.6 - height) / 7);
-    c.set('#2b6972').lerp(new THREE.Color('#1a4452'), depthT);
+  if (height < waterLevel - 0.55) {
+    const depthT = Math.min(1, (waterLevel - 0.55 - height) / 7.5);
+    c.set('#28646e').lerp(new THREE.Color('#143b49'), depthT);
     return c;
   }
-  if (height < waterLevel + 1.8) {
-    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.6)) / 2.4));
-    c.set('#5a928a').lerp(new THREE.Color('#decfa4'), t);
-    return c;
-  }
-  if (height < 13) {
-    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.8)) / 11.2));
-    c.set('#7ea85f').lerp(new THREE.Color('#4a7b4c'), t);
-    if (slope > 0.28) {
-      c.lerp(new THREE.Color('#8d9387'), Math.min(0.82, (slope - 0.28) * 2.1));
+  if (height < waterLevel + 1.55) {
+    // Organic damp-pebble to warm sunlit beach sand transition along physical coastline
+    const t = Math.max(0, Math.min(1, (height - (waterLevel - 0.55)) / 2.1));
+    c.set('#5e8f84').lerp(new THREE.Color('#d8c79a'), t);
+    if (slope > 0.24) {
+      c.lerp(new THREE.Color('#7f8376'), Math.min(0.75, (slope - 0.24) * 2.4));
     }
     return c;
   }
-  if (height < 25) {
-    const t = Math.max(0, Math.min(1, (height - 13) / 12));
-    c.set('#6d7c63').lerp(new THREE.Color('#959d94'), t);
-    if (slope > 0.35) {
-      c.lerp(new THREE.Color('#7f8580'), Math.min(0.75, (slope - 0.35) * 1.8));
+  if (height < 11.5) {
+    // Lowland meadow -> lush forest floor with warm earth & exposed hillside rock on steep slopes
+    const t = Math.max(0, Math.min(1, (height - (waterLevel + 1.55)) / 10));
+    c.set('#84a660').lerp(new THREE.Color('#4a7648'), t);
+    if (slope > 0.16 && slope <= 0.34) {
+      c.lerp(new THREE.Color('#7b7054'), Math.min(0.45, (slope - 0.16) * 2.2));
+    }
+    if (slope > 0.24) {
+      c.lerp(new THREE.Color('#848a80'), Math.min(0.86, (slope - 0.24) * 2.3));
     }
     return c;
   }
-  const snowT = Math.max(0, Math.min(1, (height - 25) / 14));
-  c.set('#9ba49d').lerp(new THREE.Color('#f3f7fa'), snowT);
+  if (height < 23) {
+    const t = Math.max(0, Math.min(1, (height - 11.5) / 11.5));
+    c.set('#64765a').lerp(new THREE.Color('#8e958d'), t);
+    if (slope > 0.26) {
+      c.lerp(new THREE.Color('#6f7673'), Math.min(0.82, (slope - 0.26) * 2.1));
+    }
+    return c;
+  }
+  const snowT = Math.max(0, Math.min(1, (height - 23) / 13));
+  c.set('#969f99').lerp(new THREE.Color('#eff5f8'), snowT);
+  if (slope > 0.42) {
+    c.lerp(new THREE.Color('#767e7e'), Math.min(0.55, (slope - 0.42) * 1.6));
+  }
   return c;
 }
 
@@ -1044,9 +1055,9 @@ export function buildAtlasThreeScenePlan(
     const y =
       terrainDrivenElevation && keepOverlaySurface
         ? sampleGroundY(cx, cz, 4.5) +
-          (sharedTerrain
-            ? (0.04 + i * 0.004) / Math.max(1e-4, sharedTerrain.verticalScale)
-            : 0.38 + i * dyR)
+        (sharedTerrain
+          ? (0.04 + i * 0.004) / Math.max(1e-4, sharedTerrain.verticalScale)
+          : 0.38 + i * dyR)
         : -0.45 + i * dyR;
     const surface: AtlasThreeSurfaceKey | 'water' = atlasThreeFloorSurface(matName, opts.mapScale);
     const b = surface === 'water' ? water : get(surface);
@@ -1372,6 +1383,12 @@ export function buildAtlasThreeScenePlan(
   if (showCanonicalObjects) {
     for (const q of plan.primitives) {
       if (q.kind !== 'prop' && q.kind !== 'building_footprint') continue;
+      if (sharedTerrain && opts.mapScale === 'world') {
+        const [wx, wz] = sharedTerrain.mapToWorld(q.x, q.y);
+        const worldElev = sharedTerrain.sampleElevationWorld(wx, wz);
+        // Prevent legacy world-overview landmarks from floating in open deep ocean
+        if (worldElev < sharedTerrain.waterLevel - 0.6) continue;
+      }
       ids.add(q.id);
       const groundElevation = sampleGroundY(q.x, q.y, -0.35);
       emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
