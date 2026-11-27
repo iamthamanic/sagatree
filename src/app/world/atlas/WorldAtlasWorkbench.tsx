@@ -52,6 +52,7 @@ import {
   atlasMapScaleForKind,
   atlasPersistStatusLabelDe,
   buildAtlasMapPins,
+  buildAtlasWorldPins,
   buildSpatialWorldFromMapSources,
   canRedoSpatialWorld,
   canUndoSpatialWorld,
@@ -60,6 +61,7 @@ import {
   emptySpatialWorldHistory,
   enterChildMap,
   executeSpatialWorldOperation,
+  extractMapCalibrationMetersPerUnit,
   extractMapFrameFromGeneratorMeta,
   isDornhainGoldenRootMap,
   lodBandFromBreadcrumbDepth,
@@ -952,9 +954,21 @@ export function WorldAtlasWorkbench({
     const selected = activePlaceId ? worldPlaces.find((p) => p.id === activePlaceId) : null;
     return tryNodeKindFromPlaceKind(selected?.kind ?? activeMapOwner?.kind ?? '');
   }, [activePlaceId, worldPlaces, activeMapOwner]);
-  const activeMapPins = useMemo(
-    () => buildAtlasMapPins({ mapId: editor.activeMapId, places: worldPlaces, links: worldLinks }),
-    [editor.activeMapId, worldPlaces, worldLinks],
+  const activeMapPins = useMemo(() => {
+    if (worldSceneGraph && editor.map?.parentMapId === null) {
+      return buildAtlasWorldPins({
+        maps: worldSceneGraph.maps,
+        places: worldPlaces,
+        links: worldLinks,
+        rootMapId: editor.map.id,
+      });
+    }
+    return buildAtlasMapPins({ mapId: editor.activeMapId, places: worldPlaces, links: worldLinks });
+  }, [editor.activeMapId, editor.map?.id, editor.map?.parentMapId, worldLinks, worldPlaces, worldSceneGraph]);
+
+  const activeMapMetersPerUnit = useMemo(
+    () => extractMapCalibrationMetersPerUnit(editor.map?.generatorMeta),
+    [editor.map?.generatorMeta],
   );
 
   // Keep WebGL nav highlight in sync with the active primary map's true shallowest owner
@@ -1860,6 +1874,7 @@ export function WorldAtlasWorkbench({
               activeNodeKind={activeNodeKind}
               mapScale={activeMapScale}
               mapPins={activeMapPins}
+              metersPerUnit={activeMapMetersPerUnit}
               surfaceMode={atlasSurfaceMode}
               onSurfaceModeChange={setAtlasSurfaceMode}
               surfaceActions={atlasSurfaceMode === '2d' ? protoActions : null}

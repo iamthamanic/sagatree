@@ -64,6 +64,8 @@ export type AtlasThreeProjectedPin = {
   readonly left: number;
   readonly top: number;
   readonly visible: boolean;
+  /** Projected screen-space pixel span of the pin's World-Space footprint (for hierarchy reveal). */
+  readonly projectedSpanPx?: number;
 };
 
 export type AtlasThreeRuntimeConfig = {
@@ -877,6 +879,7 @@ export class AtlasThreeRuntime {
   panByScreenDelta(deltaPxX: number, deltaPxY: number): AtlasThreeCameraView {
     this.flight = null;
     this.zoomAnchor = null;
+    this.focusTargetMapId = null;
     const h = Math.max(1, this.config.canvas.clientHeight || 800);
     const worldPerPx = (this.targetView.span * 2) / h;
     const dx = deltaPxX * worldPerPx;
@@ -1394,6 +1397,12 @@ export class AtlasThreeRuntime {
         viewportPx: { width: w, height: h },
         previousPlan: this.worldScenePlan,
         focusTargetMapId: this.focusTargetMapId,
+        config: {
+          maxActiveMaps: 6,
+          sseRefinePx: 140,
+          sseCoarsenPx: 95,
+          sseReplaceParentPx: 210,
+        },
       });
       this.worldScenePlan = nextPlan;
       if (nextPlan.activeEditorMapId !== this.lastReportedEditorMapId) {
@@ -1750,11 +1759,27 @@ export class AtlasThreeRuntime {
     }
     const projected: AtlasThreeProjectedPin[] = [];
     const v = new THREE.Vector3();
+    const isWorldMode = this.worldMaps.length > 0;
+    const terrainSrc = isWorldMode ? this.multiMap.worldTerrain.getSource() : null;
+    const pinLift = isWorldMode
+      ? Math.min(7.5, Math.max(0.05, this.view.span * 0.032))
+      : 14;
+    const denom = Math.max(1e-6, this.view.span * 2);
+
     for (const pin of this.pins) {
-      v.set(pin.x, 14, pin.y).project(this.camera);
+      let pinY = pinLift;
+      if (terrainSrc) {
+        const groundY = this.multiMap.worldTerrain.sampleElevation(pin.x, pin.y);
+        pinY = (Number.isFinite(groundY) ? Math.max(terrainSrc.waterLevel, groundY) : 0) + pinLift;
+      }
+      v.set(pin.x, pinY, pin.y).project(this.camera);
       const visible = v.z >= -1 && v.z <= 1;
       const left = Math.round(((v.x + 1) * 0.5) * w);
       const top = Math.round(((1 - v.y) * 0.5) * h);
+      const projectedSpanPx =
+        typeof pin.worldSpan === 'number' && Number.isFinite(pin.worldSpan) && pin.worldSpan > 0
+          ? Math.round(((pin.worldSpan / denom) * h) * 10) / 10
+          : undefined;
       projected.push({
         id: pin.id,
         label: pin.label,
@@ -1762,9 +1787,12 @@ export class AtlasThreeRuntime {
         left,
         top,
         visible: visible && left >= -80 && left <= w + 80 && top >= -40 && top <= h + 40,
+        ...(projectedSpanPx !== undefined ? { projectedSpanPx } : {}),
       });
     }
-    const key = projected.map((p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0}`).join('|');
+    const key = projected
+      .map((p) => `${p.id}:${p.left},${p.top},${p.visible ? 1 : 0},${p.projectedSpanPx ?? ''}`)
+      .join('|');
     if (key !== this.lastPinEmitKey) {
       this.lastPinEmitKey = key;
       this.onProjectedPins(projected);
@@ -1819,19 +1847,22 @@ export class AtlasThreeRuntime {
             this.lastCameraNotifyMs = now;
             this.onCameraChange?.(this.view);
           }
-        } else if (
-          this.view.x !== damped.next.x ||
-          this.view.z !== damped.next.z ||
-          this.view.span !== damped.next.span ||
-          this.view.yawRad !== damped.next.yawRad ||
-          this.view.pitchRad !== damped.next.pitchRad
-        ) {
+        } else {
+          const changed =
+            this.view.x !== damped.next.x ||
+            this.view.z !== damped.next.z ||
+            (this.view.y ?? 0) !== (damped.next.y ?? 0) ||
+            this.view.span !== damped.next.span ||
+            this.view.yawRad !== damped.next.yawRad ||
+            this.view.pitchRad !== damped.next.pitchRad;
+          // Always finalize both `view` and `targetView` to `damped.next` BEFORE clearing
+          // `zoomAnchor` so the next frame never re-damps unanchored or suffers a Y jump!
           this.view = damped.next;
           this.targetView = { ...damped.next };
           this.zoomAnchor = null;
-          this.onCameraChange?.(this.view);
-        } else {
-          this.zoomAnchor = null;
+          if (changed) {
+            this.onCameraChange?.(this.view);
+          }
         }
       }
 

@@ -658,6 +658,46 @@ function createGableRoofGeometry(w: number, h: number, d: number): THREE.BufferG
 
 type PropPrim = Extract<AtlasProductGeometryPrimitive, { kind: 'prop' | 'building_footprint' }>;
 
+/**
+ * Scale-aware cartographic macro landmark abstraction for overview maps (`depth 1..3`)
+ * in continuous Shared World Space: renders a compact, low-profile medallion marker instead
+ * of giant 34-WE physical houses or 50-WE trees next to real local 4-WE settlements.
+ */
+function emitMacroLandmarkMarker(
+  get: (k: AtlasThreeSurfaceKey) => AtlasThreeGeoBuilder,
+  p: PropPrim,
+  opts: { readonly groundElevation: number },
+): void {
+  const x = p.x;
+  const z = p.y;
+  const elev = Number.isFinite(p.elevation) && p.elevation !== 0 ? p.elevation : opts.groundElevation;
+  const id = p.id;
+  const isFortress = p.stamp === 'turm' || p.stamp === 'fels';
+  const radius = isFortress ? 4.8 : p.stamp === 'haus' ? 5.6 : 3.6;
+  const height = isFortress ? 2.6 : p.stamp === 'haus' ? 1.8 : 1.3;
+
+  // Low circular stone base disc + subtle brass/slate cartographic cap
+  const baseGeo = new THREE.CylinderGeometry(radius * 0.92, radius * 1.12, height * 0.55, 12);
+  get('wall').geometry(
+    baseGeo,
+    composeMatrix(x, elev + height * 0.275, z, 1, 1, 1),
+    id,
+  );
+  baseGeo.dispose();
+
+  const capKey: AtlasThreeSurfaceKey =
+    p.stamp === 'turm' ? 'roof-slate' : p.stamp === 'haus' ? 'gold-accent' : 'rock';
+  const capGeo = isFortress
+    ? new THREE.ConeGeometry(radius * 0.62, height * 0.95, 8)
+    : new THREE.CylinderGeometry(radius * 0.58, radius * 0.72, height * 0.48, 12);
+  get(capKey).geometry(
+    capGeo,
+    composeMatrix(x, elev + height * (isFortress ? 0.98 : 0.74), z, 1, 1, 1),
+    id,
+  );
+  capGeo.dispose();
+}
+
 function emitCanonicalProp(
   get: (k: AtlasThreeSurfaceKey) => AtlasThreeGeoBuilder,
   p: PropPrim,
@@ -1293,11 +1333,15 @@ export function buildAtlasThreeScenePlan(
         return;
       }
       const surface = atlasThreeFloorSurface(matName, opts.mapScale);
+      const isSharedMacroStroke = Boolean(sharedTerrain && opts.mapScale === 'world');
+      const effectiveWidth = isSharedMacroStroke
+        ? Math.min(pt.width, surface === 'water' ? 3.2 : 4.8)
+        : pt.width;
       const lift = 0.55 + i * dyS;
       buildRibbon(
         surface === 'water' ? water : get(surface),
         pt.points,
-        pt.width,
+        effectiveWidth,
         -0.14 + i * dyS,
         pt.id,
         terrainDrivenElevation
@@ -1391,12 +1435,16 @@ export function buildAtlasThreeScenePlan(
       }
       ids.add(q.id);
       const groundElevation = sampleGroundY(q.x, q.y, -0.35);
-      emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
-        fullDetail,
-        hideRoofs: Boolean(opts.hideRoofs),
-        warmWindows: Boolean(opts.warmWindows),
-        groundElevation,
-      });
+      if (sharedTerrain && opts.mapScale === 'world') {
+        emitMacroLandmarkMarker(get, q, { groundElevation });
+      } else {
+        emitCanonicalProp(get, q, objAngles.get(q.id) ?? 0, torches, aoDiscs, smokePoints, mistPoints, {
+          fullDetail,
+          hideRoofs: Boolean(opts.hideRoofs),
+          warmWindows: Boolean(opts.warmWindows),
+          groundElevation,
+        });
+      }
     }
   }
 
@@ -1406,16 +1454,20 @@ export function buildAtlasThreeScenePlan(
       : null;
 
   // Suggestive scenery scatter (ATL3-D01 #1327) grouped by kind for InstancedMesh rendering.
-  const scatter = buildAtlasSceneScatter({
-    doc,
-    seed: opts.seed,
-    mapScale: opts.mapScale,
-    presetId: opts.presetId,
-    elevationSampler: sharedTerrain || activeTerrainHf
-      ? (x, y) => sampleGroundY(x, y, 0)
-      : undefined,
-    exclusionRects: opts.exclusionRects,
-  });
+  // On macro world/continent/country maps in continuous Shared World Space, skip giant macro
+  // scatter trees/mountains completely so real 4-WE settlements never sit beside 40-WE macro props.
+  const scatter =
+    sharedTerrain && opts.mapScale === 'world'
+      ? { format: 'atl3-d01-scatter-plan-v1' as const, seed: opts.seed, presetId: opts.presetId, maxBudget: 0, instances: [] }
+      : buildAtlasSceneScatter({
+          doc,
+          seed: opts.seed,
+          mapScale: opts.mapScale,
+          presetId: opts.presetId,
+          elevationSampler:
+            sharedTerrain || activeTerrainHf ? (x, y) => sampleGroundY(x, y, 0) : undefined,
+          exclusionRects: opts.exclusionRects,
+        });
   const scatterByKind = new Map<AtlasScatterKind, THREE.Matrix4[]>();
   for (const inst of scatter.instances) {
     const list = scatterByKind.get(inst.kind) ?? [];

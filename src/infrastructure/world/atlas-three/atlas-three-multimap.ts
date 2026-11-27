@@ -62,6 +62,8 @@ export type AtlasThreeMapGroupNode = {
   readonly pivot: THREE.Group;
   readonly content: THREE.Group;
   readonly pickables: THREE.Object3D[];
+  readonly overlayMeshes: THREE.Object3D[];
+  readonly waterMeshes: THREE.Object3D[];
   readonly scenePlan: AtlasThreeScenePlan;
   readonly buildSignature: string;
   readonly geometries: THREE.BufferGeometry[];
@@ -72,16 +74,85 @@ export type AtlasThreeMapGroupNode = {
   detailWeight: number;
   targetOpacity: number;
   currentOpacity: number;
+  targetWaterOpacity: number;
+  currentWaterOpacity: number;
   exiting: boolean;
 };
 
 export type AtlasThreeGroupOpacitySnapshot = {
   readonly detailWeight: number;
   readonly opacity: number;
+  readonly waterOpacity: number;
   readonly depth: number;
   readonly lodState: string;
   readonly exiting: boolean;
 };
+
+function smoothstep01(edge0: number, edge1: number, x: number): number {
+  if (edge0 === edge1) return x >= edge1 ? 1 : 0;
+  const t = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
+/**
+ * Compute target opacity for macro non-water overlays (macro landmark markers & macro roads)
+ * on World/Continent/Country maps (`depth 1..3`) when Shared World Terrain is active.
+ * Always fades completely to exact `0` (NEVER lingering `0.08` ghost geometry!) before
+ * entering settlement scale, and symmetrically fades back in when zooming out.
+ */
+export function computeMacroOverlayTargetOpacity(input: {
+  readonly depth: number;
+  readonly detailWeight: number;
+  readonly viewSpan: number;
+  readonly childWeight: number;
+  readonly hasActiveSettlementOrDeeper: boolean;
+}): number {
+  const { depth, detailWeight, viewSpan, childWeight, hasActiveSettlementOrDeeper } = input;
+  if (depth <= 1) {
+    if (hasActiveSettlementOrDeeper) return 0;
+    const spanFade = smoothstep01(80, 195, viewSpan);
+    const childFade = 1 - smoothstep01(0.45, 0.95, childWeight);
+    return Math.max(0, Math.min(1, spanFade * childFade));
+  }
+  if (depth === 2) {
+    if (hasActiveSettlementOrDeeper) return 0;
+    const spanFade = smoothstep01(30, 88, viewSpan);
+    const childFade = 1 - smoothstep01(0.25, 0.85, childWeight);
+    return Math.max(0, Math.min(1, detailWeight * spanFade * childFade));
+  }
+  // depth === 3 (Country): fades smoothly to 0 as settlement comes into close-up view
+  const spanFade = smoothstep01(9, 28, viewSpan);
+  const childFade = 1 - smoothstep01(0.15, 0.72, childWeight);
+  return Math.max(0, Math.min(1, detailWeight * spanFade * childFade));
+}
+
+/**
+ * Compute target opacity for macro river/water overlays (`surfaceKey === 'water'`) on `depth 1..3`.
+ * Keeps slim regional carrier rivers active across regional/approach zoom up to the Liang-Barsky
+ * settlement cutout, then smoothly hands over to the calibrated local settlement river at close-up
+ * zoom so no coarse blunt macro ribbon sits beside a narrow village stream.
+ */
+export function computeMacroWaterTargetOpacity(input: {
+  readonly depth: number;
+  readonly detailWeight: number;
+  readonly viewSpan: number;
+  readonly childWeight: number;
+  readonly hasActiveSettlementOrDeeper: boolean;
+}): number {
+  const { depth, detailWeight, viewSpan, childWeight, hasActiveSettlementOrDeeper } = input;
+  if (depth <= 1) {
+    if (hasActiveSettlementOrDeeper) return 0;
+    return Math.max(0, Math.min(1, 1 - smoothstep01(0.35, 0.9, childWeight)));
+  }
+  if (depth === 2) {
+    if (hasActiveSettlementOrDeeper && viewSpan < 10) return 0;
+    return Math.max(0, Math.min(1, detailWeight * (1 - smoothstep01(0.35, 0.9, childWeight))));
+  }
+  // depth === 3 (Country): stays active through regional approach (`span >= 8`), then hands off
+  // smoothly (`span 8 -> 2.8`) once the calibrated local settlement river owns the frame.
+  const closeHandoff = hasActiveSettlementOrDeeper ? smoothstep01(2.8, 8.0, viewSpan) : 1;
+  return Math.max(0, Math.min(1, Math.max(detailWeight, hasActiveSettlementOrDeeper ? 0.95 : 0) * closeHandoff));
+}
 
 export type AtlasThreeMultiMapStats = {
   readonly activeMapIds: readonly string[];
@@ -349,13 +420,22 @@ export class AtlasThreeMultiMapGraph {
     // 1) Fade out or dispose groups that left the active scene plan
     for (const [mapId, node] of [...this.groups.entries()]) {
       if (wantedIds.has(mapId)) continue;
-      if (useSmoothDamp && node.depth > 1 && node.currentOpacity > OPACITY_EXIT_EPSILON) {
+      if (
+        useSmoothDamp &&
+        node.depth > 1 &&
+        (node.currentOpacity > OPACITY_EXIT_EPSILON || node.currentWaterOpacity > OPACITY_EXIT_EPSILON)
+      ) {
         node.exiting = true;
         node.targetOpacity = 0;
+        node.targetWaterOpacity = 0;
         node.detailWeight = 0;
         node.currentOpacity += (0 - node.currentOpacity) * dampAlpha;
+        node.currentWaterOpacity += (0 - node.currentWaterOpacity) * dampAlpha;
         this.applyOpacityToNode(node);
-        if (node.currentOpacity <= OPACITY_EXIT_EPSILON) {
+        if (
+          node.currentOpacity <= OPACITY_EXIT_EPSILON &&
+          node.currentWaterOpacity <= OPACITY_EXIT_EPSILON
+        ) {
           this.disposeGroupNode(node);
           this.groups.delete(mapId);
         }
@@ -400,29 +480,48 @@ export class AtlasThreeMultiMapGraph {
       const sig = `${rev}|${source.mapScale}|${source.look}|${input.presetId}|${effectiveHideRoofs ? 1 : 0}|${cSig}|${terrainSig}`;
 
       const childWeight = maxChildWeightByParent.get(entry.mapId) ?? 0;
-      // Smooth visual handover: when zooming into a settlement (depth >= 4), fade coarse
-      // world/continent/country overlays out gently (avoiding giant pixelated parent roads or
-      // duplicate village icons beside Dornhain), while keeping the shared world terrain at 100%.
+      // Scale-aware 2-channel handover:
+      //  - Macro non-water overlays (macro landmark markers & coarse roads on depth 1..3) fade
+      //    completely to exact `0` before settlement scale (ZERO `0.08` ghost geometry!).
+      //  - Macro rivers (`water`) stay active on the immediate regional carrier around Liang-Barsky
+      //    settlement cutouts so calibrated local settlement rivers hand off without abrupt breaks.
+      const isSharedMacroOutdoor =
+        hasSharedTerrain && source.look === 'outdoor' && source.mapScale === 'world';
       let targetOpacity: number;
-      if (entry.depth === 1) {
-        targetOpacity = hasSharedTerrain && hasActiveSettlementOrDeeper ? 0.08 : 1;
-      } else if (source.look === 'outdoor' && source.mapScale === 'world' && childWeight > 0.2) {
-        // Continent/country overlay yields smoothly as its child settlement takes over
-        const fade = Math.max(0, 1 - (childWeight - 0.2) / 0.65);
-        targetOpacity = Math.max(0, Math.min(1, entry.detailWeight * fade));
+      let targetWaterOpacity: number;
+      if (isSharedMacroOutdoor) {
+        targetOpacity = computeMacroOverlayTargetOpacity({
+          depth: entry.depth,
+          detailWeight: entry.detailWeight,
+          viewSpan: input.viewSpan,
+          childWeight,
+          hasActiveSettlementOrDeeper,
+        });
+        targetWaterOpacity = computeMacroWaterTargetOpacity({
+          depth: entry.depth,
+          detailWeight: entry.detailWeight,
+          viewSpan: input.viewSpan,
+          childWeight,
+          hasActiveSettlementOrDeeper,
+        });
+      } else if (entry.depth === 1) {
+        targetOpacity = 1;
+        targetWaterOpacity = 1;
       } else if (source.look === 'outdoor' && hasIndoorChildByParent.get(entry.mapId)) {
         // Keep settlement surroundings gently visible as context around an active indoor building
         targetOpacity = Math.max(0.45, Math.min(1, entry.detailWeight * 0.72));
+        targetWaterOpacity = targetOpacity;
       } else {
         targetOpacity = Math.max(0, Math.min(1, entry.detailWeight));
+        targetWaterOpacity = targetOpacity;
       }
 
       const baseElevationY =
         hasSharedTerrain && source.look === 'indoor'
           ? this.worldTerrain.sampleElevation(
-              entry.worldTransform.centerX,
-              entry.worldTransform.centerY,
-            ) + 0.003
+            entry.worldTransform.centerX,
+            entry.worldTransform.centerY,
+          ) + 0.003
           : 0;
 
       const existing = this.groups.get(entry.mapId);
@@ -432,10 +531,22 @@ export class AtlasThreeMultiMapGraph {
         existing.lodState = entry.lodState;
         existing.detailWeight = entry.detailWeight;
         existing.targetOpacity = targetOpacity;
+        existing.targetWaterOpacity = targetWaterOpacity;
         existing.currentOpacity =
           useSmoothDamp
             ? existing.currentOpacity + (targetOpacity - existing.currentOpacity) * dampAlpha
             : targetOpacity;
+        existing.currentWaterOpacity =
+          useSmoothDamp
+            ? existing.currentWaterOpacity +
+              (targetWaterOpacity - existing.currentWaterOpacity) * dampAlpha
+            : targetWaterOpacity;
+        if (Math.abs(existing.currentOpacity - targetOpacity) < 0.004) {
+          existing.currentOpacity = targetOpacity;
+        }
+        if (Math.abs(existing.currentWaterOpacity - targetWaterOpacity) < 0.004) {
+          existing.currentWaterOpacity = targetWaterOpacity;
+        }
         applyWorldTransformToGroup(
           existing.pivot,
           existing.content,
@@ -448,6 +559,7 @@ export class AtlasThreeMultiMapGraph {
       }
 
       const prevOpacity = existing?.currentOpacity;
+      const prevWaterOpacity = existing?.currentWaterOpacity;
       if (existing) {
         this.disposeGroupNode(existing);
         this.groups.delete(entry.mapId);
@@ -466,16 +578,16 @@ export class AtlasThreeMultiMapGraph {
       const sharedWorldTerrain: SharedWorldTerrainBinding | undefined =
         hasSharedTerrain && source.look === 'outdoor'
           ? {
-              sampleElevationWorld: (wx, wz) => this.worldTerrain.sampleElevation(wx, wz),
-              mapToWorld: (lx, lz) => {
-                const dx = (lx - midX) * scaleX;
-                const dz = (lz - midY) * scaleY;
-                return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;
-              },
-              verticalScale,
-              depthLiftY,
-              waterLevel: this.worldTerrain.getSource()?.waterLevel ?? 0,
-            }
+            sampleElevationWorld: (wx, wz) => this.worldTerrain.sampleElevation(wx, wz),
+            mapToWorld: (lx, lz) => {
+              const dx = (lx - midX) * scaleX;
+              const dz = (lz - midY) * scaleY;
+              return [centerX + dx * cosR - dz * sinR, centerY + dx * sinR + dz * cosR] as const;
+            },
+            verticalScale,
+            depthLiftY,
+            waterLevel: this.worldTerrain.getSource()?.waterLevel ?? 0,
+          }
           : undefined;
 
       const plan = buildAtlasThreeScenePlan(filteredDoc, {
@@ -500,6 +612,8 @@ export class AtlasThreeMultiMapGraph {
       pivot.add(content);
 
       const pickables: THREE.Object3D[] = [];
+      const overlayMeshes: THREE.Object3D[] = [];
+      const waterMeshes: THREE.Object3D[] = [];
       const geometries: THREE.BufferGeometry[] = [];
       const materials: ClonedGroupMaterial[] = [];
 
@@ -526,6 +640,7 @@ export class AtlasThreeMultiMapGraph {
         mesh.userData.mapId = entry.mapId;
         mesh.name = `atlas3:${entry.mapId}:${surfaceKey}`;
         content.add(mesh);
+        overlayMeshes.push(mesh);
         pickables.push(mesh);
       }
 
@@ -540,6 +655,7 @@ export class AtlasThreeMultiMapGraph {
         mesh.name = `atlas3:${entry.mapId}:water`;
         mesh.renderOrder = 2;
         content.add(mesh);
+        waterMeshes.push(mesh);
         pickables.push(mesh);
       }
 
@@ -560,6 +676,7 @@ export class AtlasThreeMultiMapGraph {
         inst.userData.mapId = entry.mapId;
         inst.name = `atlas3:${entry.mapId}:doors`;
         content.add(inst);
+        overlayMeshes.push(inst);
         pickables.push(inst);
       }
 
@@ -586,6 +703,7 @@ export class AtlasThreeMultiMapGraph {
             inst.userData.mapId = entry.mapId;
             inst.name = `atlas3:${entry.mapId}:scatter:${batch.kind}`;
             content.add(inst);
+            overlayMeshes.push(inst);
           }
         }
       }
@@ -608,6 +726,7 @@ export class AtlasThreeMultiMapGraph {
         aoInst.renderOrder = 2;
         aoInst.name = `atlas3:${entry.mapId}:ao`;
         content.add(aoInst);
+        overlayMeshes.push(aoInst);
       }
 
       // Per-map terrain only if no shared world terrain source exists (legacy fallback)
@@ -622,6 +741,7 @@ export class AtlasThreeMultiMapGraph {
         mesh.userData.mapId = entry.mapId;
         mesh.name = `atlas3:${entry.mapId}:terrain`;
         content.add(mesh);
+        overlayMeshes.push(mesh);
       }
 
       applyWorldTransformToGroup(pivot, content, entry, source.bounds, baseElevationY);
@@ -636,6 +756,14 @@ export class AtlasThreeMultiMapGraph {
             : useSmoothDamp
               ? targetOpacity * dampAlpha
               : targetOpacity;
+      const initialWaterOpacity =
+        prevWaterOpacity !== undefined
+          ? prevWaterOpacity
+          : entry.depth === 1
+            ? targetWaterOpacity
+            : useSmoothDamp
+              ? targetWaterOpacity * dampAlpha
+              : targetWaterOpacity;
 
       const node: AtlasThreeMapGroupNode = {
         mapId: entry.mapId,
@@ -643,6 +771,8 @@ export class AtlasThreeMultiMapGraph {
         pivot,
         content,
         pickables,
+        overlayMeshes,
+        waterMeshes,
         scenePlan: plan,
         buildSignature: sig,
         geometries,
@@ -653,6 +783,8 @@ export class AtlasThreeMultiMapGraph {
         detailWeight: entry.detailWeight,
         targetOpacity,
         currentOpacity: initialOpacity,
+        targetWaterOpacity,
+        currentWaterOpacity: initialWaterOpacity,
         exiting: false,
       };
       this.applyOpacityToNode(node);
@@ -708,10 +840,19 @@ export class AtlasThreeMultiMapGraph {
 
   private applyOpacityToNode(node: AtlasThreeMapGroupNode): void {
     const op = Math.max(0, Math.min(1, node.currentOpacity));
+    const waterOp = Math.max(0, Math.min(1, node.currentWaterOpacity));
+    const showOverlay = op > 0.005;
+    const showWater = waterOp > 0.005;
     for (const m of node.materials) {
-      applyMaterialOpacity(m, op);
+      applyMaterialOpacity(m, m.surfaceKey === 'water' ? waterOp : op);
     }
-    node.pivot.visible = op > 0.005;
+    for (const mesh of node.overlayMeshes) {
+      mesh.visible = showOverlay;
+    }
+    for (const mesh of node.waterMeshes) {
+      mesh.visible = showWater;
+    }
+    node.pivot.visible = showOverlay || showWater;
   }
 
   getGroup(mapId: string): AtlasThreeMapGroupNode | undefined {
@@ -722,7 +863,9 @@ export class AtlasThreeMultiMapGraph {
     const out: THREE.Object3D[] = [];
     for (const g of this.groups.values()) {
       if (!g.pivot.visible || g.exiting) continue;
-      for (const p of g.pickables) out.push(p);
+      for (const p of g.pickables) {
+        if (p.visible) out.push(p);
+      }
     }
     return out;
   }
@@ -758,6 +901,7 @@ export class AtlasThreeMultiMapGraph {
       groupOpacities[g.mapId] = {
         detailWeight: Math.round(g.detailWeight * 1000) / 1000,
         opacity: Math.round(g.currentOpacity * 1000) / 1000,
+        waterOpacity: Math.round(g.currentWaterOpacity * 1000) / 1000,
         depth: g.depth,
         lodState: g.lodState,
         exiting: g.exiting,
@@ -798,6 +942,8 @@ export class AtlasThreeMultiMapGraph {
     node.geometries.length = 0;
     node.materials.length = 0;
     node.pickables.length = 0;
+    node.overlayMeshes.length = 0;
+    node.waterMeshes.length = 0;
   }
 }
 

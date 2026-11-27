@@ -97,63 +97,170 @@ export function autoAtlasThreePitchForSpan(
 }
 
 /**
- * Format a truthful, scale-grounded German HUD readout for the current camera span
- * instead of a saturated fake percentage (`2500%`).
+ * Compute the real visible vertical ground span (in world/map units) around the camera focus
+ * taking actual camera projection geometry (`ortho-topdown`, `diorama-oblique`, `perspective`)
+ * and tilt (`pitchRad`) into account:
+ *  - `ortho-topdown` (`pitch = π/2`): exact `2 * span`.
+ *  - `diorama-oblique` (tilted ortho): `2 * span / sin(pitch)` along the horizontal ground plane.
+ *  - `perspective`: central ground-plane span measured via exact ray unprojection at `ndcY = ±0.5` × 2.
+ */
+export function computeVisibleGroundSpanWu(
+  view: Pick<AtlasThreeCameraView, 'mode' | 'span' | 'pitchRad'> & {
+    readonly x?: number;
+    readonly z?: number;
+    readonly y?: number;
+    readonly yawRad?: number;
+  },
+  aspect = 16 / 10,
+): number {
+  const safeSpan = clamp(Number.isFinite(view.span) ? view.span : 430, 0.05, 2400);
+  const pitch = clampAtlasThreePitch(view.mode, Number.isFinite(view.pitchRad) ? view.pitchRad : autoAtlasThreePitchForSpan(view.mode, safeSpan));
+  if (view.mode === 'ortho-topdown') {
+    return safeSpan * 2;
+  }
+  if (view.mode === 'diorama-oblique') {
+    return (safeSpan * 2) / Math.max(0.25, Math.sin(pitch));
+  }
+  // Perspective: measure real central ground span via rig unprojection onto the focus plane
+  const fullView: AtlasThreeCameraView = {
+    mode: 'perspective',
+    x: view.x ?? 0,
+    z: view.z ?? 0,
+    y: view.y ?? 0,
+    span: safeSpan,
+    yawRad: view.yawRad ?? 0,
+    pitchRad: pitch,
+  };
+  const rig = buildAtlasThreeCameraRig(fullView, aspect);
+  const planeY = fullView.y ?? 0;
+  const nearPt = unprojectNdcToPlaneWithRig(rig, 0, -0.5, planeY);
+  const farPt = unprojectNdcToPlaneWithRig(rig, 0, 0.5, planeY);
+  if (nearPt && farPt) {
+    const centralSpan = Math.hypot(farPt.x - nearPt.x, farPt.z - nearPt.z) * 2;
+    if (Number.isFinite(centralSpan) && centralSpan > 0) {
+      return centralSpan;
+    }
+  }
+  return (safeSpan * 2) / Math.max(0.25, Math.sin(pitch));
+}
+
+function formatCalibratedMetersDe(meters: number): {
+  readonly shortLabel: string;
+  readonly scaleText: string;
+} {
+  if (meters >= 100_000) {
+    const km = Math.round(meters / 1000);
+    return { shortLabel: `~${km} km`, scaleText: `ca. ${km} km Boden-Sichthöhe` };
+  }
+  if (meters >= 10_000) {
+    const km = Math.round(meters / 1000);
+    return { shortLabel: `~${km} km`, scaleText: `ca. ${km} km Boden-Sichthöhe` };
+  }
+  if (meters >= 1_000) {
+    const km = Math.round(meters / 100) / 10;
+    const fmt = km.toFixed(1).replace('.', ',');
+    return { shortLabel: `~${fmt} km`, scaleText: `ca. ${fmt} km Boden-Sichthöhe` };
+  }
+  if (meters >= 100) {
+    const m = Math.round(meters / 5) * 5;
+    return { shortLabel: `~${m} m`, scaleText: `ca. ${m} m Boden-Sichthöhe` };
+  }
+  if (meters >= 10) {
+    const m = Math.round(meters);
+    return { shortLabel: `~${m} m`, scaleText: `ca. ${m} m Boden-Sichthöhe` };
+  }
+  const m = Math.max(0.5, Math.round(meters * 10) / 10);
+  const fmt = m.toFixed(1).replace('.', ',');
+  return { shortLabel: `~${fmt} m`, scaleText: `ca. ${fmt} m Boden-Sichthöhe` };
+}
+
+function formatUncalibratedUnitsDe(units: number): {
+  readonly shortLabel: string;
+  readonly scaleText: string;
+} {
+  if (units >= 100) {
+    const rounded = Math.round(units);
+    return { shortLabel: `~${rounded} WE`, scaleText: `ca. ${rounded} WE (unkalibriert)` };
+  }
+  if (units >= 10) {
+    const rounded = Math.round(units * 10) / 10;
+    const fmt = rounded.toFixed(1).replace('.', ',');
+    return { shortLabel: `~${fmt} WE`, scaleText: `ca. ${fmt} WE (unkalibriert)` };
+  }
+  const rounded = Math.max(0.05, Math.round(units * 100) / 100);
+  const fmt = rounded.toFixed(2).replace('.', ',');
+  return { shortLabel: `~${fmt} WE`, scaleText: `ca. ${fmt} WE (unkalibriert)` };
+}
+
+/**
+ * Format a truthful, calibration- and projection-grounded German HUD readout for the
+ * current camera view instead of a saturated fake percentage (`2500%`) or invented meters.
  *
- * Meaning: visible vertical ground span (`2 * span` world units), calibrated to SagaTree's
- * Bottom-Up Default World (~1 world unit ≈ 1.4 km on planet scale; at settlement/interior
- * single-document mode, displays local map meter scale).
+ * Rules:
+ *  - Uses exact persisted `metersPerUnit` calibration when present (`> 0`).
+ *  - NEVER claims meters or kilometers when `metersPerUnit` is null/absent!
+ *  - Accounts for real camera geometry (`ortho-topdown`, `diorama-oblique`, `perspective`).
  */
 export function formatAtlasTruthfulScaleHud(
   span: number,
-  options?: { readonly isWorldSceneGraph?: boolean },
+  options?: {
+    readonly isWorldSceneGraph?: boolean;
+    readonly metersPerUnit?: number | null;
+    readonly mode?: AtlasThreeCameraMode;
+    readonly pitchRad?: number;
+    readonly aspect?: number;
+  },
 ): {
   readonly shortLabel: string;
   readonly zoomLevel: number;
+  readonly visibleGroundWu: number;
+  readonly visibleMeters: number | null;
+  readonly calibrated: boolean;
   readonly detailTitleDe: string;
 } {
   const safeSpan = clamp(Number.isFinite(span) ? span : 430, 0.05, 2400);
   const isWorld = options?.isWorldSceneGraph ?? true;
-  // Logarithmic map zoom index Z1 (span ~1024) .. Z15 (span ~0.06)
+  const mode: AtlasThreeCameraMode = options?.mode ?? 'ortho-topdown';
+  const pitchRad =
+    options?.pitchRad !== undefined && Number.isFinite(options.pitchRad)
+      ? options.pitchRad
+      : autoAtlasThreePitchForSpan(mode, safeSpan);
   const zoomLevel = Math.round(clamp(1 + Math.log2(1024 / safeSpan), 1, 15) * 10) / 10;
-  const visibleWidthWu = safeSpan * 2;
+  const visibleGroundWu = computeVisibleGroundSpanWu(
+    { mode, span: safeSpan, pitchRad },
+    options?.aspect ?? 16 / 10,
+  );
+  const mpu =
+    typeof options?.metersPerUnit === 'number' &&
+    Number.isFinite(options.metersPerUnit) &&
+    options.metersPerUnit > 0
+      ? options.metersPerUnit
+      : null;
 
-  if (!isWorld) {
-    // Local single-map document (1000 local units)
-    const pct = Math.max(10, Math.min(1200, Math.round((220 / Math.max(16, safeSpan)) * 100)));
+  if (mpu !== null) {
+    const visibleMeters = visibleGroundWu * mpu;
+    const { shortLabel, scaleText } = formatCalibratedMetersDe(visibleMeters);
+    const scopeLabel = isWorld ? `Weltmaßstab Z${zoomLevel.toFixed(1)}` : 'Kartenmaßstab';
     return {
-      shortLabel: `${pct}%`,
+      shortLabel,
       zoomLevel,
-      detailTitleDe: `Einzelkarte · Sichtbereich ${Math.round(visibleWidthWu)} Karteneinheiten (Klick zentriert)`,
+      visibleGroundWu,
+      visibleMeters,
+      calibrated: true,
+      detailTitleDe: `${scopeLabel} · ${scaleText} (${mpu} m/WE · Klick zentriert)`,
     };
   }
 
-  // World-space calibrated physical scale (~1 world unit ≈ 1250 m in Dornhain hierarchy)
-  const visibleMeters = visibleWidthWu * 1250;
-  let shortLabel: string;
-  let scaleText: string;
-  if (visibleMeters >= 100_000) {
-    const km = Math.round(visibleMeters / 10_000) * 10;
-    shortLabel = `~${km} km`;
-    scaleText = `ca. ${km} km Sichthöhe`;
-  } else if (visibleMeters >= 10_000) {
-    const km = Math.round(visibleMeters / 1000);
-    shortLabel = `~${km} km`;
-    scaleText = `ca. ${km} km Sichthöhe`;
-  } else if (visibleMeters >= 1_000) {
-    const km = Math.round(visibleMeters / 100) / 10;
-    shortLabel = `~${km.toFixed(1).replace('.', ',')} km`;
-    scaleText = `ca. ${km.toFixed(1).replace('.', ',')} km Sichthöhe`;
-  } else {
-    const m = Math.max(10, Math.round(visibleMeters / 10) * 10);
-    shortLabel = `~${m} m`;
-    scaleText = `ca. ${m} m Sichthöhe`;
-  }
-
+  // Uncalibrated: NEVER invent meters/kilometers!
+  const { shortLabel, scaleText } = formatUncalibratedUnitsDe(visibleGroundWu);
+  const scopeLabel = isWorld ? `Unkalibriert Z${zoomLevel.toFixed(1)}` : 'Einzelkarte (unkalibriert)';
   return {
     shortLabel,
     zoomLevel,
-    detailTitleDe: `Weltmaßstab Z${zoomLevel.toFixed(1)} · ${scaleText} (Span ${safeSpan < 10 ? safeSpan.toFixed(2) : Math.round(safeSpan)} WE · Klick zentriert)`,
+    visibleGroundWu,
+    visibleMeters: null,
+    calibrated: false,
+    detailTitleDe: `${scopeLabel} · ${scaleText} (Klick zentriert)`,
   };
 }
 

@@ -147,11 +147,11 @@ export function computeMapWorldTransform(
   mapId: string,
 ):
   | {
-      readonly ok: true;
-      readonly depth: number;
-      readonly transform: AtlasWorldTransform2D;
-      readonly aabb: AtlasWorldAabb;
-    }
+    readonly ok: true;
+    readonly depth: number;
+    readonly transform: AtlasWorldTransform2D;
+    readonly aabb: AtlasWorldAabb;
+  }
   | { readonly ok: false; readonly error: AtlasWorldTransformError } {
   const chainRes = resolveWorldChain(nodes, mapId);
   if (isAtlasWorldError(chainRes)) return { ok: false, error: chainRes.error };
@@ -383,9 +383,11 @@ export function buildAtlasWorldScenePlan(input: {
     }
   }
 
-  // Compute the focus ancestor chain (World → … → deepest focus-containing candidate, plus
-  // explicit `focusTargetMapId` chain) so carrier maps along the focus path ALWAYS survive budget!
-  const focusChainIds = new Set<string>(requestedFocusChainIds);
+  // Compute the LIVE camera focus ancestor chain (`World → … → deepest focus-containing candidate`)
+  // separately from any explicit `requestedFocusChainIds` so a stale off-screen `focusTargetMapId`
+  // (e.g. Schankraum after user panned/zoomed over to Südmark/Moorbrück) can NEVER starve the
+  // region actually under the camera!
+  const liveFocusChainIds = new Set<string>();
   const deepestFocus = [...candidates]
     .filter((c) => c.containsFocus)
     .sort((a, b) => (b.depth !== a.depth ? b.depth - a.depth : a.transform.worldSpan - b.transform.worldSpan))[0];
@@ -394,27 +396,43 @@ export function buildAtlasWorldScenePlan(input: {
     const visited = new Set<string>();
     while (cur && !visited.has(cur.map.id)) {
       visited.add(cur.map.id);
-      focusChainIds.add(cur.map.id);
+      liveFocusChainIds.add(cur.map.id);
       cur = cur.parentMapId ? allValidById.get(cur.parentMapId) : undefined;
     }
   }
+  for (const c of candidates) {
+    if (c.containsFocus) {
+      liveFocusChainIds.add(c.map.id);
+    }
+  }
+
+  // Only grant requestedFocusPath top priority over live camera focus when the requested target
+  // actually intersects the viewport (arriving/arrived) or when no live focus child exists yet.
+  const requestedTargetCand = requestedTargetId ? allValidById.get(requestedTargetId) : undefined;
+  const requestedTargetInView = Boolean(
+    requestedTargetCand &&
+      (requestedTargetCand.containsFocus || aabbIntersects(requestedTargetCand.aabb, viewAabb)),
+  );
 
   // Enforce multi-map budget:
   //  1. World Root (depth 1) always kept
-  //  2. Explicit requested focus path (World → … → focusTargetMapId) always prioritized
-  //  3. Camera focus carrier chain (World → … → active focused map) always prioritized
+  //  2. Live camera focus chain ALWAYS prioritized over stale off-screen requested targets
+  //  3. In-view requested focus path (World → … → focusTargetMapId) prioritized
   //  4. Keep-coarse carriers of visible descendants prioritized ahead of non-focus leaf details
   //  5. Remaining visible maps by depth DESC, effectiveSsePx DESC
   const sortedForBudget = [...candidates].sort((a, b) => {
     if (a.depth === 1 && b.depth !== 1) return -1;
     if (b.depth === 1 && a.depth !== 1) return 1;
+    const aReqActive = requestedTargetInView && a.onRequestedFocusPath;
+    const bReqActive = requestedTargetInView && b.onRequestedFocusPath;
+    if (aReqActive !== bReqActive) return aReqActive ? -1 : 1;
+    const aLive = liveFocusChainIds.has(a.map.id);
+    const bLive = liveFocusChainIds.has(b.map.id);
+    if (aLive !== bLive) return aLive ? -1 : 1;
+    if (aLive && bLive && a.depth !== b.depth) return b.depth - a.depth;
     if (a.onRequestedFocusPath !== b.onRequestedFocusPath) {
       return a.onRequestedFocusPath ? -1 : 1;
     }
-    const aFocus = focusChainIds.has(a.map.id);
-    const bFocus = focusChainIds.has(b.map.id);
-    if (aFocus !== bFocus) return aFocus ? -1 : 1;
-    if (aFocus && bFocus && a.depth !== b.depth) return b.depth - a.depth;
     const aCarrier = carrierOfActiveIds.has(a.map.id);
     const bCarrier = carrierOfActiveIds.has(b.map.id);
     if (aCarrier !== bCarrier) return aCarrier ? -1 : 1;
@@ -424,8 +442,11 @@ export function buildAtlasWorldScenePlan(input: {
     return a.map.id.localeCompare(b.map.id);
   });
 
-  const kept = sortedForBudget.slice(0, Math.max(1, cfg.maxActiveMaps));
-  const dropped = sortedForBudget.slice(Math.max(1, cfg.maxActiveMaps));
+  // Never drop a map on the active camera focus chain if the chain itself fits cleanly;
+  // standard cap stays `cfg.maxActiveMaps` (default 6).
+  const effectiveBudget = Math.max(1, cfg.maxActiveMaps);
+  const kept = sortedForBudget.slice(0, effectiveBudget);
+  const dropped = sortedForBudget.slice(effectiveBudget);
   for (const d of dropped) {
     excluded.push({ mapId: d.map.id, reason: 'budget' });
   }
@@ -458,12 +479,12 @@ export function buildAtlasWorldScenePlan(input: {
       c.depth === 1
         ? 1
         : Math.max(
-            0,
-            Math.min(
-              1,
-              (c.effectiveSsePx - safeCoarsen) / Math.max(1, cfg.sseReplaceParentPx - safeCoarsen),
-            ),
-          );
+          0,
+          Math.min(
+            1,
+            (c.effectiveSsePx - safeCoarsen) / Math.max(1, cfg.sseReplaceParentPx - safeCoarsen),
+          ),
+        );
     // Keep explicitly focused target smoothly visible upon arrival even at wider framing spans
     const detailWeight =
       c.onRequestedFocusPath && c.containsFocus
@@ -507,4 +528,39 @@ export function buildAtlasWorldScenePlan(input: {
       candidateCount: candidates.length,
     },
   };
+}
+
+/**
+ * Resolve the effective World-Space calibration (`meters per world unit`) for the current
+ * camera context strictly from persisted calibration metadata — NEVER invents meters/km:
+ *  1. Explicit calibrated world root (`rootMetersPerUnit > 0`) takes precedence.
+ *  2. Otherwise, if `activeMapId` (or its immediate anchor) carries an explicit
+ *     `parentAnchor.metersPerUnit > 0`, derives `metersPerUnit / worldScale` from its
+ *     exact `computeMapWorldTransform`.
+ *  3. Otherwise returns `null` (honestly uncalibrated).
+ */
+export function resolveWorldCalibrationMetersPerUnit(input: {
+  readonly maps: readonly AtlasWorldSceneMapInput[];
+  readonly rootMetersPerUnit: number | null;
+  readonly activeMapId: string | null;
+}): number | null {
+  const { maps, rootMetersPerUnit, activeMapId } = input;
+  if (
+    typeof rootMetersPerUnit === 'number' &&
+    Number.isFinite(rootMetersPerUnit) &&
+    rootMetersPerUnit > 0
+  ) {
+    return rootMetersPerUnit;
+  }
+  if (!activeMapId || maps.length === 0) return null;
+  const nodes = new Map<string, AtlasWorldSpaceNode>();
+  for (const m of maps) nodes.set(m.id, m);
+  const active = nodes.get(activeMapId);
+  const mpu = active?.parentAnchor?.metersPerUnit ?? null;
+  if (typeof mpu !== 'number' || !Number.isFinite(mpu) || mpu <= 0) return null;
+  const wt = computeMapWorldTransform(nodes, activeMapId);
+  if (!wt.ok) return null;
+  const worldScale = Math.sqrt(Math.max(1e-12, wt.transform.scaleX * wt.transform.scaleY));
+  if (!Number.isFinite(worldScale) || worldScale <= 0) return null;
+  return mpu / worldScale;
 }

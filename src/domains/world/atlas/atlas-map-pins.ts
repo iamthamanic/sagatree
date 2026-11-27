@@ -8,6 +8,15 @@
 import { tryNodeKindFromPlaceKind, type WorldNodeKind } from '../hierarchy';
 import { anchorPointFromLink } from '../places/atlas-place-nav';
 import type { WorldPlaceMapLinkVm, WorldPlaceVm } from '../places/world-place.types';
+import {
+  computeMapWorldTransform,
+  type AtlasWorldSceneMapInput,
+} from './atlas-world-scene-plan';
+import {
+  isAtlasWorldError,
+  localToWorld,
+  type AtlasWorldSpaceNode,
+} from './atlas-world-space';
 
 /** How a map's content is drawn: terrain (world), streets/buildings (settlement), floor plans (interior). */
 export type AtlasMapScale = 'world' | 'settlement' | 'interior';
@@ -19,6 +28,12 @@ export type AtlasMapPin = {
   readonly kind: WorldNodeKind | null;
   readonly x: number;
   readonly y: number;
+  /** Optional World-Space footprint span (used for projection-driven label reveal in World mode). */
+  readonly worldSpan?: number;
+  /** Optional map ID associated with this pin (own primary map or host parent map for landmarks). */
+  readonly mapId?: string;
+  /** Optional hierarchy depth (1=world, 2=continent, 3=country, 4=place, 5=building, 6=room). */
+  readonly depth?: number;
 };
 
 /** Runtime label budget per map; extra places stay reachable via the structure tree. */
@@ -145,6 +160,161 @@ export function buildAtlasMapPins(input: {
       y: point.y,
     });
   }
+  pins.sort(
+    (a, b) =>
+      (a.kind ? PIN_KIND_ORDER[a.kind] : 9) - (b.kind ? PIN_KIND_ORDER[b.kind] : 9) ||
+      a.label.localeCompare(b.label, 'de'),
+  );
+  return pins.slice(0, ATLAS_MAP_PIN_LIMIT);
+}
+
+/**
+ * Build unified World-Space pins across the ENTIRE located map hierarchy (continents,
+ * countries, settlements like Moorbrück/Dornhain, buildings/dungeons, rooms & child landmarks):
+ *  - Deduplicates strictly per `place.id`.
+ *  - For places owning a located primary map (where this place is the shallowest owner),
+ *    uses the exact World-Space map center via `computeMapWorldTransform`.
+ *  - For child landmarks without their own primary map (e.g. Whisper Road / Marktplatz)
+ *    or places with only an overview link, resolves `localToWorld(link.mapId, anchor)`.
+ *  - Honestly skips unlocated maps / broken anchor chains (never invents coordinates).
+ */
+export function buildAtlasWorldPins(input: {
+  readonly maps: readonly AtlasWorldSceneMapInput[];
+  readonly places: readonly WorldPlaceVm[];
+  readonly links: readonly WorldPlaceMapLinkVm[];
+  readonly rootMapId: string | null;
+}): AtlasMapPin[] {
+  const { maps, places, links, rootMapId } = input;
+  if (maps.length === 0) return [];
+
+  const nodes = new Map<string, AtlasWorldSpaceNode>();
+  const locatedTransforms = new Map<
+    string,
+    {
+      readonly depth: number;
+      readonly centerX: number;
+      readonly centerY: number;
+      readonly worldSpan: number;
+    }
+  >();
+
+  for (const m of maps) {
+    nodes.set(m.id, m);
+  }
+  for (const m of maps) {
+    if (m.status === 'unlocated' || m.isPortal) continue;
+    const wt = computeMapWorldTransform(nodes, m.id);
+    if (!wt.ok) continue;
+    locatedTransforms.set(m.id, {
+      depth: wt.depth,
+      centerX: wt.transform.centerX,
+      centerY: wt.transform.centerY,
+      worldSpan: wt.transform.worldSpan,
+    });
+  }
+
+  // Precompute shallowest owner place for every located map so child landmarks sharing
+  // a settlement's primary map don't steal the settlement's map center.
+  const ownerPlaceIdByMapId = new Map<string, string>();
+  for (const mapId of locatedTransforms.keys()) {
+    const owner = atlasMapOwnerPlace(mapId, places, links);
+    if (owner) ownerPlaceIdByMapId.set(mapId, owner.id);
+  }
+
+  const linksByPlaceId = new Map<string, WorldPlaceMapLinkVm[]>();
+  for (const link of links) {
+    const list = linksByPlaceId.get(link.placeId) ?? [];
+    list.push(link);
+    linksByPlaceId.set(link.placeId, list);
+  }
+
+  const pins: AtlasMapPin[] = [];
+  const seen = new Set<string>();
+
+  for (const place of places) {
+    if (place.status === 'archived' || seen.has(place.id)) continue;
+    const placeLinks = linksByPlaceId.get(place.id);
+    if (!placeLinks || placeLinks.length === 0) continue;
+
+    const kind = tryNodeKindFromPlaceKind(place.kind);
+    const label = place.name.trim() || 'Ort';
+
+    // 1) Primary-map pin: place owns a located non-root map -> exact World-Space map center
+    const ownedPrimary = placeLinks.find(
+      (l) =>
+        l.usage === 'primary' &&
+        l.mapId !== rootMapId &&
+        ownerPlaceIdByMapId.get(l.mapId) === place.id &&
+        locatedTransforms.has(l.mapId),
+    );
+    if (ownedPrimary) {
+      const wt = locatedTransforms.get(ownedPrimary.mapId)!;
+      seen.add(place.id);
+      pins.push({
+        id: place.id,
+        label,
+        kind,
+        x: wt.centerX,
+        y: wt.centerY,
+        worldSpan: wt.worldSpan,
+        mapId: ownedPrimary.mapId,
+        depth: wt.depth,
+      });
+      continue;
+    }
+
+    // 2) Child landmark / overview-link pin: resolve anchor via `localToWorld(link.mapId, anchor)`
+    // Prefer links anchored on the deepest located host map (e.g. Marktplatz on Dornhain)
+    const groundedCandidates = placeLinks
+      .map((link) => {
+        const pt = anchorPointFromLink(link);
+        const hostWt = locatedTransforms.get(link.mapId);
+        if (!pt || !hostWt) return null;
+        return { link, pt, hostWt };
+      })
+      .filter(
+        (c): c is {
+          readonly link: WorldPlaceMapLinkVm;
+          readonly pt: { readonly x: number; readonly y: number };
+          readonly hostWt: {
+            readonly depth: number;
+            readonly centerX: number;
+            readonly centerY: number;
+            readonly worldSpan: number;
+          };
+        } => c !== null,
+      )
+      .sort((a, b) => b.hostWt.depth - a.hostWt.depth);
+
+    const best = groundedCandidates[0];
+    if (!best) continue;
+
+    const worldPos = localToWorld(nodes, best.link.mapId, best.pt);
+    if (isAtlasWorldError(worldPos)) continue;
+
+    seen.add(place.id);
+    // Estimate landmark footprint relative to host map so micro-POIs reveal at host zoom
+    const landmarkSpan =
+      kind === 'continent'
+        ? best.hostWt.worldSpan * 0.4
+        : kind === 'country'
+          ? best.hostWt.worldSpan * 0.25
+          : kind === 'place'
+            ? best.hostWt.worldSpan * 0.08
+            : best.hostWt.worldSpan * 0.14;
+
+    pins.push({
+      id: place.id,
+      label,
+      kind,
+      x: worldPos.value.x,
+      y: worldPos.value.y,
+      worldSpan: landmarkSpan,
+      mapId: best.link.mapId,
+      depth: best.hostWt.depth + 1,
+    });
+  }
+
   pins.sort(
     (a, b) =>
       (a.kind ? PIN_KIND_ORDER[a.kind] : 9) - (b.kind ? PIN_KIND_ORDER[b.kind] : 9) ||

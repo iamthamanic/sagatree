@@ -104,6 +104,8 @@ export type AtlasNative3dEditorProps = {
   readonly mapScale?: AtlasMapScale;
   /** Persisted place labels anchored on the active map. */
   readonly mapPins?: readonly AtlasMapPin[] | null;
+  /** Explicit physical calibration (`metersPerUnit`) for the active map/world, or null if uncalibrated. */
+  readonly metersPerUnit?: number | null;
   /** ATL2-D01 graphics quality preset (default balanced). */
   readonly graphicsPresetId?: AtlasGraphicsPresetId;
   /** ATL2-F04 dungeon theme (atmospheric); geometry IDs stay canonical. */
@@ -419,6 +421,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
     canEdit = true,
     mapScale = 'world',
     mapPins = null,
+    metersPerUnit = null,
     graphicsPresetId = 'balanced',
     navRestoreView = null,
     onNavViewChange,
@@ -472,6 +475,7 @@ export function AtlasNative3dEditor(props: AtlasNative3dEditorProps) {
           externalNav={externalNav}
           activePlaceId={activePlaceId}
           mapPins={mapPins ?? []}
+          metersPerUnit={metersPerUnit}
           navRestoreView={navRestoreView}
           canUndo={canUndo}
           canRedo={canRedo}

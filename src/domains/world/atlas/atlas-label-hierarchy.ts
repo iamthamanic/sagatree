@@ -23,6 +23,8 @@ export type AtlasPinZoomPresentation = {
   readonly visible: boolean;
   /** True when full label text should show (Tier 3 can show subtle dot slightly before text). */
   readonly showText: boolean;
+  /** True when this pin is currently focused/active and must never be hidden or pushed aside. */
+  readonly locked?: boolean;
 };
 
 export type AtlasPortalTransitionKind =
@@ -108,21 +110,132 @@ export function classifyAtlasPinTier(
 }
 
 /**
- * Compute continuous Google-Maps-style progressive visibility for a pin at the current camera span.
- * Smaller `span` = zoomed closer in.
+ * Compute continuous Google-Maps-style progressive visibility for a pin.
+ *
+ * In continuous World Scene Graph mode (`opts.isWorldSceneGraph === true` with real
+ * `projectedSpanPx` of the place's footprint on screen):
+ *  - Visibility follows actual screen projection + hierarchy (Continent → Country → Place →
+ *    Building/Dungeon → Room), NEVER rigid global span cutoffs!
+ *  - A focused or larger-located place reveals proportionally without being blocked by a
+ *    hardcoded span wall, and the currently focused/active place stays locked & visible.
+ *
+ * In legacy single-map mode (`!opts.isWorldSceneGraph`), preserves the existing local span
+ * reveal curve for single-document editing.
  */
 export function computeAtlasPinZoomPresentation(
   pin: AtlasLabelPinLike,
   span: number,
   mapScale: AtlasMapScale,
-  opts?: { readonly activePlaceId?: string | null; readonly totalPins?: number },
+  opts?: {
+    readonly activePlaceId?: string | null;
+    readonly totalPins?: number;
+    readonly isWorldSceneGraph?: boolean;
+    readonly projectedSpanPx?: number;
+    readonly isFocused?: boolean;
+  },
 ): AtlasPinZoomPresentation {
+  const isSelected = Boolean(
+    opts?.isFocused || (opts?.activePlaceId && opts.activePlaceId === pin.id),
+  );
+
+  // Continuous World Scene Graph: projection-driven hierarchy (Continent → Country → Place → Building → Room)
+  if (opts?.isWorldSceneGraph) {
+    const kind = (pin.kind ?? '').toLowerCase();
+    const label = (pin.label ?? '').toLowerCase();
+    const projPx = Number.isFinite(opts.projectedSpanPx) ? Math.max(0, opts.projectedSpanPx!) : 0;
+
+    if (isSelected) {
+      const activeTier: AtlasLabelTier =
+        kind === 'continent' || kind === 'country' || kind === 'place' ? 1 : 2;
+      return {
+        tier: activeTier,
+        opacity: 1,
+        scale: 1,
+        visible: true,
+        showText: true,
+        locked: true,
+      };
+    }
+
+    const isMicroPoi =
+      kind === 'room' ||
+      kind === 'poi' ||
+      kind === 'street' ||
+      kind === 'road' ||
+      /\b(road|straße|strasse|weg|gasse|pfad)\b/i.test(label);
+
+    if (kind === 'continent') {
+      // Visible from world overview; gently yields once zoomed deep into a country/settlement
+      const fadeOut = 1 - smoothstep(2400, 4200, projPx);
+      const opacity = Math.round(fadeOut * 1000) / 1000;
+      return {
+        tier: 1,
+        opacity,
+        scale: Math.round((0.9 + 0.1 * opacity) * 1000) / 1000,
+        visible: opacity > 0.05,
+        showText: opacity > 0.18,
+      };
+    }
+
+    if (kind === 'country' || kind === 'region' || kind === 'land') {
+      // Appears as the continent approaches viewport scale; yields smoothly inside town close-ups
+      const fadeIn = smoothstep(95, 190, projPx);
+      const fadeOut = 1 - smoothstep(3200, 5400, projPx);
+      const opacity = Math.round(fadeIn * fadeOut * 1000) / 1000;
+      return {
+        tier: 1,
+        opacity,
+        scale: Math.round((0.88 + 0.12 * opacity) * 1000) / 1000,
+        visible: opacity > 0.05,
+        showText: opacity > 0.18,
+      };
+    }
+
+    if ((kind === 'place' || kind === 'settlement') && !isMicroPoi) {
+      // Settlements (e.g. Moorbrück, Dornhain): reveal as soon as projected footprint >= ~18..44 px
+      // (already visible on regional/country zoom, never cluttering planet overview at ~3 px!)
+      const fadeIn = smoothstep(18, 44, projPx);
+      const fadeOut = 1 - smoothstep(2600, 4400, projPx);
+      const opacity = Math.round(fadeIn * fadeOut * 1000) / 1000;
+      return {
+        tier: 2,
+        opacity,
+        scale: Math.round((0.88 + 0.12 * opacity) * 1000) / 1000,
+        visible: opacity > 0.05,
+        showText: opacity > 0.16,
+      };
+    }
+
+    if (kind === 'building' && !isMicroPoi) {
+      // Buildings & Dungeons (e.g. Taverne, Krypta, Versunkenes Gewölbe): reveal on settlement zoom
+      const fadeIn = smoothstep(14, 36, projPx);
+      const opacity = Math.round(fadeIn * 1000) / 1000;
+      return {
+        tier: 2,
+        opacity,
+        scale: Math.round((0.86 + 0.14 * opacity) * 1000) / 1000,
+        visible: opacity > 0.05,
+        showText: opacity > 0.2,
+      };
+    }
+
+    // Rooms & micro-POIs (e.g. Schankraum, Marktplatz, Whisper Road): reveal on close building/town zoom
+    const fadeIn = smoothstep(22, 54, projPx);
+    const opacity = Math.round(fadeIn * 1000) / 1000;
+    return {
+      tier: 3,
+      opacity,
+      scale: Math.round((0.86 + 0.14 * opacity) * 1000) / 1000,
+      visible: opacity > 0.05,
+      showText: opacity > 0.22,
+    };
+  }
+
   const tier = classifyAtlasPinTier(pin, mapScale);
-  const isSelected = Boolean(opts?.activePlaceId && opts.activePlaceId === pin.id);
 
   // If the map has only 1 pin (e.g. Weltkarte's single Kontinent Westmark), or it is Tier 1 / active: always visible!
   if (tier === 1 || isSelected || (opts?.totalPins !== undefined && opts.totalPins <= 1)) {
-    return { tier: 1, opacity: 1, scale: 1, visible: true, showText: true };
+    return { tier: 1, opacity: 1, scale: 1, visible: true, showText: true, locked: isSelected };
   }
 
   // Reveal thresholds (span decreases as user zooms in):

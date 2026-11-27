@@ -221,6 +221,8 @@ export type UnifiedAtlasEditorProps = {
   readonly mapScale?: AtlasMapScale;
   /** Persisted place labels anchored on the active map (3D pins). */
   readonly mapPins?: readonly AtlasMapPin[] | null;
+  /** Explicit physical calibration (`metersPerUnit`) for the active map/world, or null if uncalibrated. */
+  readonly metersPerUnit?: number | null;
   /** Product surface (3D vs Draufsicht); pass it to keep the choice across map remounts. */
   readonly surfaceMode?: '3d' | '2d';
   readonly onSurfaceModeChange?: (mode: '3d' | '2d') => void;
@@ -501,6 +503,7 @@ export function UnifiedAtlasEditor({
   mapSketchStatus = null,
   mapScale = 'world',
   mapPins = null,
+  metersPerUnit = null,
   surfaceMode: surfaceModeProp,
   onSurfaceModeChange,
   onRequestSave,
@@ -2614,6 +2617,7 @@ export function UnifiedAtlasEditor({
               mapSketchStatus={mapSketchStatus ?? null}
               mapScale={mapScale}
               mapPins={mapPins}
+              metersPerUnit={metersPerUnit}
               graphicsPresetId={graphicsPresetId}
               dungeonThemeKey={
                 dungeonPreview

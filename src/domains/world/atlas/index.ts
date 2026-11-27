@@ -387,6 +387,7 @@ export {
   canLodEnterChildMap,
   canWebglDrillSelect,
   childLocalToParentPoint,
+  extractMapCalibrationMetersPerUnit,
   extractMapFrameFromGeneratorMeta,
   independentPrimaryBounds,
   isGroundedLinkAnchor,
@@ -553,6 +554,7 @@ export {
   atlasProductBrushWidth,
   atlasProductStampSize,
   buildAtlasMapPins,
+  buildAtlasWorldPins,
   type AtlasMapPin,
   type AtlasMapScale,
 } from './atlas-map-pins';
@@ -780,6 +782,7 @@ export {
   DEFAULT_ATLAS_WORLD_SCENE_PLAN_CONFIG,
   buildAtlasWorldScenePlan,
   computeMapWorldTransform,
+  resolveWorldCalibrationMetersPerUnit,
   type AtlasLocalCutoutRect,
   type AtlasSceneMapLodState,
   type AtlasWorldAabb,

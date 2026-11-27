@@ -67,6 +67,7 @@ import {
   isAtlasWorldError,
   localToWorld,
   resolveContinuousZoomTransition,
+  resolveWorldCalibrationMetersPerUnit,
   resolveWorldFocusTarget,
   shouldPromptSpatialOperation,
   switchWorldCameraProjection,
@@ -188,6 +189,8 @@ export type AtlasThreeWorkstationProps = {
   readonly externalNav: AtlasWebglNavTree | null;
   readonly activePlaceId: string | null;
   readonly mapPins: readonly AtlasMapPin[];
+  /** Explicit physical calibration (`metersPerUnit`) for the active map/world, or null if uncalibrated. */
+  readonly metersPerUnit?: number | null;
   readonly navRestoreView?: {
     readonly centerX: number;
     readonly centerY: number;
@@ -332,6 +335,7 @@ export function AtlasThreeWorkstation({
   externalNav,
   activePlaceId,
   mapPins,
+  metersPerUnit = null,
   navRestoreView = null,
   canUndo,
   canRedo,
@@ -359,6 +363,7 @@ export function AtlasThreeWorkstation({
   restoreWorldFocus = null,
   onRestoreWorldFocusConsumed,
 }: AtlasThreeWorkstationProps) {
+  const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const runtimeRef = useRef<AtlasThreeRuntime | null>(null);
   const dragRef = useRef<DragSession | null>(null);
@@ -388,6 +393,9 @@ export function AtlasThreeWorkstation({
   const [layersOpen, setLayersOpen] = useState(false);
   const layersOpenRef = useRef(layersOpen);
   layersOpenRef.current = layersOpen;
+  const layersScrollRef = useRef<HTMLDivElement | null>(null);
+  const prevLayersOpenRef = useRef(false);
+  const lastAutoScrolledPlaceRef = useRef<string | null>(null);
   const [zoomActiveMapId, setZoomActiveMapId] = useState<string | null>(null);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [navSearch, setNavSearch] = useState('');
@@ -409,6 +417,9 @@ export function AtlasThreeWorkstation({
   const [projectedPins, setProjectedPins] = useState<readonly AtlasThreeProjectedPin[]>([]);
   const [hudCoords, setHudCoords] = useState('X 500.0 · Z 500.0');
   const [hudSpan, setHudSpan] = useState(() => defaultSpanForScale(mapScale));
+  const [hudPitchRad, setHudPitchRad] = useState(() =>
+    autoAtlasThreePitchForSpan('diorama-oblique', defaultSpanForScale(mapScale)),
+  );
   const [hudYawDeg, setHudYawDeg] = useState(24);
   const [ready, setReady] = useState(false);
   const [contextLost, setContextLost] = useState(false);
@@ -566,13 +577,78 @@ export function AtlasThreeWorkstation({
     () => new Set(zoomLayerState.activeBreadcrumbPlaceIds),
     [zoomLayerState.activeBreadcrumbPlaceIds],
   );
-  const scaleHud = useMemo(
-    () =>
-      formatAtlasTruthfulScaleHud(hudSpan, {
-        isWorldSceneGraph: Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0),
-      }),
-    [hudSpan, worldSceneGraph],
-  );
+  const scaleHud = useMemo(() => {
+    const c = canvasRef.current;
+    const aspect = c && c.clientHeight > 0 ? c.clientWidth / c.clientHeight : 16 / 10;
+    const isWorld = Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0);
+    const effectiveMetersPerUnit = isWorld
+      ? resolveWorldCalibrationMetersPerUnit({
+          maps: worldSceneGraph!.maps,
+          rootMetersPerUnit: metersPerUnit ?? null,
+          activeMapId: zoomLayerState.activeMapId,
+        })
+      : (metersPerUnit ?? null);
+    return formatAtlasTruthfulScaleHud(hudSpan, {
+      isWorldSceneGraph: isWorld,
+      metersPerUnit: effectiveMetersPerUnit,
+      mode: cameraMode,
+      pitchRad: hudPitchRad,
+      aspect,
+    });
+  }, [cameraMode, hudPitchRad, hudSpan, metersPerUnit, worldSceneGraph, zoomLayerState.activeMapId]);
+
+  // C: Keep the scrollable `Ebenen` drawer aligned with the active place ONLY when
+  // the drawer opens or `zoomLayerState.activePlaceId` actually changes (never per frame,
+  // never scrolls the outer page, never steals keyboard focus, never alters `navSearch`).
+  useEffect(() => {
+    const justOpened = layersOpen && !prevLayersOpenRef.current;
+    prevLayersOpenRef.current = layersOpen;
+    if (!layersOpen) return;
+
+    const targetPlaceId = zoomLayerState.activePlaceId;
+    if (!targetPlaceId) return;
+    if (!justOpened && lastAutoScrolledPlaceRef.current === targetPlaceId) return;
+
+    const container = layersScrollRef.current;
+    if (!container) return;
+
+    const findActiveNode = (): HTMLElement | null => {
+      const nodes = container.querySelectorAll<HTMLElement>('[data-atlas-nav-node]');
+      for (const node of nodes) {
+        if (node.getAttribute('data-atlas-nav-node') === targetPlaceId) {
+          return node;
+        }
+      }
+      return null;
+    };
+
+    const el = findActiveNode();
+    if (!el) return;
+    lastAutoScrolledPlaceRef.current = targetPlaceId;
+
+    // Container-only `block: 'nearest'` scroll so the outer document NEVER scrolls!
+    if (typeof container.getBoundingClientRect === 'function' && typeof el.getBoundingClientRect === 'function') {
+      const cRect = container.getBoundingClientRect();
+      const eRect = el.getBoundingClientRect();
+      const pad = 8;
+      if (cRect.height > 0 && eRect.height > 0) {
+        if (eRect.top < cRect.top + pad) {
+          container.scrollTop += eRect.top - (cRect.top + pad);
+        } else if (eRect.bottom > cRect.bottom - pad) {
+          container.scrollTop += eRect.bottom - (cRect.bottom - pad);
+        }
+        return;
+      }
+    }
+    // Defensive fallback (e.g. jsdom without layout geometry)
+    if (typeof el.scrollIntoView === 'function') {
+      try {
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      } catch {
+        /* ignore unsupported scroll options */
+      }
+    }
+  }, [layersOpen, zoomLayerState.activePlaceId]);
   const hasParentMap = Boolean(activePlaceId && activePlaceId !== externalNav?.worldId);
 
   useEffect(
@@ -801,6 +877,7 @@ export function AtlasThreeWorkstation({
         presetId: graphicsPresetId,
         onCameraChange: (v) => {
           setHudSpan(v.span);
+          setHudPitchRad(v.pitchRad);
           setHudCoords(`X ${v.x.toFixed(1)} · Z ${v.z.toFixed(1)}`);
           const deg = ((Math.round((v.yawRad * 180) / Math.PI) % 360) + 360) % 360;
           setHudYawDeg(deg);
@@ -1393,10 +1470,12 @@ export function AtlasThreeWorkstation({
   // SWS-06 (E3–E5): Non-passive wheel + Safari gesturestart/change/end listener for
   // MacBook Trackpad Pinch (ctrlKey+wheel / Safari gesture), Two-Finger Pan, Shift+Wheel Orbit,
   // and deltaMode normalization without browser-zoom conflicts.
+  // Bound to `stageRef` (canvas + pin overlay layer) so wheel-zooming while hovering ANY map pin
+  // label zooms straight into the 3D world like Google Maps (without intercepting drawer scroll!).
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    return bindAtlasUnifiedInput(canvas, {
+    const stage = stageRef.current ?? canvasRef.current;
+    if (!stage) return;
+    return bindAtlasUnifiedInput(stage, {
       onZoomAtScreen: handleUnifiedZoomAtScreen,
       onPanByScreen: (dx, dy) => {
         focusSeqRef.current += 1;
@@ -1662,10 +1741,10 @@ export function AtlasThreeWorkstation({
       }
 
       if (drag.kind === 'pan') {
-        if (worldSceneGraphActiveRef.current && focusIntentRef.current) {
+        if (worldSceneGraphActiveRef.current) {
           focusSeqRef.current += 1;
           rt.setFocusTargetMapId(null);
-          setFocusIntent(null);
+          if (focusIntentRef.current) setFocusIntent(null);
         }
         const h = Math.max(1, canvas.clientHeight);
         const worldPerPx = (drag.span * 2) / h;
@@ -2074,8 +2153,8 @@ export function AtlasThreeWorkstation({
       data-atlas-surface-ready={ready ? 'true' : undefined}
       data-atlas-chrome-ready={ready ? 'true' : undefined}
     >
-      {/* 100% Full-Bleed Three.js Spatial Stage */}
-      <div className="absolute inset-0">
+      {/* 100% Full-Bleed Three.js Spatial Stage (canvas + map pin overlay share unified wheel/pinch input) */}
+      <div ref={stageRef} className="absolute inset-0">
         <canvas
           ref={canvasRef}
           className={`block h-full w-full touch-none ${activeTool === 'hand' ? 'cursor-grab active:cursor-grabbing' : 'cursor-crosshair'
@@ -2087,67 +2166,22 @@ export function AtlasThreeWorkstation({
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
         />
-      </div>
-
-      {/* Thematic 3D Portal & Atmospheric Flight Overlay (Oak Tavern Doors, Crypt Portcullis, Google-Earth Flight) */}
-      <AtlasPortalTransitionOverlay transition={portalTransition} />
-
-      {/* SCM-04: German Confirmation Dialog for Auto-Grow & Soft-Cascade operations */}
-      <SpatialOperationConfirmDialog
-        plan={pendingSpatialPlan}
-        onCancel={() => setPendingSpatialPlan(null)}
-        onConfirm={({ dontAskAgain }) => {
-          const plan = pendingSpatialPlan;
-          setPendingSpatialPlan(null);
-          if (!plan) return;
-          if (dontAskAgain) {
-            dismissPromptFor(plan.requiresConfirmation);
-          }
-          const adapter = spatialContainmentRef.current;
-          if (!adapter) return;
-          void adapter.commitPlan(plan).then((res) => {
-            if ('reasonDe' in res) setSpatialErrorDe(res.reasonDe);
-            else setSpatialErrorDe(null);
-          });
-        }}
-      />
-
-      {dragBoundaryBreach ? (
-        <div
-          role="status"
-          data-atlas-scm-drag-breach
-          className="pointer-events-none absolute top-16 left-1/2 z-[8] -translate-x-1/2 rounded-lg border border-accent bg-card/95 px-3 py-1.5 text-xs font-semibold text-accent shadow-xl backdrop-blur"
-        >
-          Überschreitet Grenze von „{dragBoundaryBreach.carrierLabelDe}“ — beim Loslassen bestätigen
-        </div>
-      ) : null}
-
-      {spatialErrorDe ? (
-        <div
-          role="alert"
-          data-atlas-scm-error
-          className="pointer-events-auto absolute bottom-16 left-1/2 z-[8] flex max-w-md -translate-x-1/2 items-center gap-2 rounded-lg border border-destructive bg-card/95 px-3 py-2 text-xs text-destructive shadow-xl backdrop-blur"
-        >
-          <span>{spatialErrorDe}</span>
-          <button
-            type="button"
-            className="ml-auto rounded px-1.5 py-0.5 text-[11px] font-semibold text-foreground hover:text-accent"
-            onClick={() => setSpatialErrorDe(null)}
-          >
-            Schließen
-          </button>
-        </div>
-      ) : null}
 
       {/* Google-Maps Hierarchical Zoom-Tier Progressive Pin Labels + Smart 2D Collision Declutter */}
       {(() => {
+        const isWorldMode = Boolean(worldSceneGraph && worldSceneGraph.maps.length > 0);
+        const focusedPlaceId =
+          focusIntent?.targetPlaceId ?? zoomLayerState.activePlaceId ?? activePlaceId;
         const visibleEntries = projectedPins
           .filter((p) => p.visible)
           .map((pin) => ({
             pin,
             pres: computeAtlasPinZoomPresentation(pin, hudSpan, mapScale, {
-              activePlaceId,
+              activePlaceId: zoomLayerState.activePlaceId ?? activePlaceId,
               totalPins: mapPins.length,
+              isWorldSceneGraph: isWorldMode,
+              projectedSpanPx: pin.projectedSpanPx,
+              isFocused: Boolean(focusedPlaceId && focusedPlaceId === pin.id),
             }),
           }))
           .filter((entry) => entry.pres.visible);
@@ -2157,6 +2191,7 @@ export function AtlasThreeWorkstation({
         const placed = visibleEntries.map(({ pin, pres }) => ({
           pin,
           pres,
+          locked: Boolean(pres.locked),
           x: pin.left,
           y: pin.top - (pres.tier === 1 ? 22 : pres.tier === 2 ? 16 : 12),
           w:
@@ -2178,16 +2213,30 @@ export function AtlasThreeWorkstation({
               const overlapX = (a.w + b.w) * 0.5 + 8 - Math.abs(dx);
               const overlapY = (a.h + b.h) * 0.5 + 6 - Math.abs(dy);
               if (overlapX > 0 && overlapY > 0) {
+                const aFixed = a.locked && !b.locked;
+                const bFixed = b.locked && !a.locked;
                 if (overlapY <= overlapX) {
-                  const push = overlapY * 0.54;
                   const dir = dy >= 0 ? 1 : -1;
-                  a.y -= dir * push;
-                  b.y += dir * push;
+                  if (aFixed) {
+                    b.y += dir * overlapY * 1.04;
+                  } else if (bFixed) {
+                    a.y -= dir * overlapY * 1.04;
+                  } else {
+                    const push = overlapY * 0.54;
+                    a.y -= dir * push;
+                    b.y += dir * push;
+                  }
                 } else {
-                  const push = overlapX * 0.54;
                   const dir = dx >= 0 ? 1 : -1;
-                  a.x -= dir * push;
-                  b.x += dir * push;
+                  if (aFixed) {
+                    b.x += dir * overlapX * 1.04;
+                  } else if (bFixed) {
+                    a.x -= dir * overlapX * 1.04;
+                  } else {
+                    const push = overlapX * 0.54;
+                    a.x -= dir * push;
+                    b.x += dir * push;
+                  }
                 }
               }
             }
@@ -2242,12 +2291,13 @@ export function AtlasThreeWorkstation({
               return (
                 <div
                   key={pin.id}
-                  className="pointer-events-auto absolute z-[3] transition-[opacity,transform] duration-200 ease-out"
+                  className={`${activeTool === 'hand' ? 'pointer-events-auto' : 'pointer-events-none'} absolute ${pres.locked ? 'z-[4]' : 'z-[3]'} transition-[opacity,transform] duration-200 ease-out`}
                   data-atlas-pin-tier={pres.tier}
+                  data-atlas-pin-locked={pres.locked ? 'true' : undefined}
                   style={{
                     left: Math.round(x),
                     top: Math.round(y),
-                    opacity: pres.opacity,
+                    opacity: activeTool === 'hand' ? pres.opacity : pres.opacity * 0.55,
                     transform: `translate(-50%, -50%) scale(${pres.scale})`,
                   }}
                 >
@@ -2257,7 +2307,13 @@ export function AtlasThreeWorkstation({
                     className={`flex items-center gap-1.5 whitespace-nowrap transition-colors ${tierClasses}`}
                     onClick={() => {
                       const sourcePin = mapPins.find((p) => p.id === pin.id);
-                      if (worldSceneGraph && worldSceneGraph.maps.length > 0 && targetMapId) {
+                      const isPrimaryOwnerPin = Boolean(
+                        targetMapId &&
+                          sourcePin?.mapId === targetMapId &&
+                          sourcePin.depth !== undefined &&
+                          worldSceneGraph?.maps.some((m) => m.id === targetMapId),
+                      );
+                      if (worldSceneGraph && worldSceneGraph.maps.length > 0 && targetMapId && isPrimaryOwnerPin) {
                         focusNodeInWorld({
                           placeId: pin.id,
                           mapId: targetMapId,
@@ -2266,6 +2322,14 @@ export function AtlasThreeWorkstation({
                           kind: pin.kind,
                           sub: navNode?.sub,
                         });
+                        return;
+                      }
+                      if (worldSceneGraph && worldSceneGraph.maps.length > 0 && sourcePin) {
+                        const targetSpan = Math.max(
+                          0.8,
+                          Math.min(hudSpan, (sourcePin.worldSpan ?? 4) * 1.15),
+                        );
+                        runtimeRef.current?.flyTo(sourcePin.x, sourcePin.y, targetSpan);
                         return;
                       }
                       if (targetMapId) {
@@ -2296,6 +2360,57 @@ export function AtlasThreeWorkstation({
           </>
         );
       })()}
+      </div>
+
+      {/* Thematic 3D Portal & Atmospheric Flight Overlay (Oak Tavern Doors, Crypt Portcullis, Google-Earth Flight) */}
+      <AtlasPortalTransitionOverlay transition={portalTransition} />
+
+      {/* SCM-04: German Confirmation Dialog for Auto-Grow & Soft-Cascade operations */}
+      <SpatialOperationConfirmDialog
+        plan={pendingSpatialPlan}
+        onCancel={() => setPendingSpatialPlan(null)}
+        onConfirm={({ dontAskAgain }) => {
+          const plan = pendingSpatialPlan;
+          setPendingSpatialPlan(null);
+          if (!plan) return;
+          if (dontAskAgain) {
+            dismissPromptFor(plan.requiresConfirmation);
+          }
+          const adapter = spatialContainmentRef.current;
+          if (!adapter) return;
+          void adapter.commitPlan(plan).then((res) => {
+            if ('reasonDe' in res) setSpatialErrorDe(res.reasonDe);
+            else setSpatialErrorDe(null);
+          });
+        }}
+      />
+
+      {dragBoundaryBreach ? (
+        <div
+          role="status"
+          data-atlas-scm-drag-breach
+          className="pointer-events-none absolute top-16 left-1/2 z-[8] -translate-x-1/2 rounded-lg border border-accent bg-card/95 px-3 py-1.5 text-xs font-semibold text-accent shadow-xl backdrop-blur"
+        >
+          Überschreitet Grenze von „{dragBoundaryBreach.carrierLabelDe}“ — beim Loslassen bestätigen
+        </div>
+      ) : null}
+
+      {spatialErrorDe ? (
+        <div
+          role="alert"
+          data-atlas-scm-error
+          className="pointer-events-auto absolute bottom-16 left-1/2 z-[8] flex max-w-md -translate-x-1/2 items-center gap-2 rounded-lg border border-destructive bg-card/95 px-3 py-2 text-xs text-destructive shadow-xl backdrop-blur"
+        >
+          <span>{spatialErrorDe}</span>
+          <button
+            type="button"
+            className="ml-auto rounded px-1.5 py-0.5 text-[11px] font-semibold text-foreground hover:text-accent"
+            onClick={() => setSpatialErrorDe(null)}
+          >
+            Schließen
+          </button>
+        </div>
+      ) : null}
 
       {/* TOP-LEFT Floating Collapsible `Ebenen` Chip & Frosted-Glass Drawer (leaves bottom-left open for Vollansicht/Golden!) */}
       <div
@@ -2362,7 +2477,11 @@ export function AtlasThreeWorkstation({
                 </button>
               ) : null}
             </div>
-            <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-2">
+            <div
+              ref={layersScrollRef}
+              data-atlas-layers-scroll
+              className="min-h-0 flex-1 space-y-2 overflow-y-auto p-2"
+            >
               {unlocatedFocusNotice ? (
                 <div
                   role="status"

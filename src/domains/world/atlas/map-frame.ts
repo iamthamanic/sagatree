@@ -108,6 +108,34 @@ export function extractMapFrameFromGeneratorMeta(
   return { status, parentAnchor };
 }
 
+/**
+ * Extract explicit physical calibration (`metersPerUnit`) from persisted map metadata.
+ * Returns `null` when the map/world is uncalibrated — UI must NEVER invent meters/kilometers.
+ */
+export function extractMapCalibrationMetersPerUnit(
+  meta: Readonly<Record<string, unknown>> | null | undefined,
+): number | null {
+  if (!meta || typeof meta !== 'object') return null;
+  // 1) World root calibration (`worldSpace: { calibrated: true, metersPerUnit: 250 }`)
+  const worldSpace = meta.worldSpace;
+  if (worldSpace && typeof worldSpace === 'object') {
+    const ws = worldSpace as Record<string, unknown>;
+    if (ws.calibrated !== false && isFinitePositive(ws.metersPerUnit)) {
+      return ws.metersPerUnit;
+    }
+  }
+  // 2) Child map calibration (`mapFrame.parentAnchor.metersPerUnit`)
+  const frame = extractMapFrameFromGeneratorMeta(meta);
+  if (frame.parentAnchor && isFinitePositive(frame.parentAnchor.metersPerUnit)) {
+    return frame.parentAnchor.metersPerUnit;
+  }
+  // 3) Direct top-level calibration fallback if explicitly stored
+  if (isFinitePositive(meta.metersPerUnit)) {
+    return meta.metersPerUnit;
+  }
+  return null;
+}
+
 export function mergeMapFrameIntoGeneratorMeta(
   meta: Readonly<Record<string, unknown>> | null | undefined,
   frame: MapFrameMeta,
