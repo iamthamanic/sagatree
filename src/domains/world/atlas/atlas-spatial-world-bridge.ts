@@ -148,8 +148,13 @@ export type ProjectedMapMutation = {
   readonly mapId: string;
   readonly nextDoc: UnifiedCanvasDoc;
   readonly nextParentAnchor?: ParentSpatialAnchor | null;
+  readonly nextBounds?: WorldAtlasBounds;
   readonly nextSpatialArchive?: SpatialArchiveMeta;
 };
+
+function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
 
 function round3(n: number): number {
   return Math.round(n * 1000) / 1000;
@@ -157,6 +162,51 @@ function round3(n: number): number {
 
 function round6(n: number): number {
   return Math.round(n * 1_000_000) / 1_000_000;
+}
+
+/**
+ * Measure the rotation-invariant local half-extent of a world AABB inside `mapId`.
+ * Uses adjacent projected edge lengths rather than the axis-aligned local bbox so
+ * rotated parent chains never inflate the derived size.
+ */
+function measureLocalHalfExtent(
+  nodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
+  mapId: string,
+  bounds: SpatialBounds2D,
+): number | null {
+  const c0 = worldToLocal(nodes, mapId, { x: bounds.minX, y: bounds.minY });
+  const c1 = worldToLocal(nodes, mapId, { x: bounds.maxX, y: bounds.minY });
+  const c3 = worldToLocal(nodes, mapId, { x: bounds.minX, y: bounds.maxY });
+  if (isAtlasWorldError(c0) || isAtlasWorldError(c1) || isAtlasWorldError(c3)) {
+    return null;
+  }
+  const localW = Math.hypot(c1.value.x - c0.value.x, c1.value.y - c0.value.y);
+  const localH = Math.hypot(c3.value.x - c0.value.x, c3.value.y - c0.value.y);
+  return (localW + localH) / 4;
+}
+
+function deriveProjectedObjectSize(
+  prevObj: UnifiedCanvasObject,
+  prevBoundsWorld: SpatialBounds2D,
+  nextBoundsWorld: SpatialBounds2D,
+  prevNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
+  nextNodes: Readonly<Record<string, AtlasWorldSpaceNode>>,
+  mapId: string,
+): number {
+  const nextLocalHalf = measureLocalHalfExtent(nextNodes, mapId, nextBoundsWorld);
+  if (nextLocalHalf === null || !Number.isFinite(nextLocalHalf) || nextLocalHalf <= 0) {
+    return prevObj.size;
+  }
+  const prevLocalHalf = measureLocalHalfExtent(prevNodes, mapId, prevBoundsWorld);
+  if (prevLocalHalf !== null && prevLocalHalf > 1e-6) {
+    const ratio = nextLocalHalf / prevLocalHalf;
+    if (Math.abs(ratio - 1) <= 1e-4) {
+      return prevObj.size;
+    }
+    const baseSize = prevObj.size > 0 ? prevObj.size : 0.5;
+    return round2(Math.max(0.15, Math.min(6, baseSize * ratio)));
+  }
+  return round2(Math.max(0.15, Math.min(6, nextLocalHalf / 18)));
 }
 
 function mapDepthInNodes(
@@ -463,6 +513,7 @@ export function projectSpatialOperationToMapUpdates(input: {
   const { world, plan, docsByMapId, mapNodes, spatialArchiveByMapId } = input;
   const docCopies = new Map<string, UnifiedCanvasDoc>();
   const anchorUpdates = new Map<string, ParentSpatialAnchor>();
+  const boundsUpdates = new Map<string, WorldAtlasBounds>();
   const archiveCopies = new Map<string, SpatialArchivedEntityRecord[]>();
   // Mutable working copy updated top-down so child map frames & objects inside a grown
   // parent project into the parent's NEW coordinate frame (never the stale pre-grow frame).
@@ -485,8 +536,8 @@ export function projectSpatialOperationToMapUpdates(input: {
     return base;
   };
 
-  // Pass 1 (Top-Down): Update all `__map_frame__` ParentSpatialAnchors from shallowest
-  // ancestor to deepest child so every descendant projects against its parent's updated anchor.
+  // Pass 1 (Top-Down): Update all `__map_frame__` ParentSpatialAnchors (and root bounds) from
+  // shallowest ancestor to deepest child so every descendant projects against its parent's updated frame.
   const frameChanges = plan.changes
     .filter((ch) => world.entities[ch.entityId]?.featureId === '__map_frame__')
     .sort((a, b) => mapDepthInNodes(mapNodes, a.mapId) - mapDepthInNodes(mapNodes, b.mapId));
@@ -498,19 +549,38 @@ export function projectSpatialOperationToMapUpdates(input: {
     if (node?.parentAnchor) {
       const parentId = node.parentAnchor.parentMapId;
       const parentBounds = effectiveMapNodes[parentId]?.bounds ?? DEFAULT_ATLAS_BOUNDS;
-      const pMin = worldToLocal(effectiveMapNodes, parentId, {
-        x: entity.boundsWorld.minX,
-        y: entity.boundsWorld.minY,
-      });
-      const pMax = worldToLocal(effectiveMapNodes, parentId, {
-        x: entity.boundsWorld.maxX,
-        y: entity.boundsWorld.maxY,
-      });
-      if (!isAtlasWorldError(pMin) && !isAtlasWorldError(pMax)) {
-        const minX = Math.max(parentBounds.minX, Math.min(parentBounds.maxX, Math.min(pMin.value.x, pMax.value.x)));
-        const maxX = Math.max(minX, Math.min(parentBounds.maxX, Math.max(pMin.value.x, pMax.value.x)));
-        const minY = Math.max(parentBounds.minY, Math.min(parentBounds.maxY, Math.min(pMin.value.y, pMax.value.y)));
-        const maxY = Math.max(minY, Math.min(parentBounds.maxY, Math.max(pMin.value.y, pMax.value.y)));
+      // Inverse-project all four world AABB corners so rotated parent transforms never collapse an axis.
+      const worldCorners = [
+        { x: entity.boundsWorld.minX, y: entity.boundsWorld.minY },
+        { x: entity.boundsWorld.maxX, y: entity.boundsWorld.minY },
+        { x: entity.boundsWorld.maxX, y: entity.boundsWorld.maxY },
+        { x: entity.boundsWorld.minX, y: entity.boundsWorld.maxY },
+      ] as const;
+      const localCorners: Array<{ readonly x: number; readonly y: number }> = [];
+      let projectionOk = true;
+      for (const corner of worldCorners) {
+        const projected = worldToLocal(effectiveMapNodes, parentId, corner);
+        if (isAtlasWorldError(projected)) {
+          projectionOk = false;
+          break;
+        }
+        localCorners.push(projected.value);
+      }
+      if (projectionOk && localCorners.length === 4) {
+        let rawMinX = Number.POSITIVE_INFINITY;
+        let rawMaxX = Number.NEGATIVE_INFINITY;
+        let rawMinY = Number.POSITIVE_INFINITY;
+        let rawMaxY = Number.NEGATIVE_INFINITY;
+        for (const c of localCorners) {
+          if (c.x < rawMinX) rawMinX = c.x;
+          if (c.x > rawMaxX) rawMaxX = c.x;
+          if (c.y < rawMinY) rawMinY = c.y;
+          if (c.y > rawMaxY) rawMaxY = c.y;
+        }
+        const minX = Math.max(parentBounds.minX, Math.min(parentBounds.maxX, rawMinX));
+        const maxX = Math.max(minX, Math.min(parentBounds.maxX, rawMaxX));
+        const minY = Math.max(parentBounds.minY, Math.min(parentBounds.maxY, rawMinY));
+        const maxY = Math.max(minY, Math.min(parentBounds.maxY, rawMaxY));
         const cx = round6((minX + maxX) / 2);
         const cy = round6((minY + maxY) / 2);
         const maxAllowedX = Math.max(1e-3, Math.floor(Math.min(cx - parentBounds.minX, parentBounds.maxX - cx) * 1_000_000) / 1_000_000);
@@ -532,6 +602,28 @@ export function projectSpatialOperationToMapUpdates(input: {
         effectiveMapNodes[entity.mapId] = {
           ...node,
           parentAnchor: nextAnchor,
+        };
+      }
+    } else if (node) {
+      // World-root map frame has no parentAnchor: persist its grown bounds directly
+      // so rehydration & child parentBounds clamping remain consistent after reload.
+      const nextBounds: WorldAtlasBounds = {
+        minX: round6(entity.boundsWorld.minX),
+        minY: round6(entity.boundsWorld.minY),
+        maxX: round6(entity.boundsWorld.maxX),
+        maxY: round6(entity.boundsWorld.maxY),
+      };
+      const prevBounds = node.bounds ?? DEFAULT_ATLAS_BOUNDS;
+      const boundsChanged =
+        Math.abs(nextBounds.minX - prevBounds.minX) > 1e-6 ||
+        Math.abs(nextBounds.minY - prevBounds.minY) > 1e-6 ||
+        Math.abs(nextBounds.maxX - prevBounds.maxX) > 1e-6 ||
+        Math.abs(nextBounds.maxY - prevBounds.maxY) > 1e-6;
+      if (boundsChanged) {
+        boundsUpdates.set(entity.mapId, nextBounds);
+        effectiveMapNodes[entity.mapId] = {
+          ...node,
+          bounds: nextBounds,
         };
       }
     }
@@ -598,20 +690,38 @@ export function projectSpatialOperationToMapUpdates(input: {
         if (objIdx >= 0) {
           if (!isAtlasWorldError(localCenter)) {
             const prevObj = curDoc.objects[objIdx]!;
+            const nextSize = deriveProjectedObjectSize(
+              prevObj,
+              ch.prevBoundsWorld,
+              entity.boundsWorld,
+              mapNodes,
+              effectiveMapNodes,
+              entity.mapId,
+            );
             const nextObjects = [...curDoc.objects];
             nextObjects[objIdx] = {
               ...prevObj,
               x: round3(localCenter.value.x),
               y: round3(localCenter.value.y),
+              size: nextSize,
             };
             docCopies.set(entity.mapId, { ...curDoc, objects: nextObjects });
           }
         } else if (archivedObjRec?.object) {
+          const nextSize = deriveProjectedObjectSize(
+            archivedObjRec.object,
+            ch.prevBoundsWorld,
+            entity.boundsWorld,
+            mapNodes,
+            effectiveMapNodes,
+            entity.mapId,
+          );
           const restoredObj: UnifiedCanvasObject = !isAtlasWorldError(localCenter)
             ? {
                 ...archivedObjRec.object,
                 x: round3(localCenter.value.x),
                 y: round3(localCenter.value.y),
+                size: nextSize,
               }
             : archivedObjRec.object;
           docCopies.set(entity.mapId, {
@@ -734,11 +844,14 @@ export function projectSpatialOperationToMapUpdates(input: {
   const allMapIds = new Set<string>([
     ...docCopies.keys(),
     ...anchorUpdates.keys(),
+    ...boundsUpdates.keys(),
     ...archiveCopies.keys(),
   ]);
   for (const mapId of allMapIds) {
     const nextDoc = docCopies.get(mapId) ?? docsByMapId[mapId];
-    if (!nextDoc && !anchorUpdates.has(mapId) && !archiveCopies.has(mapId)) continue;
+    if (!nextDoc && !anchorUpdates.has(mapId) && !boundsUpdates.has(mapId) && !archiveCopies.has(mapId)) {
+      continue;
+    }
     out.push({
       mapId,
       nextDoc: nextDoc ?? {
@@ -750,6 +863,7 @@ export function projectSpatialOperationToMapUpdates(input: {
         walls: [],
       },
       ...(anchorUpdates.has(mapId) ? { nextParentAnchor: anchorUpdates.get(mapId) } : {}),
+      ...(boundsUpdates.has(mapId) ? { nextBounds: boundsUpdates.get(mapId) } : {}),
       ...(archiveCopies.has(mapId) ? { nextSpatialArchive: archiveCopies.get(mapId) } : {}),
     });
   }

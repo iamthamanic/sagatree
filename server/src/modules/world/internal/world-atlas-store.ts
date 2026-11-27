@@ -12,19 +12,24 @@ import {
 import type { HostDatabase } from '../../../persistence/open-database.ts';
 
 const ParentAnchorSchema = z.object({
-  parentMapId: z.string().trim().min(1),
-  centerX: z.number().finite(),
-  centerY: z.number().finite(),
-  extentX: z.number().finite().positive(),
-  extentY: z.number().finite().positive(),
-  rotationRad: z.number().finite().optional().default(0),
+  parentMapId: z.preprocess(
+    (value) => (typeof value === 'string' && value.trim().length > 0 ? value.trim() : null),
+    z.string().min(1).nullable(),
+  ),
+  centerX: z.unknown().optional(),
+  centerY: z.unknown().optional(),
+  extentX: z.preprocess((value) => Number(value), z.number().finite().positive()),
+  extentY: z.preprocess((value) => Number(value), z.number().finite().positive()),
+  rotationRad: z.preprocess((value) => (value == null ? 0 : Number(value)), z.number().finite()),
 });
 
 const GeneratorMetaRecordSchema = z.record(z.string(), z.unknown());
 
-const CycleParentLinkRowSchema = z.object({
-  parentMapId: z.string().trim().min(1).nullable(),
-  anchorParentMapId: z.string().trim().min(1).nullable(),
+const NonEmptyTrimmedIdSchema = z.string().trim().min(1);
+
+const CycleParentLinkRawRowSchema = z.object({
+  parentMapId: z.unknown().optional(),
+  anchorParentMapId: z.unknown().optional(),
 });
 
 export type PartyRevealedAtlasMapIds = (
@@ -712,13 +717,17 @@ export class WorldAtlasStore {
       seen.add(cursor);
       const rawRow = stmt.get(cursor);
       if (!rawRow) continue;
-      const parsed = CycleParentLinkRowSchema.safeParse(rawRow);
-      if (!parsed.success) continue;
-      if (parsed.data.parentMapId) {
-        queue.push(parsed.data.parentMapId);
+      const parsedRow = CycleParentLinkRawRowSchema.safeParse(rawRow);
+      if (!parsedRow.success) continue;
+      const parsedParentId = NonEmptyTrimmedIdSchema.safeParse(parsedRow.data.parentMapId);
+      if (parsedParentId.success) {
+        queue.push(parsedParentId.data);
       }
-      if (parsed.data.anchorParentMapId) {
-        queue.push(parsed.data.anchorParentMapId);
+      const parsedAnchorParentId = NonEmptyTrimmedIdSchema.safeParse(
+        parsedRow.data.anchorParentMapId,
+      );
+      if (parsedAnchorParentId.success) {
+        queue.push(parsedAnchorParentId.data);
       }
     }
     return false;

@@ -4,7 +4,7 @@
 
 Source baseline: `3c6c97bdeac822b8c4d1489ec4b1ef5825d6f248`. **Live backend verified: false. Successor parity verified: false.** Required acceptance tests below are specifications, not executed test results. No architecture gate is approved by this contract.
 
-Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `117c6afc98915beecf82e0322045f4bc2b636df9351d3d3e53c00e385a29f60c`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
+Exact AST snapshot: [infra-world.json](source-contracts/infra-world.json) (SHA-256 `99af39db5c8bb987d307832ca165fa59b200b9223a095c15644d4d9a27d54696`). The snapshot includes complete source declarations and operation expressions; no list is truncated.
 
 ## Facade behavior and authorization boundary
 
@@ -6241,14 +6241,14 @@ All backend operations are included in the public declarations above.
 | `src/domains/world/atlas/atlas-spatial-containment.ts` | `b4d0dd0186856c2df5adb7cbaa58743ec9e786deb9726b281fbaa7966594e8f7` |
 | `src/domains/world/atlas/atlas-spatial-edit-prefs.ts` | `7248152b93c7b0c2748b1682bb12fd174ac64b88fda12f0d0cca588c4a21ee1c` |
 | `src/domains/world/atlas/atlas-spatial-propagation.ts` | `61720d09fcf09248c30f2d6ab17181e0968f0aacaf88b1823da30b660bd45abb` |
-| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `7ddcc90929d18b7cac51e5362f3c472cdf7a82a21dcc27d32c0408b00744b05a` |
+| `src/domains/world/atlas/atlas-spatial-world-bridge.ts` | `fdde808af62f5d1fc1e4ae2d91e582abaea224dcdd6d40617cf5bb498d40c8cb` |
 | `src/domains/world/atlas/atlas-terrain-mesh.ts` | `76aa0ae181cc9817561db31f6b5ccea8cac0a22b73fa46e6292b022b53978ba7` |
 | `src/domains/world/atlas/atlas-tool-registry.ts` | `be0492bd7d71f1dafa260c6a1a75165f8c587bd1f55d3178f96fbd67ac5988af` |
 | `src/domains/world/atlas/atlas-webgl-write-retire.ts` | `baf40e97aaa9c74c873f3919e72b4d9049e8c7781566ed58ce52ccf2f168ce69` |
 | `src/domains/world/atlas/atlas-workstation-adaptive.ts` | `2a87a8f4cf36e532f9bbb0faa0085013f4169fedc26622a1bbef800b46f59846` |
 | `src/domains/world/atlas/atlas-world-camera.ts` | `b0ac5e7eac73a8cdaa0e21e6758f6d6cfa1e448d935a9d763213a6ce9bc9a127` |
 | `src/domains/world/atlas/atlas-world-focus.ts` | `e8da0d711424bb7a4fa87c1533111d2d4ce1bf06799334e8d5a72128cf610bfd` |
-| `src/domains/world/atlas/atlas-world-operation-history.ts` | `b5967717b5fba9aa2a87b6ab71e8cf6f99eaa28a11a553855c97b582c96da015` |
+| `src/domains/world/atlas/atlas-world-operation-history.ts` | `edeaad892bd3b95e08466a4e9b8d6cf02997facac309a48e3aeea4fc64079aae` |
 | `src/domains/world/atlas/atlas-world-scene-plan.ts` | `060e03785a1b39bbe2de76cb61ad9088a523e0edca58ba0355ec7a26ced66af9` |
 | `src/domains/world/atlas/atlas-world-space.ts` | `9023fa99f88df8873ac68934fe0c7389dcafa991f02b27769099e60bbedd91af` |
 | `src/domains/world/atlas/atlas-world-terrain-chunks.ts` | `42307761b5c6ab4228336f127d6bc02829120a4e4841abb4f3a499ce2a76c0b5` |

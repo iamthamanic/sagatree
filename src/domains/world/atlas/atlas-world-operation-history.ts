@@ -21,11 +21,13 @@ import {
 import type { SpatialArchiveMeta } from './atlas-spatial-world-bridge';
 import type { ParentSpatialAnchor } from './map-frame';
 import type { UnifiedCanvasDoc } from './unified-canvas-doc';
+import type { WorldAtlasBounds } from './world-atlas.types';
 
 /** Persisted per-map state captured before/after an atomic SCM transaction (M-2). */
 export type SpatialMapPersistSnapshot = {
   readonly doc: UnifiedCanvasDoc;
   readonly parentAnchor: ParentSpatialAnchor | null;
+  readonly bounds?: WorldAtlasBounds;
   readonly spatialArchive?: SpatialArchiveMeta;
 };
 

@@ -336,7 +336,151 @@ let passed = 0;
     tavernMut.nextParentAnchor.centerX + tavernMut.nextParentAnchor.extentX <= 1000,
     `child map frame must stay <= 1000 inside grown parent (got ${tavernMut.nextParentAnchor.centerX + tavernMut.nextParentAnchor.extentX})`,
   );
+
+  // Regression (Codex P2): scaled object persists updated `size` alongside x/y
+  const scaledDoc = {
+    format: 'sagatree-unified-atlas-v1',
+    layers: { terrain: true, roads: true, region: true, city: true, interior: true, drawings: true, objects: true, grid: false },
+    strokes: [],
+    objects: [{ id: 'obj.scale', type: 'haus', x: 500, y: 500, size: 1 }],
+    rooms: [],
+    walls: [],
+  };
+  const scaleWorld = bridge.buildSpatialWorldFromMapSources([
+    {
+      mapId: 'm.root',
+      title: 'Root',
+      role: 'world',
+      parentMapId: null,
+      parentAnchor: null,
+      doc: scaledDoc,
+    },
+  ]);
+  const scaledEntity = scaleWorld.entities['obj:m.root:obj.scale'];
+  const origCx = (scaledEntity.boundsWorld.minX + scaledEntity.boundsWorld.maxX) / 2;
+  const origCy = (scaledEntity.boundsWorld.minY + scaledEntity.boundsWorld.maxY) / 2;
+  const origHalf = (scaledEntity.boundsWorld.maxX - scaledEntity.boundsWorld.minX) / 2;
+  const scalePlan = prop.planPropagation(scaleWorld, {
+    kind: 'resize_or_move',
+    entityId: scaledEntity.id,
+    nextBoundsWorld: {
+      minX: origCx - origHalf * 2.5,
+      minY: origCy - origHalf * 2.5,
+      maxX: origCx + origHalf * 2.5,
+      maxY: origCy + origHalf * 2.5,
+    },
+  });
+  assert.equal(scalePlan.ok, true);
+  const scaleApplied = prop.applyWorldOperation(scaleWorld, scalePlan.plan);
+  assert.equal(scaleApplied.ok, true);
+  const scaleMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: scaleApplied.world,
+    plan: scalePlan.plan,
+    docsByMapId: { 'm.root': scaledDoc },
+    mapNodes: scaleWorld.mapNodes,
+  });
+  const persistedScaledObj = scaleMuts[0]?.nextDoc?.objects.find((o) => o.id === 'obj.scale');
+  assert.equal(persistedScaledObj?.size, 2.5, 'scaled object persists new size = 2.5');
+
+  // Regression (Codex P2): rotated parent map projects all 4 corners without collapsing extent at 45°
+  const emptyDoc = {
+    format: 'sagatree-unified-atlas-v1',
+    layers: { terrain: true, roads: true, region: true, city: true, interior: true, drawings: true, objects: true, grid: false },
+    strokes: [],
+    objects: [],
+    rooms: [],
+    walls: [],
+  };
+  const rotWorld = bridge.buildSpatialWorldFromMapSources([
+    {
+      mapId: 'm.root',
+      title: 'Root',
+      role: 'world',
+      parentMapId: null,
+      parentAnchor: null,
+      doc: emptyDoc,
+    },
+    {
+      mapId: 'm.rotParent',
+      title: 'Rotated Parent',
+      role: 'continent',
+      parentMapId: 'm.root',
+      parentAnchor: {
+        parentMapId: 'm.root',
+        centerX: 500,
+        centerY: 500,
+        extentX: 200,
+        extentY: 200,
+        rotationRad: Math.PI / 4,
+        metersPerUnit: 100,
+      },
+      doc: emptyDoc,
+    },
+    {
+      mapId: 'm.rotChild',
+      title: 'Nested Child',
+      role: 'settlement',
+      parentMapId: 'm.rotParent',
+      parentAnchor: {
+        parentMapId: 'm.rotParent',
+        centerX: 500,
+        centerY: 500,
+        extentX: 60,
+        extentY: 60,
+        rotationRad: 0,
+        metersPerUnit: 10,
+      },
+      doc: emptyDoc,
+    },
+  ]);
+  const rotChildEnt = rotWorld.entities['map:m.rotChild'];
+  const rotPlan = prop.planPropagation(rotWorld, {
+    kind: 'resize_or_move',
+    entityId: 'map:m.rotChild',
+    nextBoundsWorld: {
+      minX: rotChildEnt.boundsWorld.minX - 5,
+      minY: rotChildEnt.boundsWorld.minY - 5,
+      maxX: rotChildEnt.boundsWorld.maxX + 5,
+      maxY: rotChildEnt.boundsWorld.maxY + 5,
+    },
+  });
+  assert.equal(rotPlan.ok, true);
+  const rotApplied = prop.applyWorldOperation(rotWorld, rotPlan.plan);
+  assert.equal(rotApplied.ok, true);
+  const rotMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: rotApplied.world,
+    plan: rotPlan.plan,
+    docsByMapId: { 'm.root': emptyDoc, 'm.rotParent': emptyDoc, 'm.rotChild': emptyDoc },
+    mapNodes: rotWorld.mapNodes,
+  });
+  const rotChildMut = rotMuts.find((m) => m.mapId === 'm.rotChild');
+  assert.ok(
+    rotChildMut?.nextParentAnchor &&
+      rotChildMut.nextParentAnchor.extentX > 50 &&
+      rotChildMut.nextParentAnchor.extentY > 50,
+    `45° rotated parent projection preserves both extents (got ${rotChildMut?.nextParentAnchor?.extentX}x${rotChildMut?.nextParentAnchor?.extentY})`,
+  );
+
+  // Regression (Codex P2): root map frame growth emits nextBounds for persistence
+  const rootGrowPlan = prop.planPropagation(scaleWorld, {
+    kind: 'resize_or_move',
+    entityId: scaledEntity.id,
+    nextBoundsWorld: { minX: 980, minY: 480, maxX: 1120, maxY: 520 },
+  });
+  assert.equal(rootGrowPlan.ok, true);
+  assert.ok(rootGrowPlan.plan.grownCarrierIds.includes('map:m.root'), 'root map frame grows');
+  const rootGrowApplied = prop.applyWorldOperation(scaleWorld, rootGrowPlan.plan);
+  assert.equal(rootGrowApplied.ok, true);
+  const rootGrowMuts = bridge.projectSpatialOperationToMapUpdates({
+    world: rootGrowApplied.world,
+    plan: rootGrowPlan.plan,
+    docsByMapId: { 'm.root': scaledDoc },
+    mapNodes: scaleWorld.mapNodes,
+  });
+  const rootMut = rootGrowMuts.find((m) => m.mapId === 'm.root');
+  assert.equal(rootMut?.nextBounds?.maxX, 1120, 'grown root map emits nextBounds.maxX = 1120');
+
   passed += 1;
 }
 
-console.log(`✓ scm-propagation.self-test: ${passed}/5 (SCM-01 inland grow, SCM-02 coastal chain, SCM-03 CARVED, SCM-04 FLOWING, Bridge projection)`);
+console.log(`✓ scm-propagation.self-test: ${passed}/5 (SCM-01 inland grow, SCM-02 coastal chain, SCM-03 CARVED, SCM-04 FLOWING, Bridge projection + scale/45°-rot/root-bounds)`);

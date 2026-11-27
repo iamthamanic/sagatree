@@ -37762,7 +37762,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
-            "sha256": "7ddcc90929d18b7cac51e5362f3c472cdf7a82a21dcc27d32c0408b00744b05a"
+            "sha256": "fdde808af62f5d1fc1e4ae2d91e582abaea224dcdd6d40617cf5bb498d40c8cb"
           },
           {
             "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
@@ -37790,7 +37790,7 @@
           },
           {
             "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-            "sha256": "b5967717b5fba9aa2a87b6ab71e8cf6f99eaa28a11a553855c97b582c96da015"
+            "sha256": "edeaad892bd3b95e08466a4e9b8d6cf02997facac309a48e3aeea4fc64079aae"
           },
           {
             "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
@@ -38106,7 +38106,7 @@
         "testStatus": "required-not-executed"
       },
       "sourceContract": ".qa/intake/edge-infra-contracts/source-contracts/infra-world.json",
-      "sourceContractSha256": "117c6afc98915beecf82e0322045f4bc2b636df9351d3d3e53c00e385a29f60c",
+      "sourceContractSha256": "99af39db5c8bb987d307832ca165fa59b200b9223a095c15644d4d9a27d54696",
       "rpcUsed": [],
       "tablesTouched": [],
       "storageBuckets": [],

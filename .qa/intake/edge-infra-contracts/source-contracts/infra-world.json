@@ -343,7 +343,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
-      "sha256": "7ddcc90929d18b7cac51e5362f3c472cdf7a82a21dcc27d32c0408b00744b05a"
+      "sha256": "fdde808af62f5d1fc1e4ae2d91e582abaea224dcdd6d40617cf5bb498d40c8cb"
     },
     {
       "path": "src/domains/world/atlas/atlas-terrain-mesh.ts",
@@ -371,7 +371,7 @@
     },
     {
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "sha256": "b5967717b5fba9aa2a87b6ab71e8cf6f99eaa28a11a553855c97b582c96da015"
+      "sha256": "edeaad892bd3b95e08466a4e9b8d6cf02997facac309a48e3aeea4fc64079aae"
     },
     {
       "path": "src/domains/world/atlas/atlas-world-scene-plan.ts",
@@ -2500,8 +2500,8 @@
       "name": "ProjectedMapMutation",
       "path": "src/domains/world/atlas/atlas-spatial-world-bridge.ts",
       "line": 147,
-      "endLine": 152,
-      "text": "export type ProjectedMapMutation = {\n  readonly mapId: string;\n  readonly nextDoc: UnifiedCanvasDoc;\n  readonly nextParentAnchor?: ParentSpatialAnchor | null;\n  readonly nextSpatialArchive?: SpatialArchiveMeta;\n};"
+      "endLine": 153,
+      "text": "export type ProjectedMapMutation = {\n  readonly mapId: string;\n  readonly nextDoc: UnifiedCanvasDoc;\n  readonly nextParentAnchor?: ParentSpatialAnchor | null;\n  readonly nextBounds?: WorldAtlasBounds;\n  readonly nextSpatialArchive?: SpatialArchiveMeta;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
@@ -2675,32 +2675,32 @@
       "kind": "TypeAliasDeclaration",
       "name": "SpatialMapPersistSnapshot",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 26,
-      "endLine": 30,
-      "text": "export type SpatialMapPersistSnapshot = {\n  readonly doc: UnifiedCanvasDoc;\n  readonly parentAnchor: ParentSpatialAnchor | null;\n  readonly spatialArchive?: SpatialArchiveMeta;\n};"
+      "line": 27,
+      "endLine": 32,
+      "text": "export type SpatialMapPersistSnapshot = {\n  readonly doc: UnifiedCanvasDoc;\n  readonly parentAnchor: ParentSpatialAnchor | null;\n  readonly bounds?: WorldAtlasBounds;\n  readonly spatialArchive?: SpatialArchiveMeta;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialWorldHistorySnapshot",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 32,
-      "endLine": 38,
+      "line": 34,
+      "endLine": 40,
       "text": "export type SpatialWorldHistorySnapshot = {\n  readonly worldJson: string;\n  readonly summaryDe: string;\n  readonly affectedMapIds: readonly string[];\n  readonly plan: WorldOperationPlan;\n  readonly mapSnapshots?: Readonly<Record<string, SpatialMapPersistSnapshot>>;\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "SpatialWorldTransactionHistory",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 40,
-      "endLine": 43,
+      "line": 42,
+      "endLine": 45,
       "text": "export type SpatialWorldTransactionHistory = {\n  readonly past: readonly SpatialWorldHistorySnapshot[];\n  readonly future: readonly SpatialWorldHistorySnapshot[];\n};"
     },
     {
       "kind": "TypeAliasDeclaration",
       "name": "ExecuteSpatialWorldResult",
       "path": "src/domains/world/atlas/atlas-world-operation-history.ts",
-      "line": 64,
-      "endLine": 79,
+      "line": 66,
+      "endLine": 81,
       "text": "export type ExecuteSpatialWorldResult =\n  | {\n      readonly ok: true;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly appliedChangeCount: number;\n      readonly affectedMapIds: readonly string[];\n    }\n  | {\n      readonly ok: false;\n      readonly world: SpatialWorldModel;\n      readonly history: SpatialWorldTransactionHistory;\n      readonly code: Extract<ApplyWorldOperationResult, { ok: false }>['code'] | 'persist_failed';\n      readonly violations: Extract<ApplyWorldOperationResult, { ok: false }>['violations'];\n      readonly reasonDe: string;\n    };"
     },
     {

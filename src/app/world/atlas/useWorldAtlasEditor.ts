@@ -998,6 +998,7 @@ export function useWorldAtlasEditor({
     async (
       vm: WorldAtlasMapVm,
       nextMeta: Readonly<Record<string, unknown>>,
+      nextBounds?: WorldAtlasMapVm['bounds'],
     ): Promise<WorldAtlasMapVm> => {
       const saved = await worldAtlasService.upsertMap({
         worldProfileId: vm.worldProfileId,
@@ -1006,7 +1007,7 @@ export function useWorldAtlasEditor({
         kind: vm.kind,
         title: vm.title,
         sortOrder: vm.sortOrder,
-        bounds: vm.bounds,
+        bounds: nextBounds ?? vm.bounds,
         layers: vm.layers,
         basemapStoragePath: vm.basemapStoragePath,
         azgaarMapStoragePath: vm.azgaarMapStoragePath,

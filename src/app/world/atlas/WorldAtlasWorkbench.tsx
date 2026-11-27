@@ -754,6 +754,7 @@ export function WorldAtlasWorkbench({
         out[id] = {
           doc,
           parentAnchor: frame.parentAnchor,
+          bounds: vm.bounds,
           spatialArchive: extractSpatialArchiveFromGeneratorMeta(vm.generatorMeta),
         };
       }
@@ -806,6 +807,7 @@ export function WorldAtlasWorkbench({
           mapId,
           nextDoc: snap.doc,
           nextParentAnchor: snap.parentAnchor,
+          nextBounds: snap.bounds,
           nextSpatialArchive: snap.spatialArchive,
         }))
         : projectSpatialOperationToMapUpdates({
@@ -821,6 +823,7 @@ export function WorldAtlasWorkbench({
         readonly mapId: string;
         readonly vm: WorldAtlasMapVm;
         readonly nextMeta: Record<string, unknown>;
+        readonly nextBounds?: WorldAtlasMapVm['bounds'];
       }> = [];
       let nextRootDoc = prevRootDoc;
       for (const m of mutations) {
@@ -842,14 +845,18 @@ export function WorldAtlasWorkbench({
         if (m.nextSpatialArchive !== undefined) {
           nextMeta = mergeSpatialArchiveIntoGeneratorMeta(nextMeta, m.nextSpatialArchive);
         }
+        const resolvedBounds = m.nextBounds ?? vm.bounds;
         const localUpdated: WorldAtlasMapVm = {
           ...vm,
+          bounds: resolvedBounds,
           generatorMeta: nextMeta,
         };
-        if (m.mapId !== rootMap.id) {
+        if (m.mapId === rootMap.id) {
+          editorMapRef.current = localUpdated;
+        } else {
           updatedChildMap.set(m.mapId, localUpdated);
         }
-        prepared.push({ mapId: m.mapId, vm, nextMeta });
+        prepared.push({ mapId: m.mapId, vm, nextMeta, nextBounds: m.nextBounds });
       }
 
       // Sync ref before async HTTP persistence so rapid back-to-back Undo/Redo captures the latest doc/anchor
@@ -878,7 +885,7 @@ export function WorldAtlasWorkbench({
         const savedChildMap = new Map<string, WorldAtlasMapVm>(updatedChildMap);
         try {
           for (const item of prepared) {
-            const saved = await editor.persistMapMeta(item.vm, item.nextMeta);
+            const saved = await editor.persistMapMeta(item.vm, item.nextMeta, item.nextBounds);
             committed.push({ mapId: item.mapId, prevVm: item.vm, savedVm: saved });
             if (item.mapId === rootMap.id) {
               latestRootVm = saved;
@@ -915,7 +922,11 @@ export function WorldAtlasWorkbench({
           for (let i = committed.length - 1; i >= 0; i -= 1) {
             const entry = committed[i]!;
             try {
-              const restored = await editor.persistMapMeta(entry.savedVm, entry.prevVm.generatorMeta);
+              const restored = await editor.persistMapMeta(
+                entry.savedVm,
+                entry.prevVm.generatorMeta,
+                entry.prevVm.bounds,
+              );
               restoredById.set(entry.mapId, restored);
               if (entry.mapId === rootMap.id) {
                 editorMapRef.current = restored;
@@ -977,83 +988,101 @@ export function WorldAtlasWorkbench({
       canRedo: canRedoSpatialWorld(spatialHistory),
       planIntent: (intent: SpatialEditIntent) =>
         planPropagation(spatialWorldRef.current ?? spatialWorld, intent),
-      commitPlan: async (plan: WorldOperationPlan) => {
-        const curWorld = spatialWorldRef.current ?? spatialWorld;
-        const curHistory = spatialHistoryRef.current;
-        const preSnapshots = captureMapSnapshots(plan.affectedMapIds);
-        const exec = executeSpatialWorldOperation(curWorld, curHistory, plan, preSnapshots);
-        if (!exec.ok) return exec;
-        spatialWorldRef.current = exec.world;
-        spatialHistoryRef.current = exec.history;
-        setSpatialWorld(exec.world);
-        setSpatialHistory(exec.history);
-        const persistRes = await enqueuePersist(() =>
-          persistProjectedMapUpdates(exec.world, plan),
-        );
-        if ('reasonDe' in persistRes) {
-          spatialWorldRef.current = curWorld;
-          spatialHistoryRef.current = curHistory;
-          setSpatialWorld(curWorld);
-          setSpatialHistory(curHistory);
-          return {
-            ok: false,
-            world: curWorld,
-            history: curHistory,
-            code: 'persist_failed',
-            violations: [],
-            reasonDe: persistRes.reasonDe,
-          };
-        }
-        return exec;
+      commitPlan: (plan: WorldOperationPlan) => {
+        const expectedWorld = spatialWorldRef.current ?? spatialWorld;
+        return enqueuePersist(async () => {
+          const curWorld = spatialWorldRef.current ?? spatialWorld;
+          const curHistory = spatialHistoryRef.current;
+          if (curWorld !== expectedWorld) {
+            return {
+              ok: false,
+              world: curWorld,
+              history: curHistory,
+              code: 'persist_failed',
+              violations: [],
+              reasonDe:
+                'Vorherige Raum-Transaktion hat den Weltzustand geändert oder zurückgesetzt — bitte Bearbeitung erneut ausführen.',
+            };
+          }
+          const preSnapshots = captureMapSnapshots(plan.affectedMapIds);
+          const exec = executeSpatialWorldOperation(curWorld, curHistory, plan, preSnapshots);
+          if (!exec.ok) return exec;
+          spatialWorldRef.current = exec.world;
+          spatialHistoryRef.current = exec.history;
+          setSpatialWorld(exec.world);
+          setSpatialHistory(exec.history);
+          const persistRes = await persistProjectedMapUpdates(exec.world, plan);
+          if ('reasonDe' in persistRes) {
+            spatialWorldRef.current = curWorld;
+            spatialHistoryRef.current = curHistory;
+            setSpatialWorld(curWorld);
+            setSpatialHistory(curHistory);
+            return {
+              ok: false,
+              world: curWorld,
+              history: curHistory,
+              code: 'persist_failed',
+              violations: [],
+              reasonDe: persistRes.reasonDe,
+            };
+          }
+          return exec;
+        });
       },
-      undo: async () => {
-        const curWorld = spatialWorldRef.current ?? spatialWorld;
-        const curHist = spatialHistoryRef.current;
-        const lastEntry = curHist.past[curHist.past.length - 1];
-        if (!lastEntry) return false;
-        const currentSnapshots = captureMapSnapshots(lastEntry.affectedMapIds);
-        const undone = undoSpatialWorldOperation(curWorld, curHist, currentSnapshots);
-        if (!undone) return false;
-        spatialWorldRef.current = undone.world;
-        spatialHistoryRef.current = undone.history;
-        setSpatialWorld(undone.world);
-        setSpatialHistory(undone.history);
-        const persistRes = await enqueuePersist(() =>
-          persistProjectedMapUpdates(undone.world, undone.plan, undone.mapSnapshots),
-        );
-        if (!persistRes.ok) {
-          spatialWorldRef.current = curWorld;
-          spatialHistoryRef.current = curHist;
-          setSpatialWorld(curWorld);
-          setSpatialHistory(curHist);
-          return false;
-        }
-        return true;
-      },
-      redo: async () => {
-        const curWorld = spatialWorldRef.current ?? spatialWorld;
-        const curHist = spatialHistoryRef.current;
-        const nextEntry = curHist.future[curHist.future.length - 1];
-        if (!nextEntry) return false;
-        const currentSnapshots = captureMapSnapshots(nextEntry.affectedMapIds);
-        const redone = redoSpatialWorldOperation(curWorld, curHist, currentSnapshots);
-        if (!redone) return false;
-        spatialWorldRef.current = redone.world;
-        spatialHistoryRef.current = redone.history;
-        setSpatialWorld(redone.world);
-        setSpatialHistory(redone.history);
-        const persistRes = await enqueuePersist(() =>
-          persistProjectedMapUpdates(redone.world, redone.plan, redone.mapSnapshots),
-        );
-        if (!persistRes.ok) {
-          spatialWorldRef.current = curWorld;
-          spatialHistoryRef.current = curHist;
-          setSpatialWorld(curWorld);
-          setSpatialHistory(curHist);
-          return false;
-        }
-        return true;
-      },
+      undo: () =>
+        enqueuePersist(async () => {
+          const curWorld = spatialWorldRef.current ?? spatialWorld;
+          const curHist = spatialHistoryRef.current;
+          const lastEntry = curHist.past[curHist.past.length - 1];
+          if (!lastEntry) return false;
+          const currentSnapshots = captureMapSnapshots(lastEntry.affectedMapIds);
+          const undone = undoSpatialWorldOperation(curWorld, curHist, currentSnapshots);
+          if (!undone) return false;
+          spatialWorldRef.current = undone.world;
+          spatialHistoryRef.current = undone.history;
+          setSpatialWorld(undone.world);
+          setSpatialHistory(undone.history);
+          const persistRes = await persistProjectedMapUpdates(
+            undone.world,
+            undone.plan,
+            undone.mapSnapshots,
+          );
+          if (!persistRes.ok) {
+            spatialWorldRef.current = curWorld;
+            spatialHistoryRef.current = curHist;
+            setSpatialWorld(curWorld);
+            setSpatialHistory(curHist);
+            return false;
+          }
+          return true;
+        }),
+      redo: () =>
+        enqueuePersist(async () => {
+          const curWorld = spatialWorldRef.current ?? spatialWorld;
+          const curHist = spatialHistoryRef.current;
+          const nextEntry = curHist.future[curHist.future.length - 1];
+          if (!nextEntry) return false;
+          const currentSnapshots = captureMapSnapshots(nextEntry.affectedMapIds);
+          const redone = redoSpatialWorldOperation(curWorld, curHist, currentSnapshots);
+          if (!redone) return false;
+          spatialWorldRef.current = redone.world;
+          spatialHistoryRef.current = redone.history;
+          setSpatialWorld(redone.world);
+          setSpatialHistory(redone.history);
+          const persistRes = await persistProjectedMapUpdates(
+            redone.world,
+            redone.plan,
+            redone.mapSnapshots,
+          );
+          if (!persistRes.ok) {
+            spatialWorldRef.current = curWorld;
+            spatialHistoryRef.current = curHist;
+            setSpatialWorld(curWorld);
+            setSpatialHistory(curHist);
+            return false;
+          }
+          return true;
+        }),
     };
   }, [
     captureMapSnapshots,

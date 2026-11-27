@@ -497,13 +497,14 @@ try {
   assert.equal(anchorOnlyCycle.ok, false, 'pure parentAnchor cycle (D -> E -> D) rejected');
   assert.equal(anchorOnlyCycle.error, '23514');
 
-  // 11) Incomplete parentAnchor (missing centerX/centerY or parentMapId) rejected (`23514`)
-  const missingCenter = store.upsertMap([owner], {
+  // 11) Legacy anchors (missing centerX/centerY/parentMapId or rotationRad: null) stay editable,
+  //     while non-positive/non-finite extents or non-finite rotationRad are still rejected (`23514`).
+  const legacyAnchorNullRot = store.upsertMap([owner], {
     worldProfileId: worldId,
     mapId: null,
     parentMapId: resA.value.id,
     kind: 'region',
-    title: 'Missing Center Anchor',
+    title: 'Legacy Anchor Null Rotation',
     layers: emptyLayers,
     bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
     generatorMeta: {
@@ -511,10 +512,9 @@ try {
       mapFrame: {
         status: 'ready',
         parentAnchor: {
-          parentMapId: resA.value.id,
           extentX: 50,
           extentY: 50,
-          rotationRad: 0,
+          rotationRad: null,
         },
       },
     },
@@ -523,15 +523,18 @@ try {
     basemapStoragePath: null,
     azgaarMapStoragePath: null,
   });
-  assert.equal(missingCenter.ok, false, 'incomplete parentAnchor without centerX/centerY rejected');
-  assert.equal(missingCenter.error, '23514');
+  assert.equal(
+    legacyAnchorNullRot.ok,
+    true,
+    'legacy anchor with missing centerX/centerY/parentMapId and rotationRad: null accepted without blocking saves',
+  );
 
-  const missingAnchorParent = store.upsertMap([owner], {
+  const invalidExtentAnchor = store.upsertMap([owner], {
     worldProfileId: worldId,
     mapId: null,
     parentMapId: resA.value.id,
     kind: 'region',
-    title: 'Missing Anchor Parent',
+    title: 'Invalid Extent Anchor',
     layers: emptyLayers,
     bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
     generatorMeta: {
@@ -539,9 +542,10 @@ try {
       mapFrame: {
         status: 'ready',
         parentAnchor: {
+          parentMapId: resA.value.id,
           centerX: 500,
           centerY: 500,
-          extentX: 50,
+          extentX: 0,
           extentY: 50,
           rotationRad: 0,
         },
@@ -552,46 +556,184 @@ try {
     basemapStoragePath: null,
     azgaarMapStoragePath: null,
   });
-  assert.equal(missingAnchorParent.ok, false, 'incomplete parentAnchor without parentMapId rejected');
-  assert.equal(missingAnchorParent.error, '23514');
+  assert.equal(invalidExtentAnchor.ok, false, 'non-positive extentX rejected');
+  assert.equal(invalidExtentAnchor.error, '23514');
 
-  // 12) Canonical mapFrame.parentAnchor: null honored over legacy top-level parentAnchor
-  const canonicalNullOverLegacy = store.upsertMap([owner], {
+  // 12) UPDATE-path legacy top-level parentAnchor cycle detected (`23514`)
+  const legacyNodeX = store.upsertMap([owner], {
     worldProfileId: worldId,
     mapId: null,
     parentMapId: resA.value.id,
     kind: 'region',
-    title: 'Canonical Null Unlocated',
+    title: 'Legacy Node X',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas' },
+    expectedRevision: null,
+    sortOrder: 11,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(legacyNodeX.ok, true, 'create Legacy Node X');
+
+  const legacyNodeY = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Node Y',
     layers: emptyLayers,
     bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
     generatorMeta: {
       engine: 'unified_canvas',
       parentAnchor: {
-        parentMapId: 'dangling-legacy-id',
-        centerX: 100,
-        centerY: 100,
-        extentX: 10,
-        extentY: 10,
+        parentMapId: legacyNodeX.value.id,
+        centerX: 500,
+        centerY: 500,
+        extentX: 50,
+        extentY: 50,
+        rotationRad: 0,
+      },
+    },
+    expectedRevision: null,
+    sortOrder: 12,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(legacyNodeY.ok, true, 'create Legacy Node Y with top-level legacy parentAnchor -> X');
+
+  const legacyAnchorCycleUpdate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: legacyNodeX.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Node X',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      parentAnchor: {
+        parentMapId: legacyNodeY.value.id,
+        centerX: 500,
+        centerY: 500,
+        extentX: 50,
+        extentY: 50,
+        rotationRad: 0,
+      },
+    },
+    expectedRevision: legacyNodeX.value.revision,
+    sortOrder: 11,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(
+    legacyAnchorCycleUpdate.ok,
+    false,
+    'UPDATE-path legacy top-level parentAnchor cycle (X -> Y -> X) rejected',
+  );
+  assert.equal(legacyAnchorCycleUpdate.error, '23514');
+
+  // 13) UPDATE-path canonical mapFrame.parentAnchor: null takes precedence over legacy top-level parentAnchor
+  const legacyNodeYNullOverride = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: legacyNodeY.value.id,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Legacy Node Y (Unlocated Override)',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: {
+      engine: 'unified_canvas',
+      parentAnchor: {
+        parentMapId: legacyNodeX.value.id,
+        centerX: 500,
+        centerY: 500,
+        extentX: 50,
+        extentY: 50,
+        rotationRad: 0,
       },
       mapFrame: {
         status: 'unlocated',
         parentAnchor: null,
       },
     },
-    expectedRevision: null,
+    expectedRevision: legacyNodeY.value.revision,
+    sortOrder: 12,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(
+    legacyNodeYNullOverride.ok,
+    true,
+    'update Legacy Node Y with canonical mapFrame.parentAnchor: null over legacy top-level link',
+  );
+
+  // Now updating X -> Y via UPDATE must NOT falsely detect a cycle through Y's overridden legacy link
+  const legacyNullPrecedenceUpdate = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: legacyNodeX.value.id,
+    parentMapId: legacyNodeY.value.id,
+    kind: 'region',
+    title: 'Legacy Node X under Y',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas' },
+    expectedRevision: legacyNodeX.value.revision,
     sortOrder: 11,
     basemapStoragePath: null,
     azgaarMapStoragePath: null,
   });
   assert.equal(
-    canonicalNullOverLegacy.ok,
+    legacyNullPrecedenceUpdate.ok,
     true,
-    'canonical mapFrame.parentAnchor: null takes precedence over legacy top-level parentAnchor',
+    'UPDATE-path cycle check honors canonical mapFrame.parentAnchor: null over stale legacy parentAnchor',
   );
+
+  // 14) Malformed anchor metadata on an ancestor row must NOT drop valid parent_map_id cycle detection
+  const malformedChild = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: null,
+    parentMapId: resA.value.id,
+    kind: 'region',
+    title: 'Malformed Anchor Ancestor',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas' },
+    expectedRevision: null,
+    sortOrder: 13,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(malformedChild.ok, true, 'create Malformed Anchor Ancestor');
+  // Simulate pre-existing legacy row with numeric (malformed) anchor parentMapId in SQLite
+  db.prepare(`UPDATE world_atlas_maps SET generator_meta = ? WHERE id = ?`).run(
+    JSON.stringify({ engine: 'unified_canvas', parentAnchor: { parentMapId: 12345 } }),
+    malformedChild.value.id,
+  );
+  const malformedAncestorCycle = store.upsertMap([owner], {
+    worldProfileId: worldId,
+    mapId: resA.value.id,
+    parentMapId: malformedChild.value.id,
+    kind: 'world',
+    title: 'Map A',
+    layers: emptyLayers,
+    bounds: { minX: 0, minY: 0, maxX: 1000, maxY: 1000 },
+    generatorMeta: { engine: 'unified_canvas' },
+    expectedRevision: resA.value.revision,
+    sortOrder: 0,
+    basemapStoragePath: null,
+    azgaarMapStoragePath: null,
+  });
+  assert.equal(
+    malformedAncestorCycle.ok,
+    false,
+    'malformed anchor metadata must not suppress valid parent_map_id cycle check',
+  );
+  assert.equal(malformedAncestorCycle.error, '23514');
 
   db.close();
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
 
-console.log('✓ sws-write-guards.self-test: 13/13 (cycles + anchor-only cycle + shear + uniform rot + dangling/cross-world + incomplete + canonical-null anchor)');
+console.log('✓ sws-write-guards.self-test: 16/16 (cycles + anchor-only + legacy UPDATE cycle + canonical-null UPDATE + malformed-anchor resilience + shear + legacy null-rot + dangling/cross-world)');
