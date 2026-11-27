@@ -1,12 +1,12 @@
 # Composition Gate — atlas-world-zoom-journey
 
 - Feature slug: `atlas-world-zoom-journey`
-- HEAD_SHA: 95d795058290f81d1b5f0039705ad5fc84e1beea
+- HEAD_SHA: 897f2634c83fada547d0a40b0df11200e6de28bb
 - BASE_SHA: 1490c7854b7d6ee45fdb3cccdaefe73f7d27574c
-- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation (`0` ghost opacity + river cutout handoff), unified World-Space located pins & projection-driven hierarchy, live focus-chain budget protection, Ebenen-Drawer container-only auto-scroll, calibration-/projection-truthful Scale HUD, and `zoomAnchor` settling fix on top of `984bcd44b` (unrelated dirty files excluded)
+- WORKTREE: `feat/atlas-spatial-containment` — Scale-aware macro-deco separation, unified World-Space pins, live focus-chain protection, Ebenen-Drawer auto-scroll, calibrated Scale HUD, `zoomAnchor` settling, plus PR #1331 Codex P1 & Kody review fixes (world-scoped `parentAnchor.parentMapId` guard, compensating multi-map rollback, content-aware SCM rehydration, incremental child loading, cached child scene entries, `persistMapMeta` cache invalidation, `spatialArchive` + `#clip<i>` freeland persistence, `planRestore` grow confirm, heightfield-fingerprinted terrain key, idle-frame WebGL throttle, product-journey markers)
 - Date: 2026-11-27
 - Verdict: CLEAR
-- Acceptance tier: hardware-WebGL browser E2E (`atlas-world-zoom-journey.spec.ts` 1/1, `scm-spatial-containment.spec.ts` 4/4), disposable real-world `WO-5CFNZ` probe (`01..07` + `trace.json`), `atlas-camera-anchor.self-test` (10/10), and full `npm run test-gate` verified (see `.qa/runs/atlas-scale-labels-pass.md`)
+- Acceptance tier: hardware-WebGL browser E2E (`atlas-world-zoom-journey.spec.ts` 1/1, `scm-spatial-containment.spec.ts` 4/4), `sws-write-guards.self-test` (10/10), `scm-invariants.self-test` (11/11), `atlas-camera-anchor.self-test` (10/10), and full `npm run test-gate` PASS on `897f2634c` (see `.qa/runs/atlas-scale-labels-pass.md`)
 - Deferred integration: None for this pass (`5c7cab392..95d795058` introduced zero new backend, persistence, API, or migration hops); tablet/phone native hardware R05 (#1270), Q01 (#1300), and ATL4 biome-painting persistence (#1308/#1310) remain separate follow-up epics
 
 ## Event
